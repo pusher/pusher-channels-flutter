@@ -24,6 +24,23 @@ class _MyAppState extends State<MyApp> {
     initPlatformState();
   }
 
+  void onConnectionStateChange(currentState, previousState) {
+    print("currentState:" + currentState + " previousState:" + previousState);
+  }
+
+  void onError(String message, int code, String e) {
+    print("ERROR:" + message + " " + code.toString() + " exception:" + e);
+  }
+
+  void onEvent(String channelName, String eventName, String event) {
+    print("EVENT: channelName:" +
+        channelName +
+        " eventName:" +
+        eventName +
+        " event:" +
+        event);
+  }
+
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
     String platformVersion;
@@ -32,8 +49,15 @@ class _MyAppState extends State<MyApp> {
     try {
       platformVersion =
           await PusherChannels.platformVersion ?? 'Unknown platform version';
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
+      await PusherChannels.init(apiKey: "<API_KEY>", cluster: "eu");
+      await PusherChannels.subscribe(
+          channelName: "test-channel",
+          eventName: "test-event",
+          onEvent: onEvent);
+      await PusherChannels.connect(
+          onConnectionStateChange: onConnectionStateChange, onError: onError);
+    } on Exception catch (e) {
+      platformVersion = e.toString();
     }
 
     // If the widget was removed from the tree while the asynchronous platform
