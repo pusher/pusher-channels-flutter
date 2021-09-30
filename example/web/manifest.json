@@ -1,11 +1,11 @@
 {
-    "name": "pusher_channels_example",
-    "short_name": "pusher_channels_example",
+    "name": "pusher_channels_flutter_example",
+    "short_name": "pusher_channels_flutter_example",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "Demonstrates how to use the pusher_channels plugin.",
+    "description": "Demonstrates how to use the pusher_channels_flutter plugin.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

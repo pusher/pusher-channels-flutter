@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:pusher_channels/pusher_channels.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,7 +17,13 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
+  String _log = '';
+  final _apiKey = TextEditingController();
+  final _cluster = TextEditingController();
+  final _channelName = TextEditingController();
+  final _eventName = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final _listViewController = ScrollController();
 
   @override
   void initState() {
@@ -24,49 +31,70 @@ class _MyAppState extends State<MyApp> {
     initPlatformState();
   }
 
+  void onConnectPressed() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+    // Remove keyboard
+    FocusScope.of(context).requestFocus(FocusNode());
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("apiKey", _apiKey.text);
+    prefs.setString("cluster", _cluster.text);
+    prefs.setString("channelName", _channelName.text);
+    prefs.setString("eventName", _eventName.text);
+
+    try {
+      await PusherChannelsFlutter.init(
+          apiKey: _apiKey.text, cluster: _cluster.text);
+      await PusherChannelsFlutter.subscribe(
+          channelName: _channelName.text,
+          eventName: _eventName.text,
+          onEvent: onEvent);
+      await PusherChannelsFlutter.connect(
+          onConnectionStateChange: onConnectionStateChange, onError: onError);
+    } catch (e) {
+      log("ERROR: " + e.toString());
+    }
+  }
+
   void onConnectionStateChange(currentState, previousState) {
-    print("currentState:" + currentState + " previousState:" + previousState);
+    log("Connection: currentState:" +
+        currentState +
+        " previousState:" +
+        previousState);
+  }
+
+  void log(String text) {
+    print("LOG: " + text);
+    setState(() {
+      _log += text + "\n";
+      Timer(
+        const Duration(milliseconds: 100),
+            () => _listViewController.jumpTo(_listViewController.position.maxScrollExtent)
+      );
+    });
   }
 
   void onError(String message, int code, String e) {
-    print("ERROR:" + message + " " + code.toString() + " exception:" + e);
+    log("ERROR:" + message + " " + code.toString() + " exception:" + e);
   }
 
-  void onEvent(String channelName, String eventName, String event) {
-    print("EVENT: channelName:" +
-        channelName +
-        " eventName:" +
-        eventName +
-        " event:" +
-        event);
+  void onEvent(Object event) {
+    log("EVENT: " + event.toString());
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // We also handle the message potentially returning null.
-    try {
-      platformVersion =
-          await PusherChannels.platformVersion ?? 'Unknown platform version';
-      await PusherChannels.init(apiKey: "<API_KEY>", cluster: "eu");
-      await PusherChannels.subscribe(
-          channelName: "test-channel",
-          eventName: "test-event",
-          onEvent: onEvent);
-      await PusherChannels.connect(
-          onConnectionStateChange: onConnectionStateChange, onError: onError);
-    } on Exception catch (e) {
-      platformVersion = e.toString();
-    }
-
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
     // setState to update our non-existent appearance.
     if (!mounted) return;
-
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      _platformVersion = platformVersion;
+      _apiKey.text = prefs.getString("apiKey") ?? '';
+      _cluster.text = prefs.getString("cluster") ?? '';
+      _channelName.text = prefs.getString("channelName") ?? '';
+      _eventName.text = prefs.getString("eventName") ?? '';
     });
   }
 
@@ -75,10 +103,71 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Plugin example app'),
+          title: const Text('Pusher Channels Example'),
         ),
-        body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Form(
+            key: _formKey,
+            child: ListView(
+                controller: _listViewController,
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                children: <Widget>[
+                  TextFormField(
+                    controller: _apiKey,
+                    validator: (String? value) {
+                      return (value != null && value.isEmpty)
+                          ? 'Please enter your API key.'
+                          : null;
+                    },
+                    //onSaved: (String? value) { _apiKey = value!; },
+                    decoration: const InputDecoration(labelText: 'API Key'),
+                  ),
+                  TextFormField(
+                    controller: _cluster,
+                    validator: (String? value) {
+                      return (value != null && value.isEmpty)
+                          ? 'Please enter your cluster.'
+                          : null;
+                    },
+                    //onSaved: (String? value) { _cluster = value!; },
+                    decoration: const InputDecoration(
+                      labelText: 'Cluster',
+                    ),
+                  ),
+                  TextFormField(
+                    controller: _channelName,
+                    validator: (String? value) {
+                      return (value != null && value.isEmpty)
+                          ? 'Please enter your channel name.'
+                          : null;
+                    },
+                    //onSaved: (String? value) { _channelName = value!; },
+                    decoration: const InputDecoration(
+                      labelText: 'Channel',
+                    ),
+                  ),
+                  TextFormField(
+                    controller: _eventName,
+                    validator: (String? value) {
+                      return (value != null && value.isEmpty)
+                          ? 'Please enter your event name.'
+                          : null;
+                    },
+                    //onSaved: (String? value) { _eventName = value!; },
+                    decoration: const InputDecoration(
+                      labelText: 'Event',
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: onConnectPressed,
+                    child: const Text('Connect'),
+                  ),
+                  SingleChildScrollView(
+                      scrollDirection: Axis.vertical, child: Text('$_log')),
+                ]),
+          ),
         ),
       ),
     );

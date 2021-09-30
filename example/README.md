@@ -1,6 +1,6 @@
-# pusher_channels_example
+# pusher_channels_flutter_example
 
-Demonstrates how to use the pusher_channels plugin.
+Demonstrates how to use the pusher_channels_flutter plugin.
 
 ## Getting Started
 

@@ -1,4 +1,4 @@
-group 'com.example.pusher_channels'
+group 'com.pusher'
 version '1.0-SNAPSHOT'
 
 buildscript {

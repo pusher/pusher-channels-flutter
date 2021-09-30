@@ -1,4 +1,4 @@
-name: pusher_channels_example
+name: pusher_channels_flutter_example
 description: Demonstrates how to use the pusher_channels plugin.
 
 # The following line prevents the package from being accidentally published to
@@ -17,8 +17,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  shared_preferences: "2.0.8"
 
-  pusher_channels:
+  pusher_channels_flutter:
     # When depending on this package from a real application you should use:
     #   pusher_channels: ^x.y.z
     # See https://dart.dev/tools/pub/dependencies#version-constraints

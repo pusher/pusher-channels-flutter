@@ -1,7 +1,7 @@
-name: pusher_channels
-description: A new flutter plugin project.
+name: pusher_channels_flutter
+description: Pusher Channels Flutter Plugin
 version: 0.0.1
-homepage:
+homepage: https://github.com/pusher/pusher-channels-flutter
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -30,13 +30,14 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.example.pusher_channels
-        pluginClass: PusherChannelsPlugin
+        package: com.pusher.channels_flutter
+        pluginClass: PusherChannelsFlutterPlugin
+        fileName: pusher_channels_flutter.dart
       ios:
-        pluginClass: PusherChannelsPlugin
+        pluginClass: PusherChannelsFlutterPlugin
       web:
-        pluginClass: PusherChannelsWeb
-        fileName: pusher_channels_web.dart
+        pluginClass: PusherChannelsFlutterWeb
+        fileName: pusher_channels_flutter_web.dart
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:

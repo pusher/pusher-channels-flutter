@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.pusher_channels_example">
+    package="com.pusher.channels_flutter_example">
    <application
-        android:label="pusher_channels_example"
+        android:label="pusher_channels_flutter_example"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
