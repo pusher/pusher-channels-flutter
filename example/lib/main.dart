@@ -25,6 +25,17 @@ class _MyAppState extends State<MyApp> {
   final _formKey = GlobalKey<FormState>();
   final _listViewController = ScrollController();
 
+  void log(String text) {
+    print("LOG: $text");
+    setState(() {
+      _log += text + "\n";
+      Timer(
+          const Duration(milliseconds: 100),
+          () => _listViewController
+              .jumpTo(_listViewController.position.maxScrollExtent));
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -45,42 +56,59 @@ class _MyAppState extends State<MyApp> {
 
     try {
       await PusherChannelsFlutter.init(
-          apiKey: _apiKey.text, cluster: _cluster.text);
+          apiKey: _apiKey.text,
+          cluster: _cluster.text,
+          onConnectionStateChange: onConnectionStateChange,
+          onError: onError,
+          onSubscriptionSucceeded: onSubscriptionSucceeded,
+          onEvent: onEvent,
+          onAuthenticationFailure: onAuthenticationFailure,
+          onDecryptionFailure: onDecryptionFailure,
+          userSubscribed: userSubscribed,
+          userUnsubscribed: userUnsubscribed,
+          onUsersInformationReceived: onUsersInformationReceived);
       await PusherChannelsFlutter.subscribe(
-          channelName: _channelName.text,
-          eventName: _eventName.text,
-          onEvent: onEvent);
-      await PusherChannelsFlutter.connect(
-          onConnectionStateChange: onConnectionStateChange, onError: onError);
+          channelName: _channelName.text, eventName: _eventName.text);
+      await PusherChannelsFlutter.connect();
     } catch (e) {
-      log("ERROR: " + e.toString());
+      log("ERROR: $e");
     }
   }
 
   void onConnectionStateChange(currentState, previousState) {
-    log("Connection: currentState:" +
-        currentState +
-        " previousState:" +
-        previousState);
-  }
-
-  void log(String text) {
-    print("LOG: " + text);
-    setState(() {
-      _log += text + "\n";
-      Timer(
-        const Duration(milliseconds: 100),
-            () => _listViewController.jumpTo(_listViewController.position.maxScrollExtent)
-      );
-    });
+    log("Connection: $currentState");
   }
 
   void onError(String message, int code, String e) {
-    log("ERROR:" + message + " " + code.toString() + " exception:" + e);
+    log("onError: $message code: $code exception: $e");
   }
 
   void onEvent(Object event) {
-    log("EVENT: " + event.toString());
+    log("onEvent: $event");
+  }
+
+  void onSubscriptionSucceeded(String channelName) {
+    log("onSubscriptionSucceeded: $channelName");
+  }
+
+  void onAuthenticationFailure(String message, String e) {
+    log("onAuthenticationFailure: $message Exception: $e");
+  }
+
+  void onDecryptionFailure(String event, String reason) {
+    log("onDecryptionFailure: $event reason: $reason");
+  }
+
+  void userSubscribed(String channelName, user) {
+    log("userSubscribed: $channelName user: $user");
+  }
+
+  void userUnsubscribed(String channelName, user) {
+    log("userUnsubscribed: $channelName user: $user");
+  }
+
+  void onUsersInformationReceived(String channelName, users) {
+    log("onUsersInformationReceived: $channelName users: $users");
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -165,7 +193,7 @@ class _MyAppState extends State<MyApp> {
                     child: const Text('Connect'),
                   ),
                   SingleChildScrollView(
-                      scrollDirection: Axis.vertical, child: Text('$_log')),
+                      scrollDirection: Axis.vertical, child: Text(_log)),
                 ]),
           ),
         ),
