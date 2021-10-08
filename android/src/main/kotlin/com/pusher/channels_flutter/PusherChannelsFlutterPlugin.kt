@@ -6,6 +6,7 @@ import com.pusher.client.channel.*
 import com.pusher.client.connection.ConnectionEventListener
 import com.pusher.client.connection.ConnectionState
 import com.pusher.client.connection.ConnectionStateChange
+import com.pusher.client.util.HttpAuthorizer
 import io.flutter.Log
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -18,8 +19,6 @@ import io.flutter.plugin.common.MethodChannel.Result
 
 
 const val TAG = "PusherChannelsFlutter"
-
-
 
 class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     ConnectionEventListener, ChannelEventListener, SubscriptionEventListener,
@@ -87,6 +86,7 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
                 call.argument("data")!!,
                 result
             )
+            "getSocketId" -> this.getSocketId(result)
             else -> {
                 result.notImplemented()
             }
@@ -120,6 +120,7 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
                     call.argument("maxReconnectionAttempts")!!
                 if (call.argument<Int>("maxReconnectGapInSeconds") != null) options.maxReconnectGapInSeconds =
                     call.argument("maxReconnectGapInSeconds")!!
+                if (call.argument<String>("authorizer") != null) options.authorizer = HttpAuthorizer(call.argument("authorizer"))
                 pusher = Pusher(call.argument("apiKey"), options)
             } else {
                 throw Exception("Pusher Channels already initialized.")
@@ -176,10 +177,16 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     }
 
     private fun trigger(channelName: String, eventName: String, data:String, result:Result) {
-        (pusherChannels[channelName] as PrivateChannel)!!.trigger(eventName, data)
+        (pusherChannels[channelName] as PrivateChannel).trigger(eventName, data)
         result.success(null)
     }
 
+    private fun getSocketId(result: Result) {
+        val socketId = pusher!!.connection.socketId
+        result.success(socketId)
+    }
+
+    // Event handlers
     override fun onConnectionStateChange(change: ConnectionStateChange) {
         Log.i(
             TAG,

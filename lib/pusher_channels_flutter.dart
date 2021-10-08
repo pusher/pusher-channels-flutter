@@ -81,7 +81,8 @@ class PusherChannelsFlutter {
       Function? onDecryptionFailure,
       Function? userSubscribed,
       Function? userUnsubscribed,
-      Function? onUsersInformationReceived}) async {
+      Function? onUsersInformationReceived,
+      String? authorizer}) async {
     _channel.setMethodCallHandler(_platformCallHandler);
     PusherChannelsFlutter.onConnectionStateChange = onConnectionStateChange;
     PusherChannelsFlutter.onError = onError;
@@ -103,7 +104,8 @@ class PusherChannelsFlutter {
       "activityTimeout": activityTimeout,
       "pongTimeout": pongTimeout,
       "maxReconnectionAttempts": maxReconnectionAttempts,
-      "maxReconnectGapInSeconds": maxReconnectGapInSeconds
+      "maxReconnectGapInSeconds": maxReconnectGapInSeconds,
+      "authorizer": authorizer
     });
   }
 
@@ -155,5 +157,9 @@ class PusherChannelsFlutter {
       required String data}) async {
     await _channel.invokeMethod('invoke',
         {"channelName": channelName, "eventName": eventName, "data": data});
+  }
+
+  static Future<void> getSocketId() async {
+    await _channel.invokeMethod('getSocketId');
   }
 }
