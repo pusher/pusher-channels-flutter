@@ -15,11 +15,6 @@ class PusherChannelsFlutter {
   static Function? userUnsubscribed;
   static Function? onUsersInformationReceived;
 
-  static Future<String?> get platformVersion async {
-    final String? version = await _channel.invokeMethod('getPlatformVersion');
-    return version;
-  }
-
   static Future<dynamic> _platformCallHandler(MethodCall call) async {
     switch (call.method) {
       case 'onConnectionStateChange':
@@ -57,8 +52,7 @@ class PusherChannelsFlutter {
             call.arguments('channelName'), call.arguments('users'));
         return Future.value('called from platform!');
       default:
-        print('Unknowm method ${call.method}');
-        throw MissingPluginException();
+        throw MissingPluginException('Unknown method ${call.method}');
     }
   }
 
@@ -82,7 +76,8 @@ class PusherChannelsFlutter {
       Function? userSubscribed,
       Function? userUnsubscribed,
       Function? onUsersInformationReceived,
-      String? authorizer}) async {
+      String? authorizer,
+      String? proxy}) async {
     _channel.setMethodCallHandler(_platformCallHandler);
     PusherChannelsFlutter.onConnectionStateChange = onConnectionStateChange;
     PusherChannelsFlutter.onError = onError;
@@ -105,7 +100,8 @@ class PusherChannelsFlutter {
       "pongTimeout": pongTimeout,
       "maxReconnectionAttempts": maxReconnectionAttempts,
       "maxReconnectGapInSeconds": maxReconnectGapInSeconds,
-      "authorizer": authorizer
+      "authorizer": authorizer,
+      "proxy": proxy
     });
   }
 

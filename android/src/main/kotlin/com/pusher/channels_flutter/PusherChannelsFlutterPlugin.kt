@@ -16,7 +16,8 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
-
+import java.net.InetSocketAddress
+import java.net.Proxy
 
 const val TAG = "PusherChannelsFlutter"
 
@@ -121,6 +122,11 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
                 if (call.argument<Int>("maxReconnectGapInSeconds") != null) options.maxReconnectGapInSeconds =
                     call.argument("maxReconnectGapInSeconds")!!
                 if (call.argument<String>("authorizer") != null) options.authorizer = HttpAuthorizer(call.argument("authorizer"))
+                pusher = Pusher(call.argument("apiKey"), options)
+                if (call.argument<String>("proxy") != null) {
+                    val (host, port) = call.argument<String>("proxy")!!.split(':')
+                    options.proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(host, port.toInt()))
+                }
                 pusher = Pusher(call.argument("apiKey"), options)
             } else {
                 throw Exception("Pusher Channels already initialized.")
