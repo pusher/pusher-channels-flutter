@@ -29,27 +29,27 @@ class PusherChannelsFlutter {
         onEvent?.call(call.arguments);
         return Future.value('called from platform!');
       case 'onSubscriptionSucceeded':
-        onSubscriptionSucceeded?.call(call.arguments('channelName'));
+        onSubscriptionSucceeded?.call(call.arguments['channelName']);
         return Future.value('called from platform!');
       case 'onAuthenticationFailure':
         onAuthenticationFailure?.call(
-            call.arguments('message'), call.arguments('e'));
+            call.arguments['message'], call.arguments['e']);
         return Future.value('called from platform!');
       case 'onDecryptionFailure':
         onDecryptionFailure?.call(
-            call.arguments('event'), call.arguments('reason'));
+            call.arguments['event'], call.arguments['reason']);
         return Future.value('called from platform!');
       case 'userSubscribed':
         userSubscribed?.call(
-            call.arguments('channelName'), call.arguments('user'));
+            call.arguments['channelName'], call.arguments['user']);
         return Future.value('called from platform!');
       case 'userUnsubscribed':
         userUnsubscribed?.call(
-            call.arguments('channelName'), call.arguments('user'));
+            call.arguments['channelName'], call.arguments['user']);
         return Future.value('called from platform!');
       case 'onUsersInformationReceived':
         onUsersInformationReceived?.call(
-            call.arguments('channelName'), call.arguments('users'));
+            call.arguments['channelName'], call.arguments['users']);
         return Future.value('called from platform!');
       default:
         throw MissingPluginException('Unknown method ${call.method}');

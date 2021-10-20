@@ -121,8 +121,9 @@ class PusherChannelsFlutterWeb {
     if (msg.event.startsWith('pusher:')) {
       print("INTERNAL EVENT!");
     }
-    if (msg.event== 'pusher_internal:subscription_succeeded') {
-      channel!.invokeMethod("onSubscriptionSucceeded", msg.channel);
+    if (msg.event == 'pusher_internal:subscription_succeeded') {
+      channel!.invokeMethod(
+          "onSubscriptionSucceeded", {"channelName": msg.channel});
     }
   }
 
@@ -133,7 +134,6 @@ class PusherChannelsFlutterWeb {
 
   void onConnected(state) {
     print("Connected: " + stringify(state));
-
   }
 
   void onDisconnected(state) {
