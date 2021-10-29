@@ -18,15 +18,13 @@ abstract class TimelineSenderOptions {
 
 @JS()
 class TimelineSender {
-  // @Ignore
-  TimelineSender.fakeConstructor$();
   external Timeline get timeline;
   external set timeline(Timeline v);
   external TimelineSenderOptions get options;
   external set options(TimelineSenderOptions v);
   external String get host;
   external set host(String v);
-//  external factory TimelineSender(
-//      Timeline timeline, TimelineSenderOptions options);
+  external factory TimelineSender(
+      Timeline timeline, TimelineSenderOptions options);
   external send(bool useTLS, [Function callback]);
 }

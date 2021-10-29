@@ -46,9 +46,9 @@ class Connection extends Dispatcher implements Socket {
 
 
   external bool sendRaw(dynamic payload);
-  external void onopen([dynamic evt]);
-  external void onerror(dynamic error);
-  external void onclose(dynamic closeEvent);
-  external void onmessage(dynamic message);
-  external void onactivity();
+  external Function([dynamic evt])? onopen;
+  external Function(dynamic)? onerror;
+  external Function(dynamic)? onclose;
+  external Function(dynamic)? onmessage;
+  external Function? onactivity;
 }

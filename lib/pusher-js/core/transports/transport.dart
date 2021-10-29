@@ -17,8 +17,6 @@ import "transport_connection.dart" show TransportConnection;
 /// See transports.js for specific implementations.
 @JS()
 class Transport {
-  // @Ignore
-  Transport.fakeConstructor$();
   external TransportHooks get hooks;
   external set hooks(TransportHooks v);
   external factory Transport(TransportHooks hooks);

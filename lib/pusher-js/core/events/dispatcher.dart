@@ -8,8 +8,6 @@ import "../channels/metadata.dart" show Metadata;
 /// Manages callback bindings and event emitting.
 @JS()
 class Dispatcher {
-  // @Ignore
-  // Dispatcher.fakeConstructor$();
   external CallbackRegistry get callbacks;
   external set callbacks(CallbackRegistry v);
   external List<Function> get global_callbacks;

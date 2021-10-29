@@ -9,8 +9,6 @@ import "../channels/channel.dart" show Channel;
 
 @JS()
 class PusherAuthorizer implements Authorizer {
-  // @Ignore
-  PusherAuthorizer.fakeConstructor$();
   external static AuthTransports get authorizers;
   external static set authorizers(AuthTransports v);
   external Channel get channel;
@@ -23,5 +21,6 @@ class PusherAuthorizer implements Authorizer {
   external set authOptions(AuthOptions v);
   external factory PusherAuthorizer(Channel channel, AuthorizerOptions options);
   external String composeQuery(String socketId);
+  @override
   external void authorize(String socketId, AuthorizerCallback callback);
 }

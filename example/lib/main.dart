@@ -23,6 +23,7 @@ class _MyAppState extends State<MyApp> {
   final _eventName = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final _listViewController = ScrollController();
+  final _triggerEventContent = TextEditingController();
 
   void log(String text) {
     print("LOG: $text");
@@ -55,17 +56,20 @@ class _MyAppState extends State<MyApp> {
 
     try {
       await PusherChannelsFlutter.init(
-          apiKey: _apiKey.text,
-          cluster: _cluster.text,
-          onConnectionStateChange: onConnectionStateChange,
-          onError: onError,
-          onSubscriptionSucceeded: onSubscriptionSucceeded,
-          onEvent: onEvent,
-          onAuthenticationFailure: onAuthenticationFailure,
-          onDecryptionFailure: onDecryptionFailure,
-          userSubscribed: userSubscribed,
-          userUnsubscribed: userUnsubscribed,
-          onUsersInformationReceived: onUsersInformationReceived);
+        apiKey: _apiKey.text,
+        cluster: _cluster.text,
+        onConnectionStateChange: onConnectionStateChange,
+        onError: onError,
+        onSubscriptionSucceeded: onSubscriptionSucceeded,
+        onEvent: onEvent,
+        onAuthenticationFailure: onAuthenticationFailure,
+        onDecryptionFailure: onDecryptionFailure,
+        userSubscribed: userSubscribed,
+        userUnsubscribed: userUnsubscribed,
+        onUsersInformationReceived: onUsersInformationReceived,
+        authEndpoint: "http://localhost:5000/pusher/auth",
+        //    authorizer: onAuthorizer
+      );
       await PusherChannelsFlutter.subscribe(
           channelName: _channelName.text, eventName: _eventName.text);
       await PusherChannelsFlutter.connect();
@@ -74,11 +78,11 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  void onConnectionStateChange(currentState, previousState) {
+  void onConnectionStateChange(dynamic currentState, dynamic previousState) {
     log("Connection: $currentState");
   }
 
-  void onError(String message, int code, String e) {
+  void onError(String message, int? code, dynamic e) {
     log("onError: $message code: $code exception: $e");
   }
 
@@ -90,7 +94,7 @@ class _MyAppState extends State<MyApp> {
     log("onSubscriptionSucceeded: $channelName");
   }
 
-  void onAuthenticationFailure(String message, String e) {
+  void onAuthenticationFailure(String message, dynamic e) {
     log("onAuthenticationFailure: $message Exception: $e");
   }
 
@@ -108,6 +112,21 @@ class _MyAppState extends State<MyApp> {
 
   void onUsersInformationReceived(String channelName, users) {
     log("onUsersInformationReceived: $channelName users: $users");
+  }
+
+  dynamic onAuthorizer(String channelName, String socketId, dynamic options) {
+    /* return {
+      "auth": "foobar:barfoo",
+      "channel_data": '{"foo":"bar"}',
+      "shared_secret": "YESYES"
+    }; */
+  }
+
+  void onTriggerEventPressed() async {
+    PusherChannelsFlutter.trigger(
+        channelName: _channelName.text,
+        eventName: _eventName.text,
+        data: _triggerEventContent.text);
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -190,6 +209,16 @@ class _MyAppState extends State<MyApp> {
                   ElevatedButton(
                     onPressed: onConnectPressed,
                     child: const Text('Connect'),
+                  ),
+                  TextFormField(
+                    controller: _triggerEventContent,
+                    decoration: const InputDecoration(
+                      labelText: 'Trigger Event Content',
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: onTriggerEventPressed,
+                    child: const Text('Trigger Event'),
                   ),
                   SingleChildScrollView(
                       scrollDirection: Axis.vertical, child: Text(_log)),

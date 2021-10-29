@@ -24,10 +24,10 @@ abstract class AuthData {
   external String get shared_secret;
   external set shared_secret(String v);
   external factory AuthData(
-      {String auth, String channel_data, String shared_secret});
+      {String auth, String? channel_data, String? shared_secret});
 }
 
-typedef void AuthorizerCallback(Error /*Error|Null*/ error, AuthData authData);
+typedef void AuthorizerCallback(Error? error, AuthData authData);
 
 @anonymous
 @JS()

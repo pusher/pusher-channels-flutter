@@ -10,9 +10,18 @@ import 'package:js/js_util.dart' as js_util;
 // ignore: avoid_web_libraries_in_flutter
 import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:pusher_channels_flutter/pusher-js/core/auth/options.dart';
+import 'package:pusher_channels_flutter/pusher-js/core/auth/pusher_authorizer.dart';
+// import 'package:pusher_channels_flutter/pusher-js/core/auth/pusher_authorizer.dart';
 import 'package:pusher_channels_flutter/pusher-js/core/channels/channel.dart';
 import 'package:pusher_channels_flutter/pusher-js/core/options.dart';
 import 'package:pusher_channels_flutter/pusher-js/core/pusher.dart';
+
+class PusherError extends Error {
+  String message;
+  int code;
+  PusherError(this.message, this.code);
+}
 
 @JS('JSON.stringify')
 external String stringify(Object obj);
@@ -45,21 +54,33 @@ T dartify<T>(dynamic jsObject) {
   return result as T;
 }
 
+class PusherChannelsFlutterWebAuthorizer implements Authorizer {
+  final void Function(String socketId, AuthorizerCallback callback) _authorize;
+  PusherChannelsFlutterWebAuthorizer(
+      void Function(String socketId, AuthorizerCallback callback) authorize)
+      : _authorize = authorize;
+
+  @override
+  void authorize(String socketId, AuthorizerCallback callback) {
+    _authorize(socketId, callback);
+  }
+}
+
 /// A web implementation of the PusherChannelsFlutter plugin.
 class PusherChannelsFlutterWeb {
   Pusher? pusher;
   Map<String, Channel> channels = {};
   Map<String, Set<String>> events = {};
-  MethodChannel? channel;
+  MethodChannel? methodChannel;
 
   static void registerWith(Registrar registrar) {
     final pluginInstance = PusherChannelsFlutterWeb();
-    pluginInstance.channel = MethodChannel(
+    pluginInstance.methodChannel = MethodChannel(
       'pusher_channels_flutter',
       const StandardMethodCodec(),
       registrar,
     );
-    pluginInstance.channel!
+    pluginInstance.methodChannel!
         .setMethodCallHandler(pluginInstance.handleMethodCall);
   }
 
@@ -73,6 +94,7 @@ class PusherChannelsFlutterWeb {
         init(call);
         break;
       case 'connect':
+        assertPusher();
         pusher!.connect();
         break;
       case 'subscribe':
@@ -83,6 +105,9 @@ class PusherChannelsFlutterWeb {
         break;
       case 'unsubscribe':
         unsubscribe(call);
+        break;
+      case 'trigger':
+        trigger(call);
         break;
       case 'getSocketId':
         return pusher!.sessionID;
@@ -95,40 +120,57 @@ class PusherChannelsFlutterWeb {
     }
   }
 
+  void assertPusher() {
+    if (pusher == null) {
+      throw ArgumentError.notNull("Pusher not initialized");
+    }
+  }
+
+  void assertChannel(channelName) {
+    if (channels[channelName] == null) {
+      throw ArgumentError.notNull("Not subscribed to channel: $channelName");
+    }
+  }
+
   void onError(err) {
     print("ERROR: " + stringify(err));
-    //if( err.error.data.code === 4004 ) {
-    //  log('Over limit!');
-    //}
-
-    channel!.invokeMethod("onError", {
-      "message": err.message,
-      "code": err.error?.data?.code,
-      "e": dartify(err.error),
+    methodChannel!.invokeMethod("onError", {
+      "message": err.data?.message,
+      "code": err.data?.code,
+      "e": dartify(err),
     });
   }
 
   void onMessage(msg) {
     print("Message: " + stringify(msg));
     if (events[msg.channel]?.contains(msg.event) == true) {
-      channel!.invokeMethod("onEvent", {
+      methodChannel!.invokeMethod("onEvent", {
         "channelName": msg.channel,
         "eventName": msg.event,
         "data": dartify(msg.data),
         "userId": msg.user_id
       });
     }
-    if (msg.event.startsWith('pusher:')) {
+    if (msg.event?.startsWith('pusher:')) {
       print("INTERNAL EVENT!");
     }
     if (msg.event == 'pusher_internal:subscription_succeeded') {
-      channel!.invokeMethod(
+      methodChannel!.invokeMethod(
           "onSubscriptionSucceeded", {"channelName": msg.channel});
+    } else if (msg.event == 'pusher_internal:subscription_error') {
+      methodChannel!.invokeMethod("onAuthenticationFailure",
+          {"message": msg.error, "e": dartify(msg.data)});
+    } else if (msg.event == 'pusher_internal:member_added') {
+      methodChannel!.invokeMethod("userSubscribed",
+          {"channelName": msg.channel, "user": dartify(msg.data)});
+    } else if (msg.event == 'pusher_internal:member_removed') {
+      methodChannel!.invokeMethod("userUnsubscribed",
+          {"channelName": msg.channel, "user": dartify(msg.data)});
     }
   }
 
   void onStateChange(state) {
-    channel!.invokeMethod("onConnectionStateChange",
+    methodChannel!.invokeMethod("onConnectionStateChange",
         {"currentState": state.current, "previousState": state.previous});
   }
 
@@ -140,10 +182,31 @@ class PusherChannelsFlutterWeb {
     print("Disconnected: " + stringify(state));
   }
 
+  Authorizer onAuthorizer(Channel channel, AuthorizerOptions options) {
+    return PusherChannelsFlutterWebAuthorizer(
+        (String socketId, AuthorizerCallback callback) async {
+      try {
+        var authData = await methodChannel!.invokeMethod('onAuthorizer', {
+          "socketId": socketId,
+          "channelName": channel.name,
+          "options": dartify(options)
+        });
+        callback(
+            null,
+            AuthData(
+                auth: authData['auth'],
+                channel_data: authData['channel_data'],
+                shared_secret: authData['shared_secret']));
+      } catch (e) {
+        callback(PusherError(e.toString(), -1), AuthData(auth: ""));
+      }
+    });
+  }
+
   void subscribe(MethodCall call) {
     var channelName = call.arguments['channelName'];
-    print("channelname:" + channelName);
     if (channels[channelName] == null) {
+      assertPusher();
       channels[channelName] = pusher!.subscribe(channelName);
       events[channelName] = {};
     }
@@ -152,11 +215,18 @@ class PusherChannelsFlutterWeb {
 
   void unsubscribe(MethodCall call) {
     var channelName = call.arguments['channelName'];
-    print("unsubscribe channelname:" + channelName);
+    assertChannel(channelName);
     pusher!.unsubscribe(channelName);
     channels[channelName]!.unbind_all();
     channels.remove(channelName);
     events.remove(channelName);
+  }
+
+  void trigger(MethodCall call) {
+    var channelName = call.arguments['channelName'];
+    assertChannel(channelName);
+    channels[channelName]!
+        .trigger(call.arguments['eventName'], call.arguments['data']);
   }
 
   void init(MethodCall call) {
@@ -215,39 +285,20 @@ class PusherChannelsFlutterWeb {
     if (call.arguments['statsHost'] != null) {
       options.statsHost = call.arguments['statsHost'];
     }
-
-    /* Options({
-          activityTimeout,
-          AuthOptions auth,
-          String authEndpoint,
-          String /*'ajax'|'jsonp'*/ authTransport,
-          AuthorizerGenerator authorizer,
-          String cluster,
-          bool enableStats,
-          bool disableStats,
-          List<String /*'ws'|'wss'|'xhr_streaming'|'xhr_polling'|'sockjs'*/ >
-              disabledTransports,
-          List<String /*'ws'|'wss'|'xhr_streaming'|'xhr_polling'|'sockjs'*/ >
-              enabledTransports,
-          bool forceTLS,
-          String httpHost,
-          String httpPath,
-          num httpPort,
-          num httpsPort,
-          bool ignoreNullOrigin,
-          //    nacl nacl,
-          num pongTimeout,
-          String statsHost,
-          dynamic timelineParams,
-          num unavailableTimeout,
-          String wsHost,
-          String wsPath,
-          num wsPort,
-          num wssPort} */
-
+    if (call.arguments['auth'] != null) {
+      options.auth = call.arguments['auth'];
+    }
+    if (call.arguments['logToConsole'] != null) {
+      Pusher.logToConsole = call.arguments['logToConsole'];
+    }
+    if (call.arguments['authorizer'] != null) {
+      options.authorizer = allowInterop(onAuthorizer);
+    }
+    Pusher.logToConsole = true;
     pusher = Pusher(call.arguments['apiKey'], options);
     pusher!.connection.bind('error', allowInterop(onError));
     pusher!.connection.bind('message', allowInterop(onMessage));
+    //pusher!.connection.bind('client-message', allowInterop(onMessage));
     pusher!.connection.bind('state_change', allowInterop(onStateChange));
     pusher!.connection.bind('connected', allowInterop(onConnected));
     pusher!.connection.bind('disconnected', allowInterop(onDisconnected));

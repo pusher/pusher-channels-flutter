@@ -5,15 +5,18 @@ import 'package:flutter/services.dart';
 class PusherChannelsFlutter {
   static const MethodChannel _channel =
       MethodChannel('pusher_channels_flutter');
-  static Function? onConnectionStateChange;
-  static Function? onSubscriptionSucceeded;
-  static Function? onAuthenticationFailure;
-  static Function? onDecryptionFailure;
-  static Function? onError;
-  static Function? onEvent;
-  static Function? userSubscribed;
-  static Function? userUnsubscribed;
-  static Function? onUsersInformationReceived;
+  static Function(dynamic currentState, dynamic previousState)?
+      onConnectionStateChange;
+  static Function(String channelName)? onSubscriptionSucceeded;
+  static Function(String message, dynamic e)? onAuthenticationFailure;
+  static Function(String event, String reason)? onDecryptionFailure;
+  static Function(String message, int? code, dynamic e)? onError;
+  static Function(Object event)? onEvent;
+  static Function(String channelName, dynamic user)? userSubscribed;
+  static Function(String channelName, dynamic user)? userUnsubscribed;
+  static Function(String channelName, dynamic users)?
+      onUsersInformationReceived;
+  static dynamic onAuthorizer;
 
   static Future<dynamic> _platformCallHandler(MethodCall call) async {
     switch (call.method) {
@@ -51,33 +54,50 @@ class PusherChannelsFlutter {
         onUsersInformationReceived?.call(
             call.arguments['channelName'], call.arguments['users']);
         return Future.value('called from platform!');
+      case 'onAuthorizer':
+          return onAuthorizer?.call(call.arguments['channelName'], call.arguments['socketId'], call.arguments['options']);
       default:
         throw MissingPluginException('Unknown method ${call.method}');
     }
   }
 
-  static Future<void> init(
-      {required String apiKey,
-      required String cluster,
-      bool? useTLS,
-      String? host,
-      int? wsPort,
-      int? wssPort,
-      int? activityTimeout,
-      int? pongTimeout,
-      int? maxReconnectionAttempts,
-      int? maxReconnectGapInSeconds,
-      Function? onConnectionStateChange,
-      Function? onError,
-      Function? onSubscriptionSucceeded,
-      Function? onEvent,
-      Function? onAuthenticationFailure,
-      Function? onDecryptionFailure,
-      Function? userSubscribed,
-      Function? userUnsubscribed,
-      Function? onUsersInformationReceived,
-      String? authorizer,
-      String? proxy}) async {
+  static Future<void> init({
+    required String apiKey,
+    required String cluster,
+    bool? useTLS,
+    String? host,
+    int? wsPort,
+    int? wssPort,
+    int? activityTimeout,
+    int? pongTimeout,
+    int? maxReconnectionAttempts,
+    int? maxReconnectGapInSeconds,
+    Function(dynamic currentState, dynamic previousState)?
+        onConnectionStateChange,
+    Function(String channelName)? onSubscriptionSucceeded,
+    Function(String message, dynamic e)? onAuthenticationFailure,
+    Function(String event, String reason)? onDecryptionFailure,
+    Function(String message, int? code, dynamic e)? onError,
+    Function(Object event)? onEvent,
+    Function(String channelName, dynamic user)? userSubscribed,
+    Function(String channelName, dynamic user)? userUnsubscribed,
+    Function(String channelName, dynamic users)? onUsersInformationReceived,
+    dynamic authorizer,
+    String? proxy,
+    bool? enableStats, // pusher-js only
+    List<String>? disabledTransports, // pusher-js only
+    List<String>? enabledTransports, // pusher-js only
+    bool? ignoreNullOrigin, // pusher-js only
+    String? statsHost, // pusher-js only
+    String? authEndpoint, // pusher-js only
+    String? authTransport, // pusher-js only
+    String? httpHost, // pusher-js only
+    String? httpPath, // pusher-js only
+    int? httpPort, // pusher-js only
+    int? httpsPort, // pusher-js only
+    Map<String, Map<String, String>>? auth, // pusher-js only
+    bool? logToConsole, // pusher-js only
+  }) async {
     _channel.setMethodCallHandler(_platformCallHandler);
     PusherChannelsFlutter.onConnectionStateChange = onConnectionStateChange;
     PusherChannelsFlutter.onError = onError;
@@ -89,6 +109,11 @@ class PusherChannelsFlutter {
     PusherChannelsFlutter.userUnsubscribed = userUnsubscribed;
     PusherChannelsFlutter.onUsersInformationReceived =
         onUsersInformationReceived;
+    // For pusher-js we pass a function to authorizer, so we map it to a callback.
+    if (authorizer is Function) {
+      PusherChannelsFlutter.onAuthorizer = authorizer;
+      authorizer = true;
+    }
     await _channel.invokeMethod('init', {
       "apiKey": apiKey,
       "cluster": cluster,
@@ -101,7 +126,20 @@ class PusherChannelsFlutter {
       "maxReconnectionAttempts": maxReconnectionAttempts,
       "maxReconnectGapInSeconds": maxReconnectGapInSeconds,
       "authorizer": authorizer,
-      "proxy": proxy
+      "proxy": proxy,
+      "enableStats": enableStats,
+      "disabledTransports": disabledTransports,
+      "enabledTransports": enabledTransports,
+      "ignoreNullOrigin": ignoreNullOrigin,
+      "statsHost": statsHost,
+      "authEndpoint": authEndpoint,
+      "authTransport": authTransport,
+      "httpHost": httpHost,
+      "httpPath": httpPath,
+      "httpPort": httpPort,
+      "httpsPort": httpsPort,
+      "auth": auth,
+      "logToConsole": logToConsole
     });
   }
 
@@ -151,7 +189,7 @@ class PusherChannelsFlutter {
       {required String channelName,
       required String eventName,
       required String data}) async {
-    await _channel.invokeMethod('invoke',
+    await _channel.invokeMethod('trigger',
         {"channelName": channelName, "eventName": eventName, "data": data});
   }
 

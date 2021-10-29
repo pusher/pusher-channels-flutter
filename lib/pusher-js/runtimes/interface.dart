@@ -1,7 +1,10 @@
 @JS()
 library interface;
 
+import 'dart:html';
+
 import "package:js/js.dart";
+import 'package:pusher_channels_flutter/pusher-js/runtimes/web/dom/script_receiver_factory.dart';
 import "../core/auth/auth_transports.dart" show AuthTransports;
 import "../core/timeline/timeline_transport.dart" show TimelineTransport;
 import "../core/http/ajax.dart" show Ajax;
@@ -33,8 +36,8 @@ abstract class Runtime {
   external String getProtocol();
   external AuthTransports getAuthorizers();
   external dynamic getLocalStorage();
-  external TimelineTransport get TimelineTransport;
-  external set TimelineTransport(TimelineTransport v);
+  external TimelineTransport timelineTransport;
+  //external set TimelineTransport(TimelineTransport v);
   external Ajax createXHR();
   external Socket createWebSocket(String url);
   external Reachability getNetwork();
@@ -48,8 +51,7 @@ abstract class Runtime {
   external void removeUnloadListener(Function listener);
   external Function get transportConnectionInitializer;
   external set transportConnectionInitializer(Function v);
-  external HTTPFactory get HTTPFactory;
-  external set HTTPFactory(HTTPFactory v);
+  external HTTPFactory httpFactory;
   external bool isXHRSupported();
   external HTTPRequest createSocketRequest(String method, String url);
 
@@ -58,8 +60,8 @@ abstract class Runtime {
   external Document getDocument();
   external dynamic createScriptRequest(String url);
   external JSONPRequest createJSONPRequest(String url, dynamic data);
-  external dynamic get ScriptReceivers;
-  external set ScriptReceivers(dynamic v);
+  external ScriptReceiverFactory get ScriptReceivers;
+  external set ScriptReceivers(ScriptReceiverFactory v);
   external bool isXDRSupported([bool useTLS]);
 }
 
