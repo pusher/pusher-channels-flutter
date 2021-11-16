@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 @JS()
 library core.connection.connection;
 
@@ -29,6 +31,7 @@ class Connection extends Dispatcher implements Socket {
   external handlesActivityChecks();
 
   /// Sends raw data.
+  @override
   external bool send(dynamic data);
 
   /// Sends an event.
@@ -37,18 +40,26 @@ class Connection extends Dispatcher implements Socket {
   /// Sends a ping message to the server.
   /// Basing on the underlying transport, it might send either transport's
   /// protocol-specific ping or pusher:ping event.
+  @override
   external ping();
 
   /// Closes the connection.
+  @override
   external close([dynamic code, dynamic reason]);
   external bindListeners();
   external handleCloseEvent(dynamic closeEvent);
 
 
+  @override
   external bool sendRaw(dynamic payload);
+  @override
   external Function([dynamic evt])? onopen;
+  @override
   external Function(dynamic)? onerror;
+  @override
   external Function(dynamic)? onclose;
+  @override
   external Function(dynamic)? onmessage;
+  @override
   external Function? onactivity;
 }

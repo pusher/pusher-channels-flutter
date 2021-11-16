@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 @JS()
 library core.auth.options;
 
@@ -27,7 +29,7 @@ abstract class AuthData {
       {String auth, String? channel_data, String? shared_secret});
 }
 
-typedef void AuthorizerCallback(Error? error, AuthData authData);
+typedef AuthorizerCallback = void Function(Error? error, AuthData authData);
 
 @anonymous
 @JS()
@@ -35,7 +37,7 @@ abstract class Authorizer {
   external void authorize(String socketId, AuthorizerCallback callback);
 }
 
-typedef Authorizer AuthorizerGenerator(
+typedef AuthorizerGenerator = Authorizer Function(
     Channel channel, AuthorizerOptions options);
 
 @anonymous

@@ -13,6 +13,8 @@ class FirstConnectedStrategy implements Strategy {
   external Strategy get strategy;
   external set strategy(Strategy v);
   external factory FirstConnectedStrategy(Strategy strategy);
+  @override
   external bool isSupported();
+  @override
   external StrategyRunner connect(num minPriority, Function callback);
 }

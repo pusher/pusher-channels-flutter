@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 @JS()
 library runtimes.worker.net_info;
 
@@ -8,6 +10,7 @@ import "../../core/reachability.dart" show Reachability;
 @JS()
 class NetInfo extends Dispatcher implements Reachability {
   external factory NetInfo([Function failThrough]);
+  @override
   external bool isOnline();
 }
 

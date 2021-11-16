@@ -17,7 +17,9 @@ class IfStrategy implements Strategy {
   external Strategy get falseBranch;
   external set falseBranch(Strategy v);
   external factory IfStrategy(
-      bool test(), Strategy trueBranch, Strategy falseBranch);
+      bool Function() test, Strategy trueBranch, Strategy falseBranch);
+  @override
   external bool isSupported();
+  @override
   external StrategyRunner connect(num minPriority, Function callback);
 }

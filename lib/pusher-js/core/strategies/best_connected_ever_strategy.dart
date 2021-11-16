@@ -12,7 +12,9 @@ class BestConnectedEverStrategy implements Strategy {
   external List<Strategy> get strategies;
   external set strategies(List<Strategy> v);
   external factory BestConnectedEverStrategy(List<Strategy> strategies);
+  @override
   external bool isSupported();
+  @override
   external connect(num minPriority, Function callback);
 }
 

@@ -1,8 +1,9 @@
+// ignore_for_file: non_constant_identifier_names
+
 @JS()
 library core.connection.callbacks;
 
 import "package:js/js.dart";
-import "protocol/action.dart" show Action;
 import "handshake/handshake_payload.dart" show HandshakePayload;
 
 @anonymous

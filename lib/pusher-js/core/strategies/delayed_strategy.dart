@@ -17,6 +17,8 @@ class DelayedStrategy implements Strategy {
   external set options(dynamic /*{ delay: number }*/ v);
   external factory DelayedStrategy(
       Strategy strategy, Object number /*{ delay: number }*/);
+  @override
   external bool isSupported();
+  @override
   external connect(num minPriority, Function callback);
 }

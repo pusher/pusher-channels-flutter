@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 @JS()
 library http_socket;
 
@@ -25,15 +27,24 @@ class HTTPSocket implements Socket {
   external State readyState;
   external HTTPRequest get stream;
   external set stream(HTTPRequest v);
+  @override
   external Function([dynamic evt])? onopen;
+  @override
   external Function(dynamic)? onerror;
+  @override
   external Function(dynamic)? onclose;
+  @override
   external Function(dynamic)? onmessage;
+  @override
   external Function? onactivity;
   external factory HTTPSocket(SocketHooks hooks, String url);
+  @override
   external bool send(dynamic payload);
+  @override
   external void ping();
+  @override
   external void close([dynamic code, dynamic reason]);
+  @override
   external bool sendRaw(dynamic payload);
   external void reconnect();
   external void onClose(dynamic code, dynamic reason, dynamic wasClean);

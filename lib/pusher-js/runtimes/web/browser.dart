@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 @JS()
 library runtimes.web.browser;
 
@@ -18,14 +20,20 @@ abstract class Browser implements Runtime {
   external set nextAuthCallbackID(num v);
   external dynamic get auth_callbacks;
   external set auth_callbacks(dynamic v);
+  @override
   external ScriptReceiverFactory get ScriptReceivers;
+  @override
   external set ScriptReceivers(ScriptReceiverFactory v);
   external ScriptReceiverFactory get DependenciesReceivers;
   external set DependenciesReceivers(ScriptReceiverFactory v);
   external onDocumentBody(Function callback);
+  @override
   external Document getDocument();
+  @override
   external JSONPRequest createJSONPRequest(String url, dynamic data);
+  @override
   external ScriptRequest createScriptRequest(String src);
+  @override
   external bool isXDRSupported([bool useTLS]);
   external Ajax createXMLHttpRequest();
   external Ajax createMicrosoftXHR();

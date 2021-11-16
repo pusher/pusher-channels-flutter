@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names, file_names
+
 @JS()
 library core.connection.protocol.message_types;
 

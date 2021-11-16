@@ -30,7 +30,9 @@ class CachedStrategy implements Strategy {
   external set timeline(Timeline v);
   external factory CachedStrategy(Strategy strategy,
       TransportStrategyDictionary transports, StrategyOptions options);
+  @override
   external bool isSupported();
+  @override
   external connect(num minPriority, Function callback);
 }
 

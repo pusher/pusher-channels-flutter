@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 @JS()
 library runtimes.web.net_info;
 
@@ -17,6 +19,7 @@ class NetInfo extends Dispatcher implements Reachability {
   /// Offline means definitely offline (no connection to router).
   /// Inverse does NOT mean definitely online (only currently supported in Safari
   /// and even there only means the device has a connection to the router).
+  @override
   external bool isOnline();
 }
 

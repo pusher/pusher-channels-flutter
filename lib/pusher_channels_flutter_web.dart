@@ -11,8 +11,6 @@ import 'package:js/js_util.dart' as js_util;
 import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:pusher_channels_flutter/pusher-js/core/auth/options.dart';
-import 'package:pusher_channels_flutter/pusher-js/core/auth/pusher_authorizer.dart';
-// import 'package:pusher_channels_flutter/pusher-js/core/auth/pusher_authorizer.dart';
 import 'package:pusher_channels_flutter/pusher-js/core/channels/channel.dart';
 import 'package:pusher_channels_flutter/pusher-js/core/options.dart';
 import 'package:pusher_channels_flutter/pusher-js/core/pusher.dart';
@@ -40,17 +38,14 @@ T dartify<T>(dynamic jsObject) {
   if (_isBasicType(jsObject)) {
     return jsObject as T;
   }
-
   if (jsObject is List) {
     return jsObject.map(dartify).toList() as T;
   }
-
   var keys = objectKeys(jsObject);
   var result = <String, dynamic>{};
   for (var key in keys) {
     result[key] = dartify(js_util.getProperty(jsObject, key));
   }
-
   return result as T;
 }
 
@@ -70,25 +65,20 @@ class PusherChannelsFlutterWebAuthorizer implements Authorizer {
 class PusherChannelsFlutterWeb {
   Pusher? pusher;
   Map<String, Channel> channels = {};
-  Map<String, Set<String>> events = {};
   MethodChannel? methodChannel;
 
   static void registerWith(Registrar registrar) {
     final pluginInstance = PusherChannelsFlutterWeb();
     pluginInstance.methodChannel = MethodChannel(
       'pusher_channels_flutter',
-      const StandardMethodCodec(),
+      const JSONMethodCodec(),
       registrar,
     );
     pluginInstance.methodChannel!
         .setMethodCallHandler(pluginInstance.handleMethodCall);
   }
 
-  /// Handles method calls over the MethodChannel of this plugin.
-  /// Note: Check the "federated" architecture for a new way of doing this:
-  /// https://flutter.dev/go/federated-plugins
   Future<dynamic> handleMethodCall(MethodCall call) async {
-    print("METHODCALL:" + call.toString());
     switch (call.method) {
       case 'init':
         init(call);
@@ -97,10 +87,11 @@ class PusherChannelsFlutterWeb {
         assertPusher();
         pusher!.connect();
         break;
+      case 'disconnect':
+        assertPusher();
+        pusher!.disconnect();
+        break;
       case 'subscribe':
-      case 'subscribePrivate':
-      case 'subscribePrivateEncrypted':
-      case 'subscribePresence':
         subscribe(call);
         break;
       case 'unsubscribe':
@@ -133,39 +124,38 @@ class PusherChannelsFlutterWeb {
   }
 
   void onError(err) {
-    print("ERROR: " + stringify(err));
     methodChannel!.invokeMethod("onError", {
       "message": err.data?.message,
       "code": err.data?.code,
-      "e": dartify(err),
+      "error": dartify(err),
     });
   }
 
   void onMessage(msg) {
-    print("Message: " + stringify(msg));
-    if (events[msg.channel]?.contains(msg.event) == true) {
+
+    if (msg.event == 'pusher_internal:subscription_succeeded') {
+      methodChannel!.invokeMethod(
+          "onSubscriptionSucceeded", {"channelName": msg.channel, "data": dartify(msg.data)});
+    } else if (msg.event == 'pusher_internal:subscription_error') {
+      methodChannel!.invokeMethod("onSubscriptionError",
+          {"message": msg.error, "error": dartify(msg.data)});
+    } else if (msg.event == 'pusher_internal:member_added') {
+      methodChannel!.invokeMethod("onMemberAdded", {
+        "channelName": msg.channel,
+        "user": {"userId": msg.data.user_id, "userInfo": dartify(msg.data.user_info)}
+      });
+    } else if (msg.event == 'pusher_internal:member_removed') {
+      methodChannel!.invokeMethod("onMemberRemoved", {
+        "channelName": msg.channel,
+        "user": {"userId": msg.data.user_id, "userInfo": dartify(msg.data.user_info)}
+      });
+    } else {
       methodChannel!.invokeMethod("onEvent", {
         "channelName": msg.channel,
         "eventName": msg.event,
         "data": dartify(msg.data),
         "userId": msg.user_id
       });
-    }
-    if (msg.event?.startsWith('pusher:')) {
-      print("INTERNAL EVENT!");
-    }
-    if (msg.event == 'pusher_internal:subscription_succeeded') {
-      methodChannel!.invokeMethod(
-          "onSubscriptionSucceeded", {"channelName": msg.channel});
-    } else if (msg.event == 'pusher_internal:subscription_error') {
-      methodChannel!.invokeMethod("onAuthenticationFailure",
-          {"message": msg.error, "e": dartify(msg.data)});
-    } else if (msg.event == 'pusher_internal:member_added') {
-      methodChannel!.invokeMethod("userSubscribed",
-          {"channelName": msg.channel, "user": dartify(msg.data)});
-    } else if (msg.event == 'pusher_internal:member_removed') {
-      methodChannel!.invokeMethod("userUnsubscribed",
-          {"channelName": msg.channel, "user": dartify(msg.data)});
     }
   }
 
@@ -208,9 +198,7 @@ class PusherChannelsFlutterWeb {
     if (channels[channelName] == null) {
       assertPusher();
       channels[channelName] = pusher!.subscribe(channelName);
-      events[channelName] = {};
     }
-    events[channelName]!.add(call.arguments['eventName']);
   }
 
   void unsubscribe(MethodCall call) {
@@ -219,7 +207,6 @@ class PusherChannelsFlutterWeb {
     pusher!.unsubscribe(channelName);
     channels[channelName]!.unbind_all();
     channels.remove(channelName);
-    events.remove(channelName);
   }
 
   void trigger(MethodCall call) {
@@ -298,7 +285,6 @@ class PusherChannelsFlutterWeb {
     pusher = Pusher(call.arguments['apiKey'], options);
     pusher!.connection.bind('error', allowInterop(onError));
     pusher!.connection.bind('message', allowInterop(onMessage));
-    //pusher!.connection.bind('client-message', allowInterop(onMessage));
     pusher!.connection.bind('state_change', allowInterop(onStateChange));
     pusher!.connection.bind('connected', allowInterop(onConnected));
     pusher!.connection.bind('disconnected', allowInterop(onDisconnected));

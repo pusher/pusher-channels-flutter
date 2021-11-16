@@ -26,7 +26,9 @@ class SequentialStrategy implements Strategy {
   external set timeoutLimit(num v);
   external factory SequentialStrategy(
       List<Strategy> strategies, StrategyOptions options);
+  @override
   external bool isSupported();
+  @override
   external connect(num minPriority, Function callback);
   external tryStrategy(Strategy strategy, num minPriority,
       StrategyOptions options, Function callback);

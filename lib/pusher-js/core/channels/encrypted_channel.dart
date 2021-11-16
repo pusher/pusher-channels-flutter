@@ -19,10 +19,13 @@ class EncryptedChannel extends PrivateChannel {
   external factory EncryptedChannel(String name, Pusher pusher, dynamic nacl);
 
   /// Authorizes the connection to use the channel.
+  @override
   external authorize(String socketId, AuthorizerCallback callback);
+  @override
   external bool trigger(String event, dynamic data);
 
   /// Handles an event. For internal use only.
+  @override
   external handleEvent(PusherEvent event);
   external void handleEncryptedEvent(String event, dynamic data);
 

@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 @JS()
 library runtimes.react_native.net_info;
 
@@ -13,6 +15,7 @@ class NetInfo extends Dispatcher implements Reachability {
   external bool get online;
   external set online(bool v);
   external factory NetInfo();
+  @override
   external bool isOnline();
 }
 

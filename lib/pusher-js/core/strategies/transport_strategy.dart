@@ -23,9 +23,11 @@ class TransportStrategy implements Strategy {
       String name, num priority, Transport transport, StrategyOptions options);
 
   /// Returns whether the transport is supported in the browser.
+  @override
   external bool isSupported();
 
   /// Launches a connection attempt and returns a strategy runner.
+  @override
   external connect(num minPriority, Function callback);
 }
 
