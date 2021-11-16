@@ -1,13 +1,16 @@
 package com.pusher.channels_flutter
 
+import com.google.gson.Gson
+import com.pusher.client.Authorizer
 import com.pusher.client.Pusher
 import com.pusher.client.PusherOptions
 import com.pusher.client.channel.*
+import com.pusher.client.channel.impl.ChannelManager
 import com.pusher.client.connection.ConnectionEventListener
 import com.pusher.client.connection.ConnectionState
 import com.pusher.client.connection.ConnectionStateChange
+import com.pusher.client.util.Factory
 import com.pusher.client.util.HttpAuthorizer
-import com.pusher.client.Authorizer
 import io.flutter.Log
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -19,10 +22,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import java.net.InetSocketAddress
 import java.net.Proxy
-import com.google.gson.Gson
-import com.pusher.client.channel.impl.ChannelManager
 import java.util.concurrent.Semaphore
-import com.pusher.client.util.Factory
 
 class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     ConnectionEventListener, ChannelEventListener, SubscriptionEventListener,
@@ -37,7 +37,7 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     inner class SubChannelManager(factory: Factory?) : ChannelManager(factory) {
         private val gson = Gson()
         override fun onMessage(event: String?, wholeMessage: String?) {
-            val json = gson.fromJson(wholeMessage,Map::class.java)
+            val json = gson.fromJson(wholeMessage, Map::class.java)
             onEvent(PusherEvent(json as Map<String, Any>?))
             super.onMessage(event, wholeMessage)
         }
@@ -145,7 +145,11 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
                     val (host, port) = call.argument<String>("proxy")!!.split(':')
                     options.proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(host, port.toInt()))
                 }
-                val pCon = Pusher::class.java.getDeclaredConstructor(String::class.java, PusherOptions::class.java, Factory::class.java)
+                val pCon = Pusher::class.java.getDeclaredConstructor(
+                    String::class.java,
+                    PusherOptions::class.java,
+                    Factory::class.java
+                )
                 pusher = pCon.newInstance(call.argument("apiKey"), options, DelegateFactory())
                 // pusher = Pusher(call.argument("apiKey"), options)
             } else {
