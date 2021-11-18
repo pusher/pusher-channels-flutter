@@ -2,60 +2,49 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
-class PusherChannelsFlutter {
-  static const MethodChannel _channel =
-      MethodChannel('pusher_channels_flutter', JSONMethodCodec());
-  static Function(dynamic currentState, dynamic previousState)?
-      onConnectionStateChange;
-  static Function(String channelName, dynamic data)? onSubscriptionSucceeded;
-  static Function(String message, dynamic e)? onSubscriptionError;
-  static Function(String event, String reason)? onDecryptionFailure;
-  static Function(String message, int? code, dynamic e)? onError;
-  static Function(Object event)? onEvent;
-  static Function(String channelName, dynamic user)? onMemberAdded;
-  static Function(String channelName, dynamic user)? onMemberRemoved;
-  static dynamic onAuthorizer;
+class PusherChannel {
+  String channelName;
+  Function(dynamic data)? onSubscriptionSucceeded;
+  Function(Object event)? onEvent;
+  Function(dynamic user)? onMemberAdded;
+  Function(dynamic user)? onMemberRemoved;
+  PusherChannel(this.channelName);
 
-  static Future<dynamic> _platformCallHandler(MethodCall call) async {
-    switch (call.method) {
-      case 'onConnectionStateChange':
-        onConnectionStateChange?.call(
-            call.arguments['currentState'], call.arguments['previousState']);
-        return Future.value(null);
-      case 'onError':
-        onError?.call(call.arguments['message'], call.arguments['code'],
-            call.arguments['error']);
-        return Future.value(null);
-      case 'onEvent':
-        onEvent?.call(call.arguments);
-        return Future.value(null);
-      case 'onSubscriptionSucceeded':
-        onSubscriptionSucceeded?.call(call.arguments['channelName'], call.arguments['data']);
-        return Future.value(null);
-      case 'onSubscriptionError':
-        onSubscriptionError?.call(
-            call.arguments['message'], call.arguments['error']);
-        return Future.value(null);
-      case 'onDecryptionFailure':
-        onDecryptionFailure?.call(
-            call.arguments['event'], call.arguments['reason']);
-        return Future.value(null);
-      case 'onMemberAdded':
-        onMemberAdded?.call(
-            call.arguments['channelName'], call.arguments['user']);
-        return Future.value(null);
-      case 'onMemberRemoved':
-        onMemberRemoved?.call(
-            call.arguments['channelName'], call.arguments['user']);
-        return Future.value(null);
-      case 'onAuthorizer':
-          return onAuthorizer?.call(call.arguments['channelName'], call.arguments['socketId'], call.arguments['options']);
-      default:
-        throw MissingPluginException('Unknown method ${call.method}');
-    }
+  Future<void> trigger(
+      {required String eventName, required String data}) async {
+    return PusherChannelsFlutter.getInstance()
+        .trigger(channelName: channelName, eventName: eventName, data: data);
   }
 
-  static Future<void> init({
+  Future<void> unsubscribe() async {
+    return PusherChannelsFlutter.getInstance()
+        .unsubscribe(channelName: channelName);
+  }
+}
+
+class PusherChannelsFlutter {
+  static PusherChannelsFlutter? _instance;
+
+  MethodChannel methodChannel =
+      const MethodChannel('pusher_channels_flutter');
+  Map<String, PusherChannel> channels = {};
+  Function(dynamic currentState, dynamic previousState)?
+      onConnectionStateChange;
+  Function(String channelName, dynamic data)? onSubscriptionSucceeded;
+  Function(String message, dynamic error)? onSubscriptionError;
+  Function(String event, String reason)? onDecryptionFailure;
+  Function(String message, int? code, dynamic error)? onError;
+  Function(Object event)? onEvent;
+  Function(String channelName, dynamic user)? onMemberAdded;
+  Function(String channelName, dynamic user)? onMemberRemoved;
+  Function(String channelName, String socketId, dynamic options)? onAuthorizer;
+
+  static PusherChannelsFlutter getInstance() {
+    _instance ??= PusherChannelsFlutter();
+    return _instance!;
+  }
+
+  Future<void> init({
     required String apiKey,
     required String cluster,
     bool? useTLS,
@@ -69,13 +58,14 @@ class PusherChannelsFlutter {
     Function(dynamic currentState, dynamic previousState)?
         onConnectionStateChange,
     Function(String channelName, dynamic data)? onSubscriptionSucceeded,
-    Function(String message, dynamic e)? onSubscriptionError,
+    Function(String message, dynamic error)? onSubscriptionError,
     Function(String event, String reason)? onDecryptionFailure,
-    Function(String message, int? code, dynamic e)? onError,
+    Function(String message, int? code, dynamic error)? onError,
     Function(Object event)? onEvent,
     Function(String channelName, dynamic user)? onMemberAdded,
     Function(String channelName, dynamic user)? onMemberRemoved,
-    dynamic authorizer,
+    Function(String channelName, String socketId, dynamic options)?
+        onAuthorizer,
     String? proxy, // pusher-websocket-java only
     bool? enableStats, // pusher-js only
     List<String>? disabledTransports, // pusher-js only
@@ -91,21 +81,17 @@ class PusherChannelsFlutter {
     Map<String, Map<String, String>>? auth, // pusher-js only
     bool? logToConsole, // pusher-js only
   }) async {
-    _channel.setMethodCallHandler(_platformCallHandler);
-    PusherChannelsFlutter.onConnectionStateChange = onConnectionStateChange;
-    PusherChannelsFlutter.onError = onError;
-    PusherChannelsFlutter.onSubscriptionSucceeded = onSubscriptionSucceeded;
-    PusherChannelsFlutter.onEvent = onEvent;
-    PusherChannelsFlutter.onSubscriptionError = onSubscriptionError;
-    PusherChannelsFlutter.onDecryptionFailure = onDecryptionFailure;
-    PusherChannelsFlutter.onMemberAdded = onMemberAdded;
-    PusherChannelsFlutter.onMemberRemoved = onMemberRemoved;
-    // For pusher-js we pass a function to authorizer, so we map it to a callback.
-    if (authorizer is Function) {
-      PusherChannelsFlutter.onAuthorizer = authorizer;
-      authorizer = true;
-    }
-    await _channel.invokeMethod('init', {
+    methodChannel.setMethodCallHandler(_platformCallHandler);
+    this.onConnectionStateChange = onConnectionStateChange;
+    this.onError = onError;
+    this.onSubscriptionSucceeded = onSubscriptionSucceeded;
+    this.onEvent = onEvent;
+    this.onSubscriptionError = onSubscriptionError;
+    this.onDecryptionFailure = onDecryptionFailure;
+    this.onMemberAdded = onMemberAdded;
+    this.onMemberRemoved = onMemberRemoved;
+    this.onAuthorizer = onAuthorizer;
+    await methodChannel.invokeMethod('init', {
       "apiKey": apiKey,
       "cluster": cluster,
       "useTLS": useTLS,
@@ -116,7 +102,7 @@ class PusherChannelsFlutter {
       "pongTimeout": pongTimeout,
       "maxReconnectionAttempts": maxReconnectionAttempts,
       "maxReconnectGapInSeconds": maxReconnectGapInSeconds,
-      "authorizer": authorizer,
+      "authorizer": onAuthorizer != null,
       "proxy": proxy,
       "enableStats": enableStats,
       "disabledTransports": disabledTransports,
@@ -134,35 +120,80 @@ class PusherChannelsFlutter {
     });
   }
 
-  static Future<void> connect() async {
-    await _channel.invokeMethod('connect');
+  Future<dynamic> _platformCallHandler(MethodCall call) async {
+    switch (call.method) {
+      case 'onConnectionStateChange':
+        onConnectionStateChange?.call(
+            call.arguments['currentState'], call.arguments['previousState']);
+        return Future.value(null);
+      case 'onError':
+        onError?.call(call.arguments['message'], call.arguments['code'],
+            call.arguments['error']);
+        return Future.value(null);
+      case 'onEvent':
+        onEvent?.call(call.arguments);
+        return Future.value(null);
+      case 'onSubscriptionSucceeded':
+        onSubscriptionSucceeded?.call(
+            call.arguments['channelName'], call.arguments['data']);
+        channels[call.arguments['channelName']]
+            ?.onSubscriptionSucceeded!(call.arguments['data']);
+        return Future.value(null);
+      case 'onSubscriptionError':
+        onSubscriptionError?.call(
+            call.arguments['message'], call.arguments['error']);
+        return Future.value(null);
+      case 'onDecryptionFailure':
+        onDecryptionFailure?.call(
+            call.arguments['event'], call.arguments['reason']);
+        return Future.value(null);
+      case 'onMemberAdded':
+        onMemberAdded?.call(
+            call.arguments['channelName'], call.arguments['user']);
+        channels[call.arguments['channelName']]
+            ?.onMemberAdded!(call.arguments['user']);
+        return Future.value(null);
+      case 'onMemberRemoved':
+        onMemberRemoved?.call(
+            call.arguments['channelName'], call.arguments['user']);
+        channels[call.arguments['channelName']]
+            ?.onMemberRemoved!(call.arguments['user']);
+        return Future.value(null);
+      case 'onAuthorizer':
+        return onAuthorizer?.call(call.arguments['channelName'],
+            call.arguments['socketId'], call.arguments['options']);
+      default:
+        throw MissingPluginException('Unknown method ${call.method}');
+    }
   }
 
-  static Future<void> disconnect() async {
-    await _channel.invokeMethod('disconnect');
+  Future<void> connect() async {
+    await methodChannel.invokeMethod('connect');
   }
 
-  static Future<void> subscribe(
-      {required String channelName}) async {
-     await _channel.invokeMethod(
-        "subscribe", {"channelName": channelName});
+  Future<void> disconnect() async {
+    await methodChannel.invokeMethod('disconnect');
   }
 
-  static Future<void> unsubscribe(
-      {required String channelName}) async {
-     await _channel.invokeMethod(
-        "unsubscribe", {"channelName": channelName});
+  Future<PusherChannel> subscribe({required String channelName}) async {
+    await methodChannel.invokeMethod("subscribe", {"channelName": channelName});
+    return PusherChannel(channelName);
   }
 
-  static Future<void> trigger(
+  Future<void> unsubscribe({required String channelName}) async {
+    await methodChannel
+        .invokeMethod("unsubscribe", {"channelName": channelName});
+  }
+
+  Future<void> trigger(
       {required String channelName,
       required String eventName,
       required String data}) async {
-    await _channel.invokeMethod('trigger',
+    await methodChannel.invokeMethod('trigger',
         {"channelName": channelName, "eventName": eventName, "data": data});
   }
 
-  static Future<void> getSocketId() async {
-    await _channel.invokeMethod('getSocketId');
+  Future<void> getSocketId() async {
+    await methodChannel.invokeMethod('getSocketId');
   }
 }

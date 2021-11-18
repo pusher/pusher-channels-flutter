@@ -71,7 +71,7 @@ class PusherChannelsFlutterWeb {
     final pluginInstance = PusherChannelsFlutterWeb();
     pluginInstance.methodChannel = MethodChannel(
       'pusher_channels_flutter',
-      const JSONMethodCodec(),
+      const StandardMethodCodec(),
       registrar,
     );
     pluginInstance.methodChannel!

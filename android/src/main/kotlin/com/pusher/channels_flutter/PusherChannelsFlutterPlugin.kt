@@ -20,6 +20,7 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import io.flutter.plugin.common.StandardMethodCodec
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.util.concurrent.Semaphore
@@ -59,8 +60,7 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
         methodChannel =
             MethodChannel(
                 flutterPluginBinding.binaryMessenger,
-                "pusher_channels_flutter",
-                GsonMethodCodec()
+                "pusher_channels_flutter"
             )
         methodChannel.setMethodCallHandler(this)
     }

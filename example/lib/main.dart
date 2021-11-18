@@ -9,6 +9,7 @@ void main() {
 }
 
 class MyApp extends StatefulWidget {
+
   const MyApp({Key? key}) : super(key: key);
 
   @override
@@ -16,6 +17,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  PusherChannelsFlutter pusher = PusherChannelsFlutter.getInstance();
   String _log = 'output:\n';
   final _apiKey = TextEditingController();
   final _cluster = TextEditingController();
@@ -55,7 +57,7 @@ class _MyAppState extends State<MyApp> {
     prefs.setString("channelName", _channelName.text);
 
     try {
-      await PusherChannelsFlutter.init(
+      await pusher.init(
         apiKey: _apiKey.text,
         cluster: _cluster.text,
         onConnectionStateChange: onConnectionStateChange,
@@ -67,10 +69,10 @@ class _MyAppState extends State<MyApp> {
         onMemberAdded: onMemberAdded,
         onMemberRemoved: onMemberRemoved,
         authEndpoint: "http://www.thecured.org:5000/pusher/auth",
-        // authorizer: onAuthorizer
+        // onAuthorizer: onAuthorizer
       );
-      await PusherChannelsFlutter.subscribe(channelName: _channelName.text);
-      await PusherChannelsFlutter.connect();
+      await pusher.subscribe(channelName: _channelName.text);
+      await pusher.connect();
     } catch (e) {
       log("ERROR: $e");
     }
@@ -126,7 +128,7 @@ class _MyAppState extends State<MyApp> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString("eventName", _eventName.text);
     prefs.setString("data", _data.text);
-    PusherChannelsFlutter.trigger(
+    pusher.trigger(
         channelName: _channelName.text,
         eventName: _eventName.text,
         data: _data.text);
