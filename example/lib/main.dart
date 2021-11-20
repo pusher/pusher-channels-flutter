@@ -9,7 +9,6 @@ void main() {
 }
 
 class MyApp extends StatefulWidget {
-
   const MyApp({Key? key}) : super(key: key);
 
   @override
@@ -68,7 +67,7 @@ class _MyAppState extends State<MyApp> {
         onDecryptionFailure: onDecryptionFailure,
         onMemberAdded: onMemberAdded,
         onMemberRemoved: onMemberRemoved,
-        authEndpoint: "http://www.thecured.org:5000/pusher/auth",
+        // authEndpoint: "<Your Authendpoint>",
         // onAuthorizer: onAuthorizer
       );
       await pusher.subscribe(channelName: _channelName.text);
@@ -86,7 +85,7 @@ class _MyAppState extends State<MyApp> {
     log("onError: $message code: $code exception: $e");
   }
 
-  void onEvent(Object event) {
+  void onEvent(PusherEvent event) {
     log("onEvent: $event");
   }
 
@@ -102,12 +101,12 @@ class _MyAppState extends State<MyApp> {
     log("onDecryptionFailure: $event reason: $reason");
   }
 
-  void onMemberAdded(String channelName, user) {
-    log("onMemberAdded: $channelName user: $user");
+  void onMemberAdded(String channelName, PusherMember member) {
+    log("onMemberAdded: $channelName user: $member");
   }
 
-  void onMemberRemoved(String channelName, user) {
-    log("onMemberRemoved: $channelName user: $user");
+  void onMemberRemoved(String channelName, PusherMember member) {
+    log("onMemberRemoved: $channelName user: $member");
   }
 
   dynamic onAuthorizer(String channelName, String socketId, dynamic options) {
@@ -119,19 +118,18 @@ class _MyAppState extends State<MyApp> {
   }
 
   void onTriggerEventPressed() async {
-    var channelFormValidated = _channelFormKey.currentState!.validate();
     var eventFormValidated = _eventFormKey.currentState!.validate();
 
-    if (!(channelFormValidated && eventFormValidated)) {
+    if (!eventFormValidated) {
       return;
     }
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString("eventName", _eventName.text);
     prefs.setString("data", _data.text);
-    pusher.trigger(
+    pusher.trigger(PusherEvent(
         channelName: _channelName.text,
         eventName: _eventName.text,
-        data: _data.text);
+        data: _data.text));
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -143,10 +141,10 @@ class _MyAppState extends State<MyApp> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       _apiKey.text = prefs.getString("apiKey") ?? '';
-      _cluster.text = prefs.getString("cluster") ?? '';
-      _channelName.text = prefs.getString("channelName") ?? '';
-      _eventName.text = prefs.getString("eventName") ?? '';
-      _data.text = prefs.getString("data") ?? '';
+      _cluster.text = prefs.getString("cluster") ?? 'eu';
+      _channelName.text = prefs.getString("channelName") ?? 'presence-channel';
+      _eventName.text = prefs.getString("eventName") ?? 'client-event';
+      _data.text = prefs.getString("data") ?? 'test';
     });
   }
 
@@ -155,7 +153,9 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Pusher Channels Example'),
+          title: Text(pusher.connectionState == 'DISCONNECTED'
+              ? 'Pusher Channels Example'
+              : _channelName.text),
         ),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -164,75 +164,87 @@ class _MyAppState extends State<MyApp> {
               scrollDirection: Axis.vertical,
               shrinkWrap: true,
               children: <Widget>[
-                Form(
-                    key: _channelFormKey,
+                if (pusher.connectionState != 'CONNECTED')
+                  Form(
+                      key: _channelFormKey,
+                      child: Column(children: <Widget>[
+                        TextFormField(
+                          controller: _apiKey,
+                          validator: (String? value) {
+                            return (value != null && value.isEmpty)
+                                ? 'Please enter your API key.'
+                                : null;
+                          },
+                          decoration:
+                              const InputDecoration(labelText: 'API Key'),
+                        ),
+                        TextFormField(
+                          controller: _cluster,
+                          validator: (String? value) {
+                            return (value != null && value.isEmpty)
+                                ? 'Please enter your cluster.'
+                                : null;
+                          },
+                          decoration: const InputDecoration(
+                            labelText: 'Cluster',
+                          ),
+                        ),
+                        TextFormField(
+                          controller: _channelName,
+                          validator: (String? value) {
+                            return (value != null && value.isEmpty)
+                                ? 'Please enter your channel name.'
+                                : null;
+                          },
+                          decoration: const InputDecoration(
+                            labelText: 'Channel',
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: onConnectPressed,
+                          child: const Text('Connect'),
+                        )
+                      ]))
+                else
+                  Form(
+                    key: _eventFormKey,
                     child: Column(children: <Widget>[
+                      ListView.builder(
+                          scrollDirection: Axis.vertical,
+                          shrinkWrap: true,
+                          itemCount: pusher
+                              .channels[_channelName.text]?.members.length,
+                          itemBuilder: (context, index) {
+                            final member = pusher
+                                .channels[_channelName.text]!.members
+                                .elementAt(index);
+                            return ListTile(
+                                title: Text(member.userInfo.toString()),
+                                subtitle: Text(member.userId));
+                          }),
                       TextFormField(
-                        controller: _apiKey,
+                        controller: _eventName,
                         validator: (String? value) {
                           return (value != null && value.isEmpty)
-                              ? 'Please enter your API key.'
+                              ? 'Please enter your event name.'
                               : null;
                         },
-                        //onSaved: (String? value) { _apiKey = value!; },
-                        decoration: const InputDecoration(labelText: 'API Key'),
-                      ),
-                      TextFormField(
-                        controller: _cluster,
-                        validator: (String? value) {
-                          return (value != null && value.isEmpty)
-                              ? 'Please enter your cluster.'
-                              : null;
-                        },
-                        //onSaved: (String? value) { _cluster = value!; },
                         decoration: const InputDecoration(
-                          labelText: 'Cluster',
+                          labelText: 'Event',
                         ),
                       ),
                       TextFormField(
-                        controller: _channelName,
-                        validator: (String? value) {
-                          return (value != null && value.isEmpty)
-                              ? 'Please enter your channel name.'
-                              : null;
-                        },
-                        //onSaved: (String? value) { _channelName = value!; },
+                        controller: _data,
                         decoration: const InputDecoration(
-                          labelText: 'Channel',
+                          labelText: 'Data',
                         ),
                       ),
                       ElevatedButton(
-                        onPressed: onConnectPressed,
-                        child: const Text('Connect'),
-                      )
-                    ])),
-                Form(
-                  key: _eventFormKey,
-                  child: Column(children: <Widget>[
-                    TextFormField(
-                      controller: _eventName,
-                      validator: (String? value) {
-                        return (value != null && value.isEmpty)
-                            ? 'Please enter your event name.'
-                            : null;
-                      },
-                      //onSaved: (String? value) { _eventName = value!; },
-                      decoration: const InputDecoration(
-                        labelText: 'Event',
+                        onPressed: onTriggerEventPressed,
+                        child: const Text('Trigger Event'),
                       ),
-                    ),
-                    TextFormField(
-                      controller: _data,
-                      decoration: const InputDecoration(
-                        labelText: 'Data',
-                      ),
-                    ),
-                    ElevatedButton(
-                      onPressed: onTriggerEventPressed,
-                      child: const Text('Trigger Event'),
-                    ),
-                  ]),
-                ),
+                    ]),
+                  ),
                 SingleChildScrollView(
                     scrollDirection: Axis.vertical, child: Text(_log)),
               ]),

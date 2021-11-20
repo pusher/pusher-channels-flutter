@@ -132,11 +132,7 @@ class PusherChannelsFlutterWeb {
   }
 
   void onMessage(msg) {
-
-    if (msg.event == 'pusher_internal:subscription_succeeded') {
-      methodChannel!.invokeMethod(
-          "onSubscriptionSucceeded", {"channelName": msg.channel, "data": dartify(msg.data)});
-    } else if (msg.event == 'pusher_internal:subscription_error') {
+    if (msg.event == 'pusher_internal:subscription_error') {
       methodChannel!.invokeMethod("onSubscriptionError",
           {"message": msg.error, "error": dartify(msg.data)});
     } else if (msg.event == 'pusher_internal:member_added') {
@@ -151,7 +147,7 @@ class PusherChannelsFlutterWeb {
       });
     } else {
       methodChannel!.invokeMethod("onEvent", {
-        "channelName": msg.channel,
+        "channelName": msg.channel ?? '',
         "eventName": msg.event,
         "data": dartify(msg.data),
         "userId": msg.user_id
@@ -161,7 +157,7 @@ class PusherChannelsFlutterWeb {
 
   void onStateChange(state) {
     methodChannel!.invokeMethod("onConnectionStateChange",
-        {"currentState": state.current, "previousState": state.previous});
+        {"currentState": state.current.toUpperCase(), "previousState": state.previous.toUpperCase()});
   }
 
   void onConnected(state) {

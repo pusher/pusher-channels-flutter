@@ -213,7 +213,7 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
             ), object : Result {
                 override fun success(o: Any?) {
                     // this will be called with o = "some string"
-                    Log.i(TAG, "SUCCESS: $o")
+                    // Log.i(TAG, "SUCCESS: $o")
                     if (o != null) {
                         val gson = Gson()
                         result = gson.toJson(o)
@@ -222,12 +222,12 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
                 }
 
                 override fun error(s: String?, s1: String?, o: Any?) {
-                    Log.e(TAG, "ERROR: $s $s1 $o")
+                    // Log.e(TAG, "ERROR: $s $s1 $o")
                     mutex.release()
                 }
 
                 override fun notImplemented() {
-                    Log.e(TAG, "Not implemented")
+                    // Log.e(TAG, "Not implemented")
                     mutex.release()
                 }
             })
