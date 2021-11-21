@@ -10,7 +10,7 @@ public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDe
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let instance = SwiftPusherChannelsFlutterPlugin()
-        instance.methodChannel = FlutterMethodChannel(name: "pusher_channels_flutter", binaryMessenger: registrar.messenger(), codec: FlutterStandardMethodCodec() )
+        instance.methodChannel = FlutterMethodChannel(name: "pusher_channels_flutter", binaryMessenger: registrar.messenger())
         registrar.addMethodCallDelegate(instance, channel: instance.methodChannel)
     }
     
