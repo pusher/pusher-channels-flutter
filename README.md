@@ -130,7 +130,7 @@ try {
   await pusher.subscribe(channelName: 'presence-chatbox');
   await pusher.connect();
 } catch (e) {
-  log("ERROR: $e");
+  print("ERROR: $e");
 }
 ```
 After calling `init(...)` you can connect to the Pusher servers.
@@ -226,7 +226,7 @@ The following functions are callbacks that can be passed to the `init()` method.
 - #### `onEvent`
 ```dart
 void onEvent(PusherEvent event) {
-  log("onEvent: $event");
+  print("onEvent: $event");
 }
 ```
 Called when a event is received by the client.
@@ -236,7 +236,7 @@ The global event handler will trigger on events from any channel.
 
 ```dart
 void onSubscriptionSucceeded(String channelName, dynamic data) {
-  log("onSubscriptionSucceeded: $channelName data: $data");
+  print("onSubscriptionSucceeded: $channelName data: $data");
 }
 ```
 use this if you want to be informed of when a channel has successfully been subscribed to, which is useful if you want to perform actions that are only relevant after a subscription has succeeded. For example querying the members for presence channel.
@@ -245,7 +245,7 @@ use this if you want to be informed of when a channel has successfully been subs
 
 ```dart
 void onSubscriptionError(String message, dynamic e) {
-  log("onSubscriptionError: $message Exception: $e");
+  print("onSubscriptionError: $message Exception: $e");
 }
 ```
 use this if you want to be informed of a failed subscription attempt, which you could use, for example, to then attempt another subscription or make a call to a service you use to track errors.
@@ -254,7 +254,7 @@ use this if you want to be informed of a failed subscription attempt, which you 
 
 ```dart
 void onDecryptionFailure(String event, String reason) {
-  log("onDecryptionFailure: $event reason: $reason");
+  print("onDecryptionFailure: $event reason: $reason");
 }
 ```
 only used with private encrypted channels - use this if you want to be notified if any messages fail to decrypt.
@@ -263,17 +263,21 @@ only used with private encrypted channels - use this if you want to be notified 
 
 ```dart
 void onMemberAdded(String channelName, PusherMember member) {
-  log("onMemberAdded: $channelName user: $member");
+  print("onMemberAdded: $channelName member: $member");
 }
 ```
+
+Called when a member is added to the presence channel.
 
 - #### `onMemberRemoved`
 
 ```dart
 void onMemberRemoved(String channelName, PusherMember member) {
-  log("onMemberRemoved: $channelName user: $member");
+  print("onMemberRemoved: $channelName member: $member");
 }
 ```
+
+Called when a member is removed to the presence channel.
 
 - #### `onAuthorizer`
 
@@ -294,7 +298,7 @@ dynamic onAuthorizer(String channelName, String socketId, dynamic options) {
 
 ```dart
 void onConnectionStateChange(dynamic currentState, dynamic previousState) {
-  log("Connection: $currentState");
+  print("Connection: $currentState");
 }
 ```
 use this if you want to use connection state changes to perform different actions / UI updates
@@ -310,7 +314,7 @@ The different states that the connection can be in are:
 
 ```dart
 void onError(String message, int? code, dynamic e) {
-  log("onError: $message code: $code exception: $e");
+  print("onError: $message code: $code exception: $e");
 }
 ```
 use this if you want to be informed of errors received from Pusher Channels e.g. `Application is over connection quota`. You can find some of the possible errors listed [here](https://pusher.com/docs/channels/library_auth_reference/pusher-websockets-protocol#error-codes).
@@ -402,13 +406,13 @@ You can also provide functions that will be called when members are either added
 
 ```dart
 void onMemberAdded(String channelName, PusherMember member) {
-  log("onMemberAdded: $channelName user: $member");
+  print("onMemberAdded: $channelName user: $member");
 }
 ```
 
 ```dart
 void onMemberRemoved(String channelName, PusherMember member) {
-  log("onMemberRemoved: $channelName user: $member");
+  print("onMemberRemoved: $channelName user: $member");
 }
 ```
 
@@ -532,7 +536,7 @@ Errors received from Pusher Channels can be accessed via the `onError` callback.
 
 ```dart
 void onError(String message, int? code, dynamic e) {
-  log("onError: $message code: $code exception: $e");
+  print("onError: $message code: $code exception: $e");
 }
 ```
 
