@@ -65,7 +65,7 @@ a minimal application to connect to a channel and send events.
     - [Private encrypted channels](#private-encrypted-channels)
       - [Limitations](#limitations)
     - [Presence channels](#presence-channels)
-    - [Ubsubscribing](#ubsubscribing)
+    - [Unsubscribing](#unsubscribing)
   - [Binding to events](#binding-to-events)
     - [Per-channel events](#per-channel-events)
     - [Global events](#global-events)
@@ -459,7 +459,7 @@ Note that both private and presence channels require the user to be authenticate
 
 We recommend that you use an authentication endpoint over including your app's secret in your app in the vast majority of use cases. If you are completely certain that there's no risk to you including your app's secret in your app, for example if your app is just for internal use at your company, then it can make things easier than setting up an authentication endpoint.
 
-### Ubsubscribing
+### Unsubscribing
 
 To unsubscribe from a channel, call the `unsubscribe()` method:
 
