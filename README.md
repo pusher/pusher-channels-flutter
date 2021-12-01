@@ -39,8 +39,23 @@ a minimal application to connect to a channel and send events.
     - [Web specific installation](#web-specific-installation)
   - [Initialization](#initialization)
   - [Configuration](#configuration)
-        - [CSRF](#csrf)
+      - [`activityTimeout (double)`](#activitytimeout-double)
+      - [`apiKey (String)`](#apikey-string)
+      - [`authParams` (Map)](#authparams-map)
+      - [`authEndpoint (String)`](#authendpoint-string)
+      - [`autoReconnect (bool)`](#autoreconnect-bool)
+      - [`cluster (String)`](#cluster-string)
+      - [`useTLS (bool)`](#usetls-bool)
   - [Event Callback parameters](#event-callback-parameters)
+      - [`onEvent`](#onevent)
+      - [`onSubscriptionSucceeded`](#onsubscriptionsucceeded)
+      - [`onSubscriptionError`](#onsubscriptionerror)
+      - [`onDecryptionFailure`](#ondecryptionfailure)
+      - [`onMemberAdded`](#onmemberadded)
+      - [`onMemberRemoved`](#onmemberremoved)
+      - [`onAuthorizer`](#onauthorizer)
+      - [`onConnectionStateChange`](#onconnectionstatechange)
+      - [`onError`](#onerror)
   - [Connection handling](#connection-handling)
     - [Connecting](#connecting)
     - [Disconnecting](#disconnecting)
@@ -159,14 +174,14 @@ describes for which platform the parameter is available:
 | proxy                    | ✅       | ⬜️   | ⬜️   |
 | useTLS                   | ✅       | ✅   | ⬜️   |
 
-- #### `activityTimeout (double)`
+#### `activityTimeout (double)`
 After this time (in seconds) without any messages received from the server, a ping message will be sent to check if the connection is still working; the default value is supplied by the server, low values will result in unnecessary traffic.
 
-- #### `apiKey (String)`
+#### `apiKey (String)`
 
 You can get your `API_KEY` and `API_CLUSTER` from the [Pusher Channels dashboard](https://dashboard.pusher.com/).
 
-- #### `authParams` (Map)
+#### `authParams` (Map)
 
 Allows passing additional data to authorizers. Supports query string params and headers (AJAX only). For example, following will pass `foo=bar` via the query string and `baz: boo` via headers:
 
@@ -184,14 +199,14 @@ await pusher.init(
 
 Additional parameters to be sent when the channel authentication endpoint is called. When using [ajax authentication](https://pusher.com/docs/authenticating_users#ajax_authentication) the parameters are passed as additional `POST` parameters. When using [jsonp authentication](http://pusher.com/docs/authenticating_users#jsonp_authentication) the parameters are passed as `GET` parameters. This can be useful with web application frameworks that guard against [CSRF (Cross-site request forgery)](http://en.wikipedia.org/wiki/Cross-site_request_forgery).
 
-##### CSRF
+CSRF
 
 If you require a CSRF header for incoming requests to the private channel authentication endpoint on your server, you should add a CSRF token to the `auth` hash under `headers`. This is applicable to frameworks which apply CSRF protection by default.
 
 ```dart
 final pusher = await pusher.init(
   apiKey: API_KEY,
-  cluster: APP_CLUSTER,
+  cluster: API_CLUSTER,
   authParams: {
     params: { foo: 'bar' },
     headers: { 'X-CSRF-Token': 'SOME_CSRF_TOKEN' }
@@ -199,7 +214,7 @@ final pusher = await pusher.init(
 );
 ```
 
-- #### `authEndpoint (String)`
+#### `authEndpoint (String)`
 
 The authEndpoint provides a URL that the
 Pusher client will call to authorize users
@@ -208,21 +223,21 @@ an authorization service please check here:
 
 https://pusher.com/docs/channels/server_api/authenticating-users/
 
-- #### `autoReconnect (bool)`
+#### `autoReconnect (bool)`
 Set whether or not you'd like the library to try and automatically reconnect upon disconnection (where possible). See [Reconnection](#reconnection) for more info
 
-- #### `cluster (String)`
+#### `cluster (String)`
 
 Specifies the cluster that pusher-js should connect to. [If you'd like to see a full list of our clusters, click here](https://pusher.com/docs/clusters). If you do not specify a cluster, `mt1` will be used by default.
 
-- #### `useTLS (bool)`
+#### `useTLS (bool)`
 Whether or not you'd like to use TLS encrypted transport or not, default is `true`
 
 ## Event Callback parameters
 
 The following functions are callbacks that can be passed to the `init()` method. All are optional.
 
-- #### `onEvent`
+#### `onEvent`
 ```dart
 void onEvent(PusherEvent event) {
   print("onEvent: $event");
@@ -231,7 +246,7 @@ void onEvent(PusherEvent event) {
 Called when a event is received by the client.
 The global event handler will trigger on events from any channel.
 
-- #### `onSubscriptionSucceeded`
+#### `onSubscriptionSucceeded`
 
 ```dart
 void onSubscriptionSucceeded(String channelName, dynamic data) {
@@ -240,7 +255,7 @@ void onSubscriptionSucceeded(String channelName, dynamic data) {
 ```
 use this if you want to be informed of when a channel has successfully been subscribed to, which is useful if you want to perform actions that are only relevant after a subscription has succeeded. For example querying the members for presence channel.
 
-- #### `onSubscriptionError`
+#### `onSubscriptionError`
 
 ```dart
 void onSubscriptionError(String message, dynamic e) {
@@ -249,7 +264,7 @@ void onSubscriptionError(String message, dynamic e) {
 ```
 use this if you want to be informed of a failed subscription attempt, which you could use, for example, to then attempt another subscription or make a call to a service you use to track errors.
 
-- #### `onDecryptionFailure`
+#### `onDecryptionFailure`
 
 ```dart
 void onDecryptionFailure(String event, String reason) {
@@ -258,7 +273,7 @@ void onDecryptionFailure(String event, String reason) {
 ```
 only used with private encrypted channels - use this if you want to be notified if any messages fail to decrypt.
 
-- #### `onMemberAdded`
+#### `onMemberAdded`
 
 ```dart
 void onMemberAdded(String channelName, PusherMember member) {
@@ -268,7 +283,7 @@ void onMemberAdded(String channelName, PusherMember member) {
 
 Called when a member is added to the presence channel.
 
-- #### `onMemberRemoved`
+#### `onMemberRemoved`
 
 ```dart
 void onMemberRemoved(String channelName, PusherMember member) {
@@ -278,7 +293,7 @@ void onMemberRemoved(String channelName, PusherMember member) {
 
 Called when a member is removed to the presence channel.
 
-- #### `onAuthorizer`
+#### `onAuthorizer`
 
 When passing the `onAuthorizer()` callback to the `init()` method, this callback is called to request auth information. For more information on how
 to generate the correct information, please look here:
@@ -293,7 +308,7 @@ dynamic onAuthorizer(String channelName, String socketId, dynamic options) {
 }
 ```
 
-- #### `onConnectionStateChange`
+#### `onConnectionStateChange`
 
 ```dart
 void onConnectionStateChange(dynamic currentState, dynamic previousState) {
@@ -309,7 +324,7 @@ The different states that the connection can be in are:
 - `DISCONNECTED` - the connection has disconnected and no attempt will be made to reconnect automatically
 - `RECONNECTING` - an attempt is going to be made to try and re-establish the connection
 
-- #### `onError`
+#### `onError`
 
 ```dart
 void onError(String message, int? code, dynamic e) {
