@@ -43,7 +43,6 @@ a minimal application to connect to a channel and send events.
       - [`apiKey (String)`](#apikey-string)
       - [`authParams (Map)`](#authparams-map)
       - [`authEndpoint (String)`](#authendpoint-string)
-      - [`autoReconnect (bool)`](#autoreconnect-bool)
       - [`cluster (String)`](#cluster-string)
       - [`useTLS (bool)`](#usetls-bool)
   - [Event Callback parameters](#event-callback-parameters)
@@ -223,9 +222,6 @@ an authorization service please check here:
 
 https://pusher.com/docs/channels/server_api/authenticating-users/
 
-#### `autoReconnect (bool)`
-Set whether or not you'd like the library to try and automatically reconnect upon disconnection (where possible). See [Reconnection](#reconnection) for more info
-
 #### `cluster (String)`
 
 Specifies the cluster that pusher-js should connect to. [If you'd like to see a full list of our clusters, click here](https://pusher.com/docs/clusters). If you do not specify a cluster, `mt1` will be used by default.
@@ -360,8 +356,6 @@ There are three main ways in which a disconnection can occur:
 - The Pusher server closes the websocket connection; typically this will only occur during a restart of the Pusher socket servers and an almost immediate reconnection should occur
 
 In the case of the first type of disconnection the library will (as you'd hope) not attempt a reconnection.
-
-All of this is the case if you have the client option of `autoReconnect` set as `true`, which it is by default. If the reconnection strategies are not suitable for your use case then you can set `autoReconnect` to `false` and implement your own reconnection strategy based on the connection state changes.
 
 ## Subscribing
 
