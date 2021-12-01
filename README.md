@@ -55,9 +55,8 @@ a minimal application to connect to a channel and send events.
   - [Binding to events](#binding-to-events)
     - [Per-channel events](#per-channel-events)
     - [Global events](#global-events)
-    - [Callback parameters](#callback-parameters)
-      - [PusherEvent](#pusherevent)
-    - [Parsing event data](#parsing-event-data)
+    - [PusherEvent](#pusherevent)
+      - [Parsing event data](#parsing-event-data)
     - [Receiving errors](#receiving-errors)
   - [Triggering events](#triggering-events)
   - [Socket information](#socket-information)
@@ -482,17 +481,6 @@ final myChannel = await pusher.subscribe(
 await pusher.connect();
 ```
 
-The callback is passed a `PusherEvent`, the field userId is only available on presence channels:
-
-```dart
-class PusherEvent {
-  String channelName;
-  String eventName;
-  dynamic data;
-  String? userId;
-}
-```
-
 ### Global events
 
 You can attach behavior to these events regardless of the channel the event is broadcast to.
@@ -511,9 +499,7 @@ final myChannel = await pusher.subscribe(
 );
 ```
 
-### Callback parameters
-
-#### PusherEvent
+### PusherEvent
 
 The callbacks you bind receive a `PusherEvent`:
 
@@ -526,7 +512,7 @@ class PusherEvent {
 }
 ```
 
-### Parsing event data
+#### Parsing event data
 
 The `data` property of  [`PusherEvent`](#pusherevent) contains the string representation of the data that you passed when you triggered the event. If you passed an object then that object will have been serialized to JSON. You can parse that JSON as appropriate.
 
