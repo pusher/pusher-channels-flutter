@@ -41,7 +41,7 @@ a minimal application to connect to a channel and send events.
   - [Configuration](#configuration)
       - [`activityTimeout (double)`](#activitytimeout-double)
       - [`apiKey (String)`](#apikey-string)
-      - [`authParams` (Map)](#authparams-map)
+      - [`authParams (Map)`](#authparams-map)
       - [`authEndpoint (String)`](#authendpoint-string)
       - [`autoReconnect (bool)`](#autoreconnect-bool)
       - [`cluster (String)`](#cluster-string)
@@ -181,7 +181,7 @@ After this time (in seconds) without any messages received from the server, a pi
 
 You can get your `API_KEY` and `API_CLUSTER` from the [Pusher Channels dashboard](https://dashboard.pusher.com/).
 
-#### `authParams` (Map)
+#### `authParams (Map)`
 
 Allows passing additional data to authorizers. Supports query string params and headers (AJAX only). For example, following will pass `foo=bar` via the query string and `baz: boo` via headers:
 
