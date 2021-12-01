@@ -32,6 +32,7 @@ class PusherMember {
 class PusherChannel {
   String channelName;
   Set<PusherMember> members = {};
+  PusherMember? me;
 
   Function(dynamic data)? onSubscriptionSucceeded;
   Function(dynamic event)? onEvent;
@@ -51,10 +52,9 @@ class PusherChannel {
 
   Future<void> trigger(PusherEvent event) async {
     if (event.channelName != channelName) {
-      throw('Event is not for this channel');
+      throw ('Event is not for this channel');
     }
-    return PusherChannelsFlutter.getInstance()
-        .trigger(event);
+    return PusherChannelsFlutter.getInstance().trigger(event);
   }
 }
 
@@ -79,41 +79,32 @@ class PusherChannelsFlutter {
     return _instance!;
   }
 
-  Future<void> init({
-    required String apiKey,
-    required String cluster,
-    bool? useTLS,
-    String? host,
-    int? wsPort,
-    int? wssPort,
-    int? activityTimeout,
-    int? pongTimeout,
-    int? maxReconnectionAttempts,
-    int? maxReconnectGapInSeconds,
-    var onConnectionStateChange,
-    var onSubscriptionSucceeded,
-    var onSubscriptionError,
-    var onDecryptionFailure,
-    var onError,
-    var onEvent,
-    var onMemberAdded,
-    var onMemberRemoved,
-    var onAuthorizer,
-    String? proxy, // pusher-websocket-java only
-    bool? enableStats, // pusher-js only
-    List<String>? disabledTransports, // pusher-js only
-    List<String>? enabledTransports, // pusher-js only
-    bool? ignoreNullOrigin, // pusher-js only
-    String? statsHost, // pusher-js only
-    String? authEndpoint, // pusher-js only
-    String? authTransport, // pusher-js only
-    String? httpHost, // pusher-js only
-    String? httpPath, // pusher-js only
-    int? httpPort, // pusher-js only
-    int? httpsPort, // pusher-js only
-    Map<String, Map<String, String>>? auth, // pusher-js only
-    bool? logToConsole, // pusher-js only
-  }) async {
+  Future<void> init(
+      {required String apiKey,
+      required String cluster,
+      bool? useTLS,
+      int? activityTimeout,
+      int? pongTimeout,
+      int? maxReconnectionAttempts,
+      int? maxReconnectGapInSeconds,
+      String? proxy, // pusher-websocket-java only
+      bool? enableStats, // pusher-js only
+      List<String>? disabledTransports, // pusher-js only
+      List<String>? enabledTransports, // pusher-js only
+      bool? ignoreNullOrigin, // pusher-js only
+      String? authEndpoint, // pusher-js only
+      String? authTransport, // pusher-js only
+      Map<String, Map<String, String>>? authParams, // pusher-js only
+      bool? logToConsole, // pusher-js only
+      var onConnectionStateChange,
+      var onSubscriptionSucceeded,
+      var onSubscriptionError,
+      var onDecryptionFailure,
+      var onError,
+      var onEvent,
+      var onMemberAdded,
+      var onMemberRemoved,
+      var onAuthorizer}) async {
     methodChannel.setMethodCallHandler(_platformCallHandler);
     this.onConnectionStateChange = onConnectionStateChange;
     this.onError = onError;
@@ -128,9 +119,6 @@ class PusherChannelsFlutter {
       "apiKey": apiKey,
       "cluster": cluster,
       "useTLS": useTLS,
-      "host": host,
-      "wssPort": wssPort,
-      "wsPort": wsPort,
       "activityTimeout": activityTimeout,
       "pongTimeout": pongTimeout,
       "maxReconnectionAttempts": maxReconnectionAttempts,
@@ -141,14 +129,9 @@ class PusherChannelsFlutter {
       "disabledTransports": disabledTransports,
       "enabledTransports": enabledTransports,
       "ignoreNullOrigin": ignoreNullOrigin,
-      "statsHost": statsHost,
       "authEndpoint": authEndpoint,
       "authTransport": authTransport,
-      "httpHost": httpHost,
-      "httpPath": httpPath,
-      "httpPort": httpPort,
-      "httpsPort": httpsPort,
-      "auth": auth,
+      "authParams": authParams,
       "logToConsole": logToConsole
     });
   }
@@ -173,11 +156,12 @@ class PusherChannelsFlutter {
           case 'pusher_internal:subscription_succeeded':
             // Depending on the platform implementation we get json or a Map.
             var decodedData = data is Map ? data : jsonDecode(data);
-            onSubscriptionSucceeded?.call(channelName!, decodedData);
             decodedData?["presence"]?["hash"]?.forEach((userId, userInfo) =>
                 channels[channelName]
                     ?.members
                     .add(PusherMember(userId, userInfo)));
+            onSubscriptionSucceeded?.call(channelName!, decodedData);
+            // channels[channelName]?.me
             channels[channelName]?.onSubscriptionSucceeded?.call(decodedData);
             break;
           default:
@@ -211,8 +195,8 @@ class PusherChannelsFlutter {
         channels[channelName]?.onMemberRemoved?.call(member);
         return Future.value(null);
       case 'onAuthorizer':
-        return onAuthorizer?.call(
-            channelName!, call.arguments['socketId'], call.arguments['options']);
+        return onAuthorizer?.call(channelName!, call.arguments['socketId'],
+            call.arguments['options']);
       default:
         throw MissingPluginException('Unknown method ${call.method}');
     }

@@ -138,12 +138,18 @@ class PusherChannelsFlutterWeb {
     } else if (msg.event == 'pusher_internal:member_added') {
       methodChannel!.invokeMethod("onMemberAdded", {
         "channelName": msg.channel,
-        "user": {"userId": msg.data.user_id, "userInfo": dartify(msg.data.user_info)}
+        "user": {
+          "userId": msg.data.user_id,
+          "userInfo": dartify(msg.data.user_info)
+        }
       });
     } else if (msg.event == 'pusher_internal:member_removed') {
       methodChannel!.invokeMethod("onMemberRemoved", {
         "channelName": msg.channel,
-        "user": {"userId": msg.data.user_id, "userInfo": dartify(msg.data.user_info)}
+        "user": {
+          "userId": msg.data.user_id,
+          "userInfo": dartify(msg.data.user_info)
+        }
       });
     } else {
       methodChannel!.invokeMethod("onEvent", {
@@ -156,8 +162,10 @@ class PusherChannelsFlutterWeb {
   }
 
   void onStateChange(state) {
-    methodChannel!.invokeMethod("onConnectionStateChange",
-        {"currentState": state.current.toUpperCase(), "previousState": state.previous.toUpperCase()});
+    methodChannel!.invokeMethod("onConnectionStateChange", {
+      "currentState": state.current.toUpperCase(),
+      "previousState": state.previous.toUpperCase()
+    });
   }
 
   void onConnected(state) {
@@ -232,32 +240,8 @@ class PusherChannelsFlutterWeb {
     if (call.arguments['enabledTransports'] != null) {
       options.enabledTransports = call.arguments['enabledTransports'];
     }
-    if (call.arguments['httpHost'] != null) {
-      options.httpHost = call.arguments['httpHost'];
-    }
-    if (call.arguments['httpPath'] != null) {
-      options.httpPath = call.arguments['httpPath'];
-    }
-    if (call.arguments['httpPort'] != null) {
-      options.httpPort = call.arguments['httpPort'];
-    }
-    if (call.arguments['httpsPort'] != null) {
-      options.httpsPort = call.arguments['httpsPort'];
-    }
     if (call.arguments['ignoreNullOrigin'] != null) {
       options.ignoreNullOrigin = call.arguments['ignoreNullOrigin'];
-    }
-    if (call.arguments['wsHost'] != null) {
-      options.wsHost = call.arguments['wsHost'];
-    }
-    if (call.arguments['wsPath'] != null) {
-      options.wsPath = call.arguments['wsPath'];
-    }
-    if (call.arguments['wsPort'] != null) {
-      options.wsPort = call.arguments['wsPort'];
-    }
-    if (call.arguments['wssPort'] != null) {
-      options.wssPort = call.arguments['wssPort'];
     }
     if (call.arguments['authTransport'] != null) {
       options.authTransport = call.arguments['authTransport'];
@@ -265,11 +249,8 @@ class PusherChannelsFlutterWeb {
     if (call.arguments['authEndpoint'] != null) {
       options.authEndpoint = call.arguments['authEndpoint'];
     }
-    if (call.arguments['statsHost'] != null) {
-      options.statsHost = call.arguments['statsHost'];
-    }
-    if (call.arguments['auth'] != null) {
-      options.auth = call.arguments['auth'];
+    if (call.arguments['authParams'] != null) {
+      options.auth = call.arguments['authParams'];
     }
     if (call.arguments['logToConsole'] != null) {
       Pusher.logToConsole = call.arguments['logToConsole'];

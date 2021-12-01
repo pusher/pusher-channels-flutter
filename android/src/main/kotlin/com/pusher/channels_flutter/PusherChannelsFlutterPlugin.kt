@@ -127,9 +127,6 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
                 if (call.argument<String>("cluster") != null) options.setCluster(call.argument("cluster"))
                 if (call.argument<Boolean>("useTLS") != null) options.isUseTLS =
                     call.argument("useTLS")!!
-                if (call.argument<String>("host") != null) options.setHost(call.argument("host"))
-                if (call.argument<Int>("wsPort") != null) options.setWsPort(call.argument("wsPort")!!)
-                if (call.argument<Int>("wssPort") != null) options.setWssPort(call.argument("wssPort")!!)
                 if (call.argument<Long>("activityTimeout") != null) options.activityTimeout =
                     call.argument("activityTimeout")!!
                 if (call.argument<Long>("pongTimeout") != null) options.pongTimeout =
@@ -212,8 +209,6 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
                 "socketId" to socketId
             ), object : Result {
                 override fun success(o: Any?) {
-                    // this will be called with o = "some string"
-                    // Log.i(TAG, "SUCCESS: $o")
                     if (o != null) {
                         val gson = Gson()
                         result = gson.toJson(o)
@@ -253,23 +248,14 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
 
     override fun onEvent(event: PusherEvent) {
         // Log.i(TAG, "Received event with data: $event")
-        if (event.eventName === "pusher_internal:subscription_succeeded") {
-            callback(
-                "onSubscriptionSucceeded", mapOf(
-                    "channelName" to event.channelName,
-                    "data" to event.data
-                )
+        callback(
+            "onEvent", mapOf(
+                "channelName" to event.channelName,
+                "eventName" to event.eventName,
+                "userId" to event.userId,
+                "data" to event.data
             )
-        } else {
-            callback(
-                "onEvent", mapOf(
-                    "channelName" to event.channelName,
-                    "eventName" to event.eventName,
-                    "userId" to event.userId,
-                    "data" to event.data
-                )
-            )
-        }
+        )
     }
 
     override fun onAuthenticationFailure(message: String, e: Exception) {
