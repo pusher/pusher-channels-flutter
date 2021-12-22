@@ -235,11 +235,16 @@ class PusherChannelsFlutter {
   }
 
   Future<void> trigger(PusherEvent event) async {
-    await methodChannel.invokeMethod('trigger', {
-      "channelName": event.channelName,
-      "eventName": event.eventName,
-      "data": event.data
-    });
+    if (event.channelName.startsWith("private-") ||
+        event.channelName.startsWith("presence-")) {
+      await methodChannel.invokeMethod('trigger', {
+        "channelName": event.channelName,
+        "eventName": event.eventName,
+        "data": event.data
+      });
+    } else {
+      throw ('Trigger event is only for private/presence channels');
+    }
   }
 
   Future<void> getSocketId() async {
