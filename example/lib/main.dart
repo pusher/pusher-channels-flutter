@@ -67,7 +67,7 @@ class _MyAppState extends State<MyApp> {
         onDecryptionFailure: onDecryptionFailure,
         onMemberAdded: onMemberAdded,
         onMemberRemoved: onMemberRemoved,
-        // authEndpoint: "<Your Authendpoint>",
+        // authEndpoint: "<Your Authendpoint Url>",
         // onAuthorizer: onAuthorizer
       );
       await pusher.subscribe(channelName: _channelName.text);
@@ -91,6 +91,8 @@ class _MyAppState extends State<MyApp> {
 
   void onSubscriptionSucceeded(String channelName, dynamic data) {
     log("onSubscriptionSucceeded: $channelName data: $data");
+    final me = pusher.getChannel(channelName)?.me;
+    log("Me: $me");
   }
 
   void onSubscriptionError(String message, dynamic e) {

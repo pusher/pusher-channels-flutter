@@ -6,8 +6,6 @@ import "package:js/js.dart";
 /// Represents a collection of members of a presence channel.
 @JS()
 class Members {
-  // @Ignore
-  Members.fakeConstructor$();
   external dynamic get members;
   external set members(dynamic v);
   external num get count;

@@ -43,7 +43,8 @@ class PusherChannel {
       this.onSubscriptionSucceeded,
       this.onEvent,
       this.onMemberAdded,
-      this.onMemberRemoved});
+      this.onMemberRemoved,
+      this.me});
 
   Future<void> unsubscribe() async {
     return PusherChannelsFlutter.getInstance()
@@ -141,6 +142,7 @@ class PusherChannelsFlutter {
     final String? eventName = call.arguments['eventName'];
     final dynamic data = call.arguments['data'];
     final dynamic user = call.arguments['user'];
+    final String? userId = call.arguments["userId"];
     switch (call.method) {
       case 'onConnectionStateChange':
         connectionState = call.arguments['currentState'];
@@ -152,16 +154,19 @@ class PusherChannelsFlutter {
             call.arguments['error']);
         return Future.value(null);
       case 'onEvent':
+        print("EVENT $eventName\n");
         switch (eventName) {
           case 'pusher_internal:subscription_succeeded':
             // Depending on the platform implementation we get json or a Map.
             var decodedData = data is Map ? data : jsonDecode(data);
-            decodedData?["presence"]?["hash"]?.forEach((userId, userInfo) =>
-                channels[channelName]
-                    ?.members
-                    .add(PusherMember(userId, userInfo)));
+            decodedData?["presence"]?["hash"]?.forEach((_userId, userInfo) {
+              var member = PusherMember(_userId, userInfo);
+              channels[channelName]?.members.add(member);
+              if (_userId == userId) {
+                channels[channelName]?.me = member;
+              }
+            });
             onSubscriptionSucceeded?.call(channelName!, decodedData);
-            // channels[channelName]?.me
             channels[channelName]?.onSubscriptionSucceeded?.call(decodedData);
             break;
           default:
@@ -223,8 +228,8 @@ class PusherChannelsFlutter {
         onMemberAdded: onMemberAdded,
         onMemberRemoved: onMemberRemoved,
         onEvent: onEvent);
-    channels[channelName] = channel;
     await methodChannel.invokeMethod("subscribe", {"channelName": channelName});
+    channels[channelName] = channel;
     return channel;
   }
 
@@ -249,5 +254,9 @@ class PusherChannelsFlutter {
 
   Future<void> getSocketId() async {
     await methodChannel.invokeMethod('getSocketId');
+  }
+
+  PusherChannel? getChannel(String channelName) {
+    return channels[channelName];
   }
 }

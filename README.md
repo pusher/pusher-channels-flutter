@@ -424,7 +424,7 @@ void onMemberRemoved(String channelName, PusherMember member) {
 }
 ```
 
-**Note**: The `members` and `me` properties of `PusherChannel` objects will only be set once subscription to the channel has succeeded.
+**Note**: The `members` property of `PusherChannel` objects will only be set once subscription to the channel has succeeded.
 
 The easiest way to find out when a channel has been successfully subscribed to is to bind to the callback named `onSubscriptionSucceeded` on the channel you're interested in. It would look something like this:
 
@@ -440,7 +440,7 @@ final myChannel = await pusher.subscribe(
   channelName:'presence-my-channel',
   onSubscriptionSucceeded: (channelName, data) {
     print("Subscribed to $channelName");
-    print("I can now access myId: ${myChannel.myId}")
+    print("I can now access me: ${myChannel.me}")
     print("And here are the channel members: ${myChannel.members}")
   },
   onMemberAdded: (member) {
@@ -557,6 +557,15 @@ Events triggered by clients are called [client events](https://pusher.com/docs/c
 * You can only trigger an event when the subscription has succeeded
 
 For full details see the [client events documentation](https://pusher.com/docs/channels/using_channels/events#triggering-client-events).
+
+## Get a channel by name
+
+To get the `PusherChannel` instance from the `Pusher` instance you can use the `getChannel(<channelName>)` method:
+
+```dart
+final channel = pusher.getChannel("presence-channel");
+```
+
 
 ## Socket information
 

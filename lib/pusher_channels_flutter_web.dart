@@ -2,6 +2,7 @@
 library pusher_channels_flutter;
 
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:js/js.dart';
 import 'package:js/js_util.dart' as js_util;
 // In order to *not* need this ignore, consider extracting the "web" version
@@ -12,6 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:pusher_channels_flutter/pusher-js/core/auth/options.dart';
 import 'package:pusher_channels_flutter/pusher-js/core/channels/channel.dart';
+import 'package:pusher_channels_flutter/pusher-js/core/channels/presence_channel.dart';
 import 'package:pusher_channels_flutter/pusher-js/core/options.dart';
 import 'package:pusher_channels_flutter/pusher-js/core/pusher.dart';
 
@@ -64,7 +66,6 @@ class PusherChannelsFlutterWebAuthorizer implements Authorizer {
 /// A web implementation of the PusherChannelsFlutter plugin.
 class PusherChannelsFlutterWeb {
   Pusher? pusher;
-  Map<String, Channel> channels = {};
   MethodChannel? methodChannel;
 
   static void registerWith(Registrar registrar) {
@@ -118,7 +119,7 @@ class PusherChannelsFlutterWeb {
   }
 
   void assertChannel(channelName) {
-    if (channels[channelName] == null) {
+    if (pusher!.channel(channelName) == null) {
       throw ArgumentError.notNull("Not subscribed to channel: $channelName");
     }
   }
@@ -152,6 +153,12 @@ class PusherChannelsFlutterWeb {
         }
       });
     } else {
+      if (msg.event == 'pusher_internal:subscription_succeeded') {
+        final presenceChannel = pusher!.channel(msg.channel) as PresenceChannel?;
+        if (presenceChannel != null) {
+          msg.user_id = presenceChannel.members.me.id;
+        }
+      }
       methodChannel!.invokeMethod("onEvent", {
         "channelName": msg.channel ?? '',
         "eventName": msg.event,
@@ -198,26 +205,22 @@ class PusherChannelsFlutterWeb {
   }
 
   void subscribe(MethodCall call) {
+    assertPusher();
     var channelName = call.arguments['channelName'];
-    if (channels[channelName] == null) {
-      assertPusher();
-      channels[channelName] = pusher!.subscribe(channelName);
-    }
+    pusher!.subscribe(channelName);
   }
 
   void unsubscribe(MethodCall call) {
     var channelName = call.arguments['channelName'];
-    assertChannel(channelName);
+    var channel = pusher!.channel(channelName);
     pusher!.unsubscribe(channelName);
-    channels[channelName]!.unbind_all();
-    channels.remove(channelName);
+    channel.unbind_all();
   }
 
   void trigger(MethodCall call) {
     var channelName = call.arguments['channelName'];
-    assertChannel(channelName);
-    channels[channelName]!
-        .trigger(call.arguments['eventName'], call.arguments['data']);
+    var channel = pusher!.channel(channelName);
+    channel.trigger(call.arguments['eventName'], call.arguments['data']);
   }
 
   void init(MethodCall call) {

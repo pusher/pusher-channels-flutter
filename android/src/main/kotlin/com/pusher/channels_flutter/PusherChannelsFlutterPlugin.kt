@@ -20,7 +20,6 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
-import io.flutter.plugin.common.StandardMethodCodec
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.util.concurrent.Semaphore
@@ -32,15 +31,20 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     private var activity: FlutterActivity? = null
     private lateinit var methodChannel: MethodChannel
     private var pusher: Pusher? = null
-    private var pusherChannels = mutableMapOf<String, Channel>()
-    val TAG = "PusherChannelsFlutter"
+    private val TAG = "PusherChannelsFlutter"
 
     inner class SubChannelManager(factory: Factory?) : ChannelManager(factory) {
         private val gson = Gson()
         override fun onMessage(event: String?, wholeMessage: String?) {
-            val json = gson.fromJson(wholeMessage, Map::class.java)
-            onEvent(PusherEvent(json as Map<String, Any>?))
+            val eventData = (gson.fromJson(wholeMessage, MutableMap::class.java) as MutableMap<String, Any>)
             super.onMessage(event, wholeMessage)
+            if (event == "pusher_internal:subscription_succeeded") {
+                val presenceChannel = pusher!!.getPresenceChannel(eventData["channel"] as String?)
+                if (presenceChannel != null) {
+                    eventData["user_id"] = presenceChannel.me.id
+                }
+            }
+            onEvent(PusherEvent(eventData))
         }
     }
 
@@ -170,17 +174,15 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     }
 
     private fun subscribe(channelName: String, result: Result) {
-        if (pusherChannels[channelName] == null) {
-            pusherChannels[channelName] = when {
-                channelName.startsWith("private-") -> pusher!!.subscribePrivate(channelName, this)
-                channelName.startsWith("private-encrypted-") -> pusher!!.subscribePrivateEncrypted(
-                    channelName, this
-                )
-                channelName.startsWith("presence-") -> pusher!!.subscribePresence(
-                    channelName, this
-                )
-                else -> pusher!!.subscribe(channelName, this)
-            }
+        when {
+            channelName.startsWith("private-") -> pusher!!.subscribePrivate(channelName, this)
+            channelName.startsWith("private-encrypted-") -> pusher!!.subscribePrivateEncrypted(
+                channelName, this
+            )
+            channelName.startsWith("presence-") -> pusher!!.subscribePresence(
+                channelName, this
+            )
+            else -> pusher!!.subscribe(channelName, this)
         }
         result.success(null)
     }
@@ -191,7 +193,12 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     }
 
     private fun trigger(channelName: String, eventName: String, data: String, result: Result) {
-        (pusherChannels[channelName] as PrivateChannel).trigger(eventName, data)
+        when {
+            channelName.startsWith("private-") -> pusher!!.getPrivateChannel(channelName).trigger(eventName, data)
+            channelName.startsWith("private-encrypted-") -> throw Exception("It's not currently possible to send a message using private encrypted channels.")
+            channelName.startsWith("presence-") -> pusher!!.getPresenceChannel(channelName).trigger(eventName, data)
+            else -> throw Exception("Messages can only be sent to private and presence channels.")
+        }
         result.success(null)
     }
 
