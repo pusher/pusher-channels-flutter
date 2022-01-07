@@ -3,6 +3,9 @@
 [![Latest Release](https://img.shields.io/github/v/release/pusher/pusher-channels-flutter)](https://github.com/pusher/pusher-channels-flutter/releases)
 [![Twitter](https://img.shields.io/badge/twitter-@Pusher-blue.svg?style=flat)](http://twitter.com/Pusher)
 [![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://raw.githubusercontent.com/pusher/pusher-channels-flutter/master/LICENSE)
+[![likes](https://badges.bar/pusher_channels_flutter/likes)](https://pub.dev/packages/pusher_channels_flutter/score)
+[![popularity](https://badges.bar/pusher_channels_flutter/popularity)](https://pub.dev/packages/pusher_channels_flutter/score)
+[![pub points](https://badges.bar/pusher_channels_flutter/pub%20points)](https://pub.dev/packages/pusher_channels_flutter/score)
 
 This is the [Pusher Channels](https://pusher.com/channels) Flutter client.
 
