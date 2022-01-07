@@ -6,7 +6,6 @@ import Foundation
 public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDelegate, Authorizer {
     private var pusher: Pusher!
     public var methodChannel: FlutterMethodChannel!
-    private var pusherChannels: [String: PusherChannel] = [:]
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let instance = SwiftPusherChannelsFlutterPlugin()
@@ -186,55 +185,47 @@ public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDe
     }
     
     func onEvent(event:PusherEvent) {
-        // print("GOT EVENT:", event)
-        if !event.eventName.starts(with: "pusher_internal:") {
-            if event.eventName.starts(with: "pusher:") {
-                if event.eventName == "pusher:subscription_succeeded" {
-                    methodChannel.invokeMethod(
-                        "onSubscriptionSucceeded", arguments: [
-                            "channelName": event.channelName,
-                            "data": event.data
-                        ]
-                    )
-                }
-            } else {
-                methodChannel.invokeMethod(
-                    "onEvent", arguments:[
-                        "channelName": event.channelName,
-                        "eventName": event.eventName,
-                        "userId": event.userId,
-                        "data": event.data
-                    ]
-                )
+        var userId:String? = nil
+        var mappedEventName:String? = nil
+        if event.eventName == "pusher:subscription_succeeded" {
+            if let channel = pusher.connection.channels.findPresence(name: event.channelName!) {
+                userId = channel.myId
             }
+            mappedEventName = "pusher_internal:subscription_succeeded"
         }
+        methodChannel.invokeMethod(
+            "onEvent", arguments:[
+                "channelName": event.channelName,
+                "eventName": mappedEventName ?? event.eventName,
+                "userId": event.userId ?? userId,
+                "data": event.data
+            ]
+        )
     }
     
     func subscribe(call:FlutterMethodCall, result:@escaping FlutterResult) {
         let args = call.arguments as! [String: String]
         let channelName:String = args["channelName"]!
-        if (pusherChannels[channelName] == nil) {
-            if channelName.hasPrefix("presence-") {
-                let onMemberAdded:(PusherPresenceChannelMember) -> () = { user in
-                    self.methodChannel.invokeMethod("onMemberAdded", arguments: [
-                        "channelName": channelName,
-                        "user": ["userId": user.userId, "userInfo": user.userInfo ]
-                    ])
-                }
-                let onMemberRemoved:(PusherPresenceChannelMember) -> () = { user in
-                    self.methodChannel.invokeMethod("onMemberRemoved", arguments: [
-                        "channelName": channelName,
-                        "user": ["userId": user.userId, "userInfo": user.userInfo ]
-                    ])
-                }
-                pusherChannels[channelName] = pusher.subscribeToPresenceChannel(
-                    channelName: channelName,
-                    onMemberAdded: onMemberAdded,
-                    onMemberRemoved: onMemberRemoved
-                )
-            } else {
-                pusherChannels[channelName] = pusher.subscribe(channelName: channelName)
+        if channelName.hasPrefix("presence-") {
+            let onMemberAdded:(PusherPresenceChannelMember) -> () = { user in
+                self.methodChannel.invokeMethod("onMemberAdded", arguments: [
+                    "channelName": channelName,
+                    "user": ["userId": user.userId, "userInfo": user.userInfo ]
+                ])
             }
+            let onMemberRemoved:(PusherPresenceChannelMember) -> () = { user in
+                self.methodChannel.invokeMethod("onMemberRemoved", arguments: [
+                    "channelName": channelName,
+                    "user": ["userId": user.userId, "userInfo": user.userInfo ]
+                ])
+            }
+            pusher.subscribeToPresenceChannel(
+                channelName: channelName,
+                onMemberAdded: onMemberAdded,
+                onMemberRemoved: onMemberRemoved
+            )
+        } else {
+            pusher.subscribe(channelName: channelName)
         }
         result(nil)
     }
@@ -251,6 +242,8 @@ public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDe
         let channelName:String = args["channelName"]!
         let eventName:String = args["eventName"]!
         let data:String? = args["data"]
-        pusherChannels[channelName]?.trigger(eventName: eventName, data: data as Any)
+        if let channel = pusher.connection.channels.find(name: channelName) {
+            channel.trigger(eventName: eventName, data: data as Any)
+        }
     }
 }
