@@ -2,7 +2,7 @@
 library core.channels.private_channel;
 
 import "package:js/js.dart";
-import 'package:pusher_channels_flutter/pusher-js/core/pusher.dart';
+import 'package:pusher_websocket_flutter/pusher-js/core/pusher.dart';
 import "channel.dart" show Channel;
 import "../auth/options.dart" show AuthorizerCallback;
 

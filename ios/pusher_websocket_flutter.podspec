@@ -3,13 +3,13 @@
 # Run `pod lib lint pusher_channels.podspec` to validate before publishing.
 #
 Pod::Spec.new do |s|
-  s.name             = 'pusher_channels_flutter'
+  s.name             = 'pusher_websocket_flutter'
   s.version          = '0.0.1'
   s.summary          = 'Pusher Channels Flutter integration.'
   s.description      = <<-DESC
 A new flutter plugin project.
                        DESC
-  s.homepage         = 'https://github.com/pusher/pusher-channels-flutter'
+  s.homepage         = 'https://github.com/pusher/pusher-websocket-flutter'
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Pusher' => 'info@pusher.com' }
   s.source           = { :path => '.' }

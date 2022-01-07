@@ -1,8 +1,8 @@
 # Pusher Channels Flutter Client
 
-[![Latest Release](https://img.shields.io/github/v/release/pusher/pusher-channels-flutter)](https://github.com/pusher/pusher-channels-flutter/releases)
+[![Latest Release](https://img.shields.io/github/v/release/pusher/pusher-websocket-flutter)](https://github.com/pusher/pusher-websocket-flutter/releases)
 [![Twitter](https://img.shields.io/badge/twitter-@Pusher-blue.svg?style=flat)](http://twitter.com/Pusher)
-[![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://raw.githubusercontent.com/pusher/pusher-channels-flutter/master/LICENSE)
+[![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://raw.githubusercontent.com/pusher/pusher-websocket-flutter/master/LICENSE)
 
 This is the [Pusher Channels](https://pusher.com/channels) Flutter client.
 
@@ -24,11 +24,11 @@ For tutorials and more in-depth information about Pusher Channels, visit our [of
 By cloning this repository you can check the Flutter example application,
 a minimal application to connect to a channel and send events.
 
-- https://github.com/pusher/pusher-channels-flutter/tree/master/example
+- https://github.com/pusher/pusher-websocket-flutter/tree/master/example
 
 ## Table of Contents
 
-- [Pusher Channels Flutter Client](#pusher-channels-flutter-client)
+- [Pusher Channels Flutter Client](#pusher-websocket-flutter-client)
   - [Supported Flutter platforms](#supported-flutter-platforms)
     - [Deployment targets](#deployment-targets)
   - [Example Application](#example-application)
@@ -578,4 +578,4 @@ PusherChannelsFlutter is owned and maintained by [Pusher](https://pusher.com).
 
 ## License
 
-PusherChannelsFlutter is released under the MIT license. See [LICENSE](https://github.com/pusher/pusher-channels-flutter/blob/master/LICENSE) for details.
+PusherChannelsFlutter is released under the MIT license. See [LICENSE](https://github.com/pusher/pusher-websocket-flutter/blob/master/LICENSE) for details.

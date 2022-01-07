@@ -7,13 +7,13 @@ public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDe
     private var pusher: Pusher!
     public var methodChannel: FlutterMethodChannel!
     private var pusherChannels: [String: PusherChannel] = [:]
-    
+
     public static func register(with registrar: FlutterPluginRegistrar) {
         let instance = SwiftPusherChannelsFlutterPlugin()
-        instance.methodChannel = FlutterMethodChannel(name: "pusher_channels_flutter", binaryMessenger: registrar.messenger())
+        instance.methodChannel = FlutterMethodChannel(name: "pusher_websocket_flutter", binaryMessenger: registrar.messenger())
         registrar.addMethodCallDelegate(instance, channel: instance.methodChannel)
     }
-    
+
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult)
     {
         switch call.method {
@@ -35,7 +35,7 @@ public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDe
             result(FlutterMethodNotImplemented)
         }
     }
-    
+
     class CustomConnection : PusherConnection {
         override func handleEvent(event: PusherEvent) {
             super.handleEvent(event:event)
@@ -45,7 +45,7 @@ public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDe
             }
         }
     }
-    
+
     func initChannels(call:FlutterMethodCall, result:@escaping FlutterResult) {
         if (pusher == nil) {
             let args = call.arguments as! [String: Any]
@@ -109,7 +109,7 @@ public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDe
             result(nil)
         }
     }
-    
+
     public func fetchAuthValue(socketID: String, channelName: String, completionHandler: @escaping (PusherAuth?) -> Void) {
         methodChannel!.invokeMethod("onAuthorizer", arguments: [
             "socketId": socketID,
@@ -127,22 +127,22 @@ public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDe
             }
         }
     }
-    
+
     public func changedConnectionState(from old: ConnectionState, to new: ConnectionState) {
         methodChannel.invokeMethod("onConnectionStateChange", arguments: [
             "previousState": old.stringValue(),
             "currentState": new.stringValue()
         ])
     }
-    
+
     public func debugLog(message: String) {
         //print("DEBUG:", message)
     }
-    
+
     public func subscribedToChannel(name: String) {
         // Handled by global handler
     }
-    
+
     public func failedToSubscribeToChannel(name: String, response: URLResponse?, data: String?, error: NSError?) {
         methodChannel.invokeMethod(
             "onSubscriptionError", arguments: [
@@ -151,7 +151,7 @@ public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDe
             ]
         )
     }
-    
+
     public func receivedError(error: PusherError) {
         methodChannel.invokeMethod(
             "onError", arguments:[
@@ -161,7 +161,7 @@ public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDe
             ]
         )
     }
-    
+
     public func failedToDecryptEvent(eventName: String, channelName: String, data: String?) {
         methodChannel.invokeMethod(
             "onDecryptionFailure", arguments: [
@@ -170,21 +170,21 @@ public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDe
             ]
         )
     }
-    
+
     func connect(result:@escaping FlutterResult) {
         pusher.connect()
         result(nil)
     }
-    
+
     func disconnect(result:@escaping FlutterResult) {
         pusher.disconnect()
         result(nil)
     }
-    
+
     func getSocketId(result:@escaping FlutterResult) {
         result(pusher.connection.socketId)
     }
-    
+
     func onEvent(event:PusherEvent) {
         // print("GOT EVENT:", event)
         if !event.eventName.starts(with: "pusher_internal:") {
@@ -209,7 +209,7 @@ public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDe
             }
         }
     }
-    
+
     func subscribe(call:FlutterMethodCall, result:@escaping FlutterResult) {
         let args = call.arguments as! [String: String]
         let channelName:String = args["channelName"]!
@@ -238,14 +238,14 @@ public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDe
         }
         result(nil)
     }
-    
+
     func unsubscribe(call:FlutterMethodCall, result:@escaping FlutterResult) {
         let args = call.arguments as! [String: String]
         let channelName: String = args["channelName"]!
         pusher.unsubscribe(channelName)
         result(nil)
     }
-    
+
     func trigger(call:FlutterMethodCall, result:@escaping FlutterResult) {
         let args = call.arguments as! [String: String]
         let channelName:String = args["channelName"]!

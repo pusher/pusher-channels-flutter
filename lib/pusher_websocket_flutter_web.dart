@@ -1,5 +1,5 @@
 @JS()
-library pusher_channels_flutter;
+library pusher_websocket_flutter;
 
 import 'dart:async';
 import 'package:js/js.dart';
@@ -10,10 +10,10 @@ import 'package:js/js_util.dart' as js_util;
 // ignore: avoid_web_libraries_in_flutter
 import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
-import 'package:pusher_channels_flutter/pusher-js/core/auth/options.dart';
-import 'package:pusher_channels_flutter/pusher-js/core/channels/channel.dart';
-import 'package:pusher_channels_flutter/pusher-js/core/options.dart';
-import 'package:pusher_channels_flutter/pusher-js/core/pusher.dart';
+import 'package:pusher_websocket_flutter/pusher-js/core/auth/options.dart';
+import 'package:pusher_websocket_flutter/pusher-js/core/channels/channel.dart';
+import 'package:pusher_websocket_flutter/pusher-js/core/options.dart';
+import 'package:pusher_websocket_flutter/pusher-js/core/pusher.dart';
 
 class PusherError extends Error {
   String message;
@@ -70,7 +70,7 @@ class PusherChannelsFlutterWeb {
   static void registerWith(Registrar registrar) {
     final pluginInstance = PusherChannelsFlutterWeb();
     pluginInstance.methodChannel = MethodChannel(
-      'pusher_channels_flutter',
+      'pusher_websocket_flutter',
       const StandardMethodCodec(),
       registrar,
     );

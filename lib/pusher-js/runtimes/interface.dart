@@ -6,7 +6,7 @@ library interface;
 import 'dart:html';
 
 import "package:js/js.dart";
-import 'package:pusher_channels_flutter/pusher-js/runtimes/web/dom/script_receiver_factory.dart';
+import 'package:pusher_websocket_flutter/pusher-js/runtimes/web/dom/script_receiver_factory.dart';
 import "../core/auth/auth_transports.dart" show AuthTransports;
 import "../core/timeline/timeline_transport.dart" show TimelineTransport;
 import "../core/http/ajax.dart" show Ajax;

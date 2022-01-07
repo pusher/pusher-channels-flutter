@@ -1,9 +1,9 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
+import 'package:pusher_websocket_flutter/pusher_websocket_flutter.dart';
 
 void main() {
-  const MethodChannel channel = MethodChannel('pusher_channels_flutter');
+  const MethodChannel channel = MethodChannel('pusher_websocket_flutter');
 
   TestWidgetsFlutterBinding.ensureInitialized();
 

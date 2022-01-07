@@ -170,7 +170,7 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.2.3"
-  pusher_channels_flutter:
+  pusher_websocket_flutter:
     dependency: "direct main"
     description:
       path: ".."

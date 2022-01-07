@@ -60,7 +60,7 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
         methodChannel =
             MethodChannel(
                 flutterPluginBinding.binaryMessenger,
-                "pusher_channels_flutter"
+                "pusher_websocket_flutter"
             )
         methodChannel.setMethodCallHandler(this)
     }
