@@ -261,7 +261,6 @@ class PusherChannelsFlutterWeb {
     if (call.arguments['authorizer'] != null) {
       options.authorizer = allowInterop(onAuthorizer);
     }
-    Pusher.logToConsole = true;
     pusher = Pusher(call.arguments['apiKey'], options);
     pusher!.connection.bind('error', allowInterop(onError));
     pusher!.connection.bind('message', allowInterop(onMessage));
