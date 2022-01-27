@@ -156,7 +156,7 @@ class PusherChannelsFlutterWeb {
       if (msg.event == 'pusher_internal:subscription_succeeded') {
         final presenceChannel = pusher!.channel(msg.channel) as PresenceChannel?;
         if (presenceChannel != null) {
-          msg.user_id = presenceChannel.members.me.id;
+          msg.user_id = presenceChannel.members.myID;
         }
       }
       methodChannel!.invokeMethod("onEvent", {
