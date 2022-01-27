@@ -39,9 +39,12 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
             val eventData = (gson.fromJson(wholeMessage, MutableMap::class.java) as MutableMap<String, Any>)
             super.onMessage(event, wholeMessage)
             if (event == "pusher_internal:subscription_succeeded") {
-                val presenceChannel = pusher!!.getPresenceChannel(eventData["channel"] as String?)
-                if (presenceChannel != null) {
-                    eventData["user_id"] = presenceChannel.me.id
+                val channelName = eventData["channel"] as String
+                if (channelName.startsWith("presence-")) {
+                    val presenceChannel = pusher!!.getPresenceChannel(eventData["channel"] as String?)
+                    if (presenceChannel != null) {
+                        eventData["user_id"] = presenceChannel.me.id
+                    }
                 }
             }
             onEvent(PusherEvent(eventData))
