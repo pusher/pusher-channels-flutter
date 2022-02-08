@@ -80,32 +80,35 @@ class PusherChannelsFlutter {
     return _instance!;
   }
 
-  Future<void> init(
-      {required String apiKey,
-      required String cluster,
-      bool? useTLS,
-      int? activityTimeout,
-      int? pongTimeout,
-      int? maxReconnectionAttempts,
-      int? maxReconnectGapInSeconds,
-      String? proxy, // pusher-websocket-java only
-      bool? enableStats, // pusher-js only
-      List<String>? disabledTransports, // pusher-js only
-      List<String>? enabledTransports, // pusher-js only
-      bool? ignoreNullOrigin, // pusher-js only
-      String? authEndpoint, // pusher-js only
-      String? authTransport, // pusher-js only
-      Map<String, Map<String, String>>? authParams, // pusher-js only
-      bool? logToConsole, // pusher-js only
-      var onConnectionStateChange,
-      var onSubscriptionSucceeded,
-      var onSubscriptionError,
-      var onDecryptionFailure,
-      var onError,
-      var onEvent,
-      var onMemberAdded,
-      var onMemberRemoved,
-      var onAuthorizer}) async {
+  Future<void> init({
+    required String apiKey,
+    required String cluster,
+    bool? useTLS,
+    int? activityTimeout,
+    int? pongTimeout,
+    int? maxReconnectionAttempts,
+    int? maxReconnectGapInSeconds,
+    String? proxy, // pusher-websocket-java only
+    bool? enableStats, // pusher-js only
+    List<String>? disabledTransports, // pusher-js only
+    List<String>? enabledTransports, // pusher-js only
+    bool? ignoreNullOrigin, // pusher-js only
+    String? authEndpoint, // pusher-js only
+    String? authTransport, // pusher-js only
+    Map<String, Map<String, String>>? authParams, // pusher-js only
+    bool? logToConsole, // pusher-js only
+    Function(String currentState, String previousState)?
+        onConnectionStateChange,
+    Function(String channelName, dynamic data)? onSubscriptionSucceeded,
+    Function(String message, dynamic error)? onSubscriptionError,
+    Function(String event, String reason)? onDecryptionFailure,
+    Function(String message, int? code, dynamic error)? onError,
+    Function(PusherEvent event)? onEvent,
+    Function(String channelName, PusherMember member)? onMemberAdded,
+    Function(String channelName, PusherMember member)? onMemberRemoved,
+    Function(String channelName, String socketId, dynamic options)?
+        onAuthorizer,
+  }) async {
     methodChannel.setMethodCallHandler(_platformCallHandler);
     this.onConnectionStateChange = onConnectionStateChange;
     this.onError = onError;
@@ -200,8 +203,8 @@ class PusherChannelsFlutter {
         channels[channelName]?.onMemberRemoved?.call(member);
         return Future.value(null);
       case 'onAuthorizer':
-        return onAuthorizer?.call(channelName!, call.arguments['socketId'],
-            call.arguments['options']);
+        return await onAuthorizer?.call(channelName!,
+            call.arguments['socketId'], call.arguments['options']);
       default:
         throw MissingPluginException('Unknown method ${call.method}');
     }
