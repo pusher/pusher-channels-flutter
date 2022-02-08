@@ -35,12 +35,6 @@ public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDe
         }
     }
     
-    class CustomConnection : PusherConnection {
-        override func handleEvent(event: PusherEvent) {
-            super.handleEvent(event:event)
-        }
-    }
-    
     func initChannels(call:FlutterMethodCall, result:@escaping FlutterResult) {
         if (pusher == nil) {
             let args = call.arguments as! [String: Any]
@@ -89,7 +83,6 @@ public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDe
                 activityTimeout: activityTimeout
             )
             pusher = Pusher(key: args["apiKey"] as! String, options: options)
-            object_setClass(pusher.connection, CustomConnection.self)
             if args["maxReconnectionAttempts"] is Int {
                 pusher.connection.reconnectAttemptsMax = (args["maxReconnectionAttempts"] as! Int)
             }
