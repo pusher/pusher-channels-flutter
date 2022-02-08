@@ -119,8 +119,8 @@ public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDe
                 completionHandler(
                     PusherAuth(
                         auth: authDataCast["auth"]!,
-                        channelData: authDataCast["channel_data"]!,
-                        sharedSecret: authDataCast["shared_secret"]!));
+                        channelData: authDataCast["channel_data"],
+                        sharedSecret: authDataCast["shared_secret"]));
             } else {
                 completionHandler(nil)
             }
