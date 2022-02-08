@@ -37,10 +37,7 @@ public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDe
     
     class CustomConnection : PusherConnection {
         override func handleEvent(event: PusherEvent) {
-            for (_, callback) in globalChannel.globalCallbacks {
-                // swiftlint:disable:next force_cast
-                callback(event.copy() as! PusherEvent)
-            }
+            super.handleEvent(event:event)
         }
     }
     
