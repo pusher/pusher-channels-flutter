@@ -115,7 +115,7 @@ public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDe
             "channelName": channelName
         ]) { authData in
             if authData != nil {
-                let authDataCast = authData as! [String:String]
+                let authDataCast = authData as! [String:String?]
                 completionHandler(
                     PusherAuth(
                         auth: authDataCast["auth"]!,
