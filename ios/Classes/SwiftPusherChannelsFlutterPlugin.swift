@@ -35,16 +35,6 @@ public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDe
         }
     }
     
-    class CustomConnection : PusherConnection {
-        override func handleEvent(event: PusherEvent) {
-            super.handleEvent(event:event)
-            for (_, callback) in globalChannel.globalCallbacks {
-                // swiftlint:disable:next force_cast
-                callback(event.copy() as! PusherEvent)
-            }
-        }
-    }
-    
     func initChannels(call:FlutterMethodCall, result:@escaping FlutterResult) {
         if (pusher == nil) {
             let args = call.arguments as! [String: Any]
@@ -93,7 +83,6 @@ public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDe
                 activityTimeout: activityTimeout
             )
             pusher = Pusher(key: args["apiKey"] as! String, options: options)
-            object_setClass(pusher.connection, CustomConnection.self)
             if args["maxReconnectionAttempts"] is Int {
                 pusher.connection.reconnectAttemptsMax = (args["maxReconnectionAttempts"] as! Int)
             }
@@ -119,8 +108,8 @@ public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDe
                 completionHandler(
                     PusherAuth(
                         auth: authDataCast["auth"]!,
-                        channelData: authDataCast["channel_data"]!,
-                        sharedSecret: authDataCast["shared_secret"]!));
+                        channelData: authDataCast["channel_data"],
+                        sharedSecret: authDataCast["shared_secret"]));
             } else {
                 completionHandler(nil)
             }
