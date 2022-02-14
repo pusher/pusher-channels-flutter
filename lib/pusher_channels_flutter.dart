@@ -145,16 +145,16 @@ class PusherChannelsFlutter {
     final String? userId = call.arguments["userId"];
     switch (call.method) {
       case 'onConnectionStateChange':
-        connectionState = call.arguments['currentState'];
+        connectionState = call.arguments['currentState'].toUpperCase();
         onConnectionStateChange?.call(
-            call.arguments['currentState'], call.arguments['previousState']);
+            call.arguments['currentState'].toUpperCase(),
+            call.arguments['previousState'].toUpperCase());
         return Future.value(null);
       case 'onError':
         onError?.call(call.arguments['message'], call.arguments['code'],
             call.arguments['error']);
         return Future.value(null);
       case 'onEvent':
-        print("EVENT $eventName\n");
         switch (eventName) {
           case 'pusher_internal:subscription_succeeded':
             // Depending on the platform implementation we get json or a Map.
