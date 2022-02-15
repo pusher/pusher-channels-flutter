@@ -1,5 +1,3 @@
-⚠️ Please note this SDK is currently being tested and is not yet production ready.
-
 # Pusher Channels Flutter Client
 
 [![Latest Release](https://img.shields.io/github/v/release/pusher/pusher-channels-flutter)](https://github.com/pusher/pusher-channels-flutter/releases)
