@@ -154,7 +154,8 @@ class PusherChannelsFlutterWeb {
       });
     } else {
       if (msg.event == 'pusher_internal:subscription_succeeded') {
-        final presenceChannel = pusher!.channel(msg.channel) as PresenceChannel?;
+        final presenceChannel =
+            pusher!.channel(msg.channel) as PresenceChannel?;
         if (presenceChannel != null) {
           msg.user_id = presenceChannel.members.myID;
         }
@@ -169,9 +170,10 @@ class PusherChannelsFlutterWeb {
   }
 
   void onStateChange(state) {
+    final dartState = dartify(state);
     methodChannel!.invokeMethod("onConnectionStateChange", {
-      "currentState": state.current.toUpperCase(),
-      "previousState": state.previous.toUpperCase()
+      "currentState": dartState["current"],
+      "previousState": dartState["previous"]
     });
   }
 
