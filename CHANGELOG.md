@@ -1,8 +1,13 @@
-## 1.0.1
-* Promoting pre-release `1.0.1-dev.1` to a stable version
+# Changelog
 
-## 1.0.1-dev.1
-* Remove duplicated events from iOS
+## 1.0.2
+
+* [FIXED] Android release configuration on example app
+
+## 1.0.1
+
+* [FIXED] Duplicated events on iOS
 
 ## 1.0.0
-* First release.
+
+* Initial release
