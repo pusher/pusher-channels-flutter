@@ -144,7 +144,7 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       _apiKey.text = prefs.getString("apiKey") ?? '';
       _cluster.text = prefs.getString("cluster") ?? 'eu';
-      _channelName.text = prefs.getString("channelName") ?? 'presence-channel';
+      _channelName.text = prefs.getString("channelName") ?? 'my-channel';
       _eventName.text = prefs.getString("eventName") ?? 'client-event';
       _data.text = prefs.getString("data") ?? 'test';
     });
