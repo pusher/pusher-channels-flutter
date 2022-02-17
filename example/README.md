@@ -5,7 +5,7 @@ at https://github.com/pusher/pusher-channels-flutter
 
 ## Getting Started
 
-This is a minimal Flutter example project for [Pusher Channels](https://pusher.com/channels)
+This is a minimal Flutter example project for [Pusher Channels](https://pusher.com/channels). Please note that it is not production ready.
 
 
 For tutorials and more in-depth information about Pusher Channels, visit our [official docs](https://pusher.com/docs/channels).
