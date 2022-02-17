@@ -5,11 +5,9 @@ import com.pusher.client.Authorizer
 import com.pusher.client.Pusher
 import com.pusher.client.PusherOptions
 import com.pusher.client.channel.*
-import com.pusher.client.channel.impl.ChannelManager
 import com.pusher.client.connection.ConnectionEventListener
 import com.pusher.client.connection.ConnectionState
 import com.pusher.client.connection.ConnectionStateChange
-import com.pusher.client.util.Factory
 import com.pusher.client.util.HttpAuthorizer
 import io.flutter.Log
 import io.flutter.embedding.android.FlutterActivity
@@ -32,36 +30,6 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     private lateinit var methodChannel: MethodChannel
     private var pusher: Pusher? = null
     private val TAG = "PusherChannelsFlutter"
-
-    inner class SubChannelManager(factory: Factory?) : ChannelManager(factory) {
-        private val gson = Gson()
-        override fun onMessage(event: String?, wholeMessage: String?) {
-            val eventData = (gson.fromJson(wholeMessage, MutableMap::class.java) as MutableMap<String, Any>)
-            super.onMessage(event, wholeMessage)
-            if (event == "pusher_internal:subscription_succeeded") {
-                val channelName = eventData["channel"] as String
-                if (channelName.startsWith("presence-")) {
-                    val presenceChannel = pusher!!.getPresenceChannel(eventData["channel"] as String?)
-                    if (presenceChannel != null) {
-                        eventData["user_id"] = presenceChannel.me.id
-                    }
-                }
-            }
-            onEvent(PusherEvent(eventData))
-        }
-    }
-
-    inner class DelegateFactory : Factory() {
-        @Synchronized
-        override fun getChannelManager(): ChannelManager {
-            val field = javaClass.superclass.getDeclaredField("channelManager")
-            field.isAccessible = true
-            if (field.get(this) == null) {
-                field.set(this, SubChannelManager(this))
-            }
-            return field.get(this) as ChannelManager
-        }
-    }
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         methodChannel =
@@ -149,20 +117,14 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
                     val (host, port) = call.argument<String>("proxy")!!.split(':')
                     options.proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(host, port.toInt()))
                 }
-                val pCon = Pusher::class.java.getDeclaredConstructor(
-                    String::class.java,
-                    PusherOptions::class.java,
-                    Factory::class.java
-                )
-                pusher = pCon.newInstance(call.argument("apiKey"), options, DelegateFactory())
-                // pusher = Pusher(call.argument("apiKey"), options)
+                pusher = Pusher(call.argument("apiKey"), options)
             } else {
                 throw Exception("Pusher Channels already initialized.")
             }
             Log.i(TAG, "Start $pusher")
             result.success(null)
         } catch (e: Exception) {
-            result.error("PusherChannels", e.message, null)
+            result.error(TAG, e.message, null)
         }
     }
 
@@ -197,9 +159,11 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
 
     private fun trigger(channelName: String, eventName: String, data: String, result: Result) {
         when {
-            channelName.startsWith("private-") -> pusher!!.getPrivateChannel(channelName).trigger(eventName, data)
+            channelName.startsWith("private-") -> pusher!!.getPrivateChannel(channelName)
+                .trigger(eventName, data)
             channelName.startsWith("private-encrypted-") -> throw Exception("It's not currently possible to send a message using private encrypted channels.")
-            channelName.startsWith("presence-") -> pusher!!.getPresenceChannel(channelName).trigger(eventName, data)
+            channelName.startsWith("presence-") -> pusher!!.getPresenceChannel(channelName)
+                .trigger(eventName, data)
             else -> throw Exception("Messages can only be sent to private and presence channels.")
         }
         result.success(null)
@@ -252,8 +216,15 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     }
 
     override fun onSubscriptionSucceeded(channelName: String) {
-        // Log.i(TAG, "Subscribed to channel: $channelName")
-        // Handled by global event handler
+        // For presence channels we wait for the onUsersInformationReceived event.
+        if (!channelName.startsWith("presence-")) {
+            callback(
+                "onEvent", mapOf(
+                    "channelName" to channelName,
+                    "eventName" to "pusher_internal:subscription_succeeded"
+                )
+            )
+        }
     }
 
     override fun onEvent(event: PusherEvent) {
@@ -279,7 +250,29 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     } // Other ChannelEventListener methods
 
     override fun onUsersInformationReceived(channelName: String?, users: MutableSet<User>?) {
-        // Handled by global handler.
+        // Log.i(TAG, "Users received: $users")
+        val gson = Gson()
+        val channel = pusher!!.getPresenceChannel(channelName)
+        val hash = mutableMapOf<String, Any?>()
+        // convert users back to original structure.
+        for (user in users!!) {
+            hash[user.id] = gson.fromJson(user.info, Map::class.java)
+        }
+        val data = mapOf(
+            "presence" to mapOf(
+                "count" to users.size,
+                "ids" to users.map { it.id },
+                "hash" to hash
+            )
+        )
+        callback(
+            "onEvent", mapOf(
+                "channelName" to channelName,
+                "eventName" to "pusher_internal:subscription_succeeded",
+                "userId" to channel.me.id,
+                "data" to data
+            )
+        )
     }
 
     override fun onDecryptionFailure(event: String?, reason: String?) {
