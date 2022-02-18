@@ -22,6 +22,3 @@ jobs:
         env:
           TAG: ${{steps.publish.outputs.package}}-${{steps.publish.outputs.localVersion}}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-        
-      
