@@ -154,9 +154,9 @@ class PusherChannelsFlutterWeb {
       });
     } else {
       if (msg.event == 'pusher_internal:subscription_succeeded') {
-        final presenceChannel =
-            pusher!.channel(msg.channel) as PresenceChannel?;
-        if (presenceChannel != null) {
+        if (msg.channel.startsWith('presence-')) {
+          final presenceChannel =
+              pusher!.channel(msg.channel) as PresenceChannel;
           msg.user_id = presenceChannel.members.myID;
         }
       }
