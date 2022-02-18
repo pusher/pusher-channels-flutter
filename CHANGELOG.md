@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.3-dev
+
+* [TEST] New release workflow
+
 ## 1.0.2
 
 * [FIXED] Android release configuration on example app
