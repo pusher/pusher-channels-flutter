@@ -25,10 +25,10 @@ jobs:
         env:
           TAG: v${{steps.publish.outputs.localVersion}}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: "Finish released tag"
-        if: finish_release_tag
-        run: |
-          echo "new tag created: ${{${{steps.release_tag.env.TAG}}}}"
+        id: finish_release_tag
+        run: 'echo "new tag created: ${{${{steps.release_tag.env.TAG}}}}"'
     outputs:
       released-version: ${{steps.release_tag.env.TAG}}
 
@@ -54,4 +54,4 @@ jobs:
           release_name: ${{ needs.publish.outputs.released-version }}
           body_path: CHANGELOG.tmp
           draft: false
-          prerelease: true
+          prerelease: false
