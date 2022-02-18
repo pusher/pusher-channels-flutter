@@ -18,6 +18,7 @@ jobs:
           flutter: true
           credentialJson: ${{ secrets.CREDENTIAL_JSON }}
       - name: 'Commit release tag'
+        id: release_tag
         if: steps.publish.outputs.success
         uses: hole19/git-tag-action@master
         env:
