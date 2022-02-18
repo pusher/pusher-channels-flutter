@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.3-dev.5
+## 1.0.3-dev.6
 
 * [TEST] New release workflow
 

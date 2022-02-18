@@ -58,8 +58,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ env.TAG }}
-          release_name: ${{ env.TAG }}
+          tag_name: ${{ needs.publish.outputs.released-version }}
+          release_name: ${{ needs.publish.outputs.released-version }}
           body_path: CHANGELOG.tmp
           draft: false
           prerelease: false
