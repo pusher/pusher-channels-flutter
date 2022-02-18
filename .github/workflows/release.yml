@@ -14,6 +14,7 @@ jobs:
         uses: k-paxian/dart-package-publisher@master
         with:
           format: true
+          dryRunOnly: true
           flutter: true
           credentialJson: ${{ secrets.CREDENTIAL_JSON }}
       - name: 'Commit release tag'
