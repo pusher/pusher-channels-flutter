@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      
       - name: 'publish pusher-channels-flutter package'
         id: publish
         uses: k-paxian/dart-package-publisher@master
@@ -18,10 +19,12 @@ jobs:
           flutter: true
           accessToken: ${{ secrets.OAUTH_ACCESS_TOKEN }}
           refreshToken: ${{ secrets.OAUTH_REFRESH_TOKEN }}
+      
       - name: 'Prepare tag name'
-        if: steps.publish.outputs.success
+        if: ${{ steps.publish.outputs.success }}
         id: prepare_tag
-        run: export TAG=v${{steps.publish.outputs.localVersion}}
+        run: export TAG=v${{ steps.publish.outputs.localVersion }}
+      
       - name: 'Commit release tag'
         id: release_tag
         if: ${{ steps.prepare_tag.outcome == 'success' }}
@@ -41,17 +44,19 @@ jobs:
         run: |
           git config user.email "pusher-ci@pusher.com"
           git config user.name "Pusher CI"
+      
       - name: Prepare description
         run: |
           csplit -s CHANGELOG.md "/##/" {1}
           cat xx01 > CHANGELOG.tmp
+      
       - name: Create Release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ needs.publish.outputs.released-version }}
-          release_name: ${{ needs.publish.outputs.released-version }}
+          tag_name: ${{ env.TAG }}
+          release_name: ${{ env.TAG }}
           body_path: CHANGELOG.tmp
           draft: false
           prerelease: false
