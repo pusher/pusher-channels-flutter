@@ -23,17 +23,19 @@ jobs:
       - name: 'Prepare tag name'
         if: ${{ steps.publish.outputs.success }}
         id: prepare_tag
-        run: export TAG=v${{ steps.publish.outputs.localVersion }}
+        run: |
+          export TAG=v${{ steps.publish.outputs.localVersion }}
+          echo "TAG=$TAG" >> $GITHUB_ENV
       
       - name: 'Commit release tag'
         id: release_tag
         if: ${{ steps.prepare_tag.outcome == 'success' }}
         uses: hole19/git-tag-action@master
         env:
-          TAG: ${{env.TAG}}
+          TAG: ${{ env.TAG }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     outputs:
-      released-version: ${{env.TAG}}
+      released-version: ${{ env.TAG }}
 
   create-github-release:
     runs-on: ubuntu-latest
