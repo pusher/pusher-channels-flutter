@@ -1,0 +1,57 @@
+name: Publish to pub.dev
+
+on:
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: 'publish pusher-channels-flutter package'
+        id: publish
+        uses: k-paxian/dart-package-publisher@master
+        with:
+          format: true
+          skipTests: true
+          flutter: true
+          accessToken: ${{ secrets.OAUTH_ACCESS_TOKEN }}
+          refreshToken: ${{ secrets.OAUTH_REFRESH_TOKEN }}
+      - name: 'Commit release tag'
+        id: release_tag
+        if: steps.publish.outputs.success
+        uses: hole19/git-tag-action@master
+        env:
+          TAG: v${{steps.publish.outputs.localVersion}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "Finish released tag"
+        id: finish_release_tag
+        run: 'echo "new tag created: ${{steps.release_tag.env.TAG}}"'
+    outputs:
+      released-version: ${{steps.release_tag.env.TAG}}
+
+  create-github-release:
+    runs-on: ubuntu-latest
+    needs: publish
+    if: ${{ needs.publish.outputs.released-version }}
+    steps:
+      - name: Setup git
+        run: |
+          git config user.email "pusher-ci@pusher.com"
+          git config user.name "Pusher CI"
+      - name: Prepare description
+        run: |
+          csplit -s CHANGELOG.md "/##/" {1}
+          cat xx01 > CHANGELOG.tmp
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ needs.publish.outputs.released-version }}
+          release_name: ${{ needs.publish.outputs.released-version }}
+          body_path: CHANGELOG.tmp
+          draft: false
+          prerelease: false
