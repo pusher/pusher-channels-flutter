@@ -18,21 +18,16 @@ jobs:
           flutter: true
           accessToken: ${{ secrets.OAUTH_ACCESS_TOKEN }}
           refreshToken: ${{ secrets.OAUTH_REFRESH_TOKEN }}
-      - name: 'Prepare tag name'
-        id: prepare_tag
-        run: echo "::set-output tag_name=v${{steps.publish.outputs.localVersion}}"
       - name: 'Commit release tag'
         id: release_tag
         if: steps.publish.outputs.success
         uses: hole19/git-tag-action@master
+        run: echo "::set-output tag_name=v${{steps.publish.outputs.localVersion}}"
         env:
-          TAG: ${{steps.prepare_tag.outputs.tag_name}}
+          TAG: v${{steps.publish.outputs.localVersion}}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: "Finish released tag"
-        id: finish_release_tag
-        run: 'echo "new tag created: ${{steps.prepare_tag.outputs.tag_name}}"'
     outputs:
-      released-version: ${{steps.prepare_tag.outputs.tag_name}}
+      released-version: ${{steps.release_tag.outputs.tag_name}}
 
   create-github-release:
     runs-on: ubuntu-latest
