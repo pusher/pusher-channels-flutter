@@ -88,7 +88,7 @@ to add the plugin to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  pusher_channel_flutter: "^0.1.1"
+  pusher_channels_flutter: "^1.0.1"
 ```
 
 ### iOS specific installation
