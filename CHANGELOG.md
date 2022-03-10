@@ -2,9 +2,9 @@
 
 ## 1.0.3
 
-* Fixes release build issues on android
+* [FIXED] release build issues on android
 * Always send connectionstate in uppercase
-* Fix release mode issue with js backend
+* [FIXED] release mode issue with js backend
 
 ## 1.0.2
 
