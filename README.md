@@ -306,7 +306,7 @@ Called when a member is removed to the presence channel.
 
 #### `onAuthorizer`
 
-> :warning: Currently on web release/profile mode this doesn't work, we're investigating this.
+> :warning: Currently on web release/profile mode this doesn't work, we're still investigating this.
 
 When passing the `onAuthorizer()` callback to the `init()` method, this callback is called to request auth information. For more information on how
 to generate the correct information, please look here:
