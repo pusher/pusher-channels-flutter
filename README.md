@@ -12,6 +12,7 @@ This is the [Pusher Channels](https://pusher.com/channels) Flutter client.
 For tutorials and more in-depth information about Pusher Channels, visit our [official docs](https://pusher.com/docs/channels).
 
 ## Supported Flutter platforms
+
 - Android through [pusher-websocket-java](https://github.com/pusher/pusher-websocket-java)
 - iOS through [pusher-websocket-swift](https://github.com/pusher/pusher-websocket-swift)
 - Web through [pusher-js](https://github.com/pusher/pusher-js)
@@ -42,22 +43,22 @@ a minimal application to connect to a channel and send events.
     - [Web specific installation](#web-specific-installation)
   - [Initialization](#initialization)
   - [Configuration](#configuration)
-      - [`activityTimeout (double)`](#activitytimeout-double)
-      - [`apiKey (String)`](#apikey-string)
-      - [`authParams (Map)`](#authparams-map)
-      - [`authEndpoint (String)`](#authendpoint-string)
-      - [`cluster (String)`](#cluster-string)
-      - [`useTLS (bool)`](#usetls-bool)
+    - [`activityTimeout (double)`](#activitytimeout-double)
+    - [`apiKey (String)`](#apikey-string)
+    - [`authParams (Map)`](#authparams-map)
+    - [`authEndpoint (String)`](#authendpoint-string)
+    - [`cluster (String)`](#cluster-string)
+    - [`useTLS (bool)`](#usetls-bool)
   - [Event Callback parameters](#event-callback-parameters)
-      - [`onEvent`](#onevent)
-      - [`onSubscriptionSucceeded`](#onsubscriptionsucceeded)
-      - [`onSubscriptionError`](#onsubscriptionerror)
-      - [`onDecryptionFailure`](#ondecryptionfailure)
-      - [`onMemberAdded`](#onmemberadded)
-      - [`onMemberRemoved`](#onmemberremoved)
-      - [`onAuthorizer`](#onauthorizer)
-      - [`onConnectionStateChange`](#onconnectionstatechange)
-      - [`onError`](#onerror)
+    - [`onEvent`](#onevent)
+    - [`onSubscriptionSucceeded`](#onsubscriptionsucceeded)
+    - [`onSubscriptionError`](#onsubscriptionerror)
+    - [`onDecryptionFailure`](#ondecryptionfailure)
+    - [`onMemberAdded`](#onmemberadded)
+    - [`onMemberRemoved`](#onmemberremoved)
+    - [`onAuthorizer`](#onauthorizer)
+    - [`onConnectionStateChange`](#onconnectionstatechange)
+    - [`onError`](#onerror)
   - [Connection handling](#connection-handling)
     - [Connecting](#connecting)
     - [Disconnecting](#disconnecting)
@@ -88,7 +89,7 @@ to add the plugin to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  pusher_channels_flutter: "^1.0.1"
+  pusher_channels_flutter: '^1.0.1'
 ```
 
 ### iOS specific installation
@@ -116,7 +117,10 @@ index.html page:
 
 ```html
 <head>
-  <script charset="utf-8" src="https://js.pusher.com/7.0/pusher.min.js"></script>
+  <script
+    charset="utf-8"
+    src="https://js.pusher.com/7.0/pusher.min.js"
+  ></script>
   ...
 </head>
 ```
@@ -149,6 +153,7 @@ try {
   print("ERROR: $e");
 }
 ```
+
 After calling `init(...)` you can connect to the Pusher servers.
 You can subscribe to channels before calling `connect()`
 
@@ -159,24 +164,25 @@ describes for which platform the parameter is available:
 
 | parameter                | Android | iOS | Web |
 | ------------------------ | ------- | --- | --- |
-| activityTimeout          | ✅       | ✅   | ✅   |
-| apiKey                   | ✅       | ✅   | ✅   |
-| authParam                | ⬜️       | ⬜️   | ✅   |
-| authEndpoint             | ✅       | ✅   | ✅   |
-| authTransport            | ⬜️       | ⬜️   | ✅   |
-| cluster                  | ✅       | ✅   | ✅   |
-| disabledTransports       | ⬜️       | ⬜️   | ✅   |
-| enabledTransports        | ⬜️       | ⬜️   | ✅   |
-| enableStats              | ⬜️       | ⬜️   | ✅   |
-| ignoreNullOrigin         | ⬜️       | ⬜️   | ✅   |
-| logToConsole             | ⬜️       | ⬜️   | ✅   |
-| maxReconnectGapInSeconds | ✅       | ✅   | ⬜️   |
-| maxReconnectionAttempts  | ✅       | ✅   | ⬜️   |
-| pongTimeout              | ✅       | ✅   | ✅   |
-| proxy                    | ✅       | ⬜️   | ⬜️   |
-| useTLS                   | ✅       | ✅   | ⬜️   |
+| activityTimeout          | ✅      | ✅  | ✅  |
+| apiKey                   | ✅      | ✅  | ✅  |
+| authParam                | ⬜️      | ⬜️ | ✅  |
+| authEndpoint             | ✅      | ✅  | ✅  |
+| authTransport            | ⬜️      | ⬜️ | ✅  |
+| cluster                  | ✅      | ✅  | ✅  |
+| disabledTransports       | ⬜️     | ⬜️ | ✅  |
+| enabledTransports        | ⬜️     | ⬜️ | ✅  |
+| enableStats              | ⬜️     | ⬜️ | ✅  |
+| ignoreNullOrigin         | ⬜️     | ⬜️ | ✅  |
+| logToConsole             | ⬜️     | ⬜️ | ✅  |
+| maxReconnectGapInSeconds | ✅      | ✅  | ⬜️ |
+| maxReconnectionAttempts  | ✅      | ✅  | ⬜️ |
+| pongTimeout              | ✅      | ✅  | ✅  |
+| proxy                    | ✅      | ⬜️ | ⬜️ |
+| useTLS                   | ✅      | ✅  | ⬜️ |
 
 #### `activityTimeout (double)`
+
 After this time (in seconds) without any messages received from the server, a ping message will be sent to check if the connection is still working; the default value is supplied by the server, low values will result in unnecessary traffic.
 
 #### `apiKey (String)`
@@ -230,6 +236,7 @@ https://pusher.com/docs/channels/server_api/authenticating-users/
 Specifies the cluster that pusher-js should connect to. [If you'd like to see a full list of our clusters, click here](https://pusher.com/docs/clusters). If you do not specify a cluster, `mt1` will be used by default.
 
 #### `useTLS (bool)`
+
 Whether or not you'd like to use TLS encrypted transport or not, default is `true`
 
 ## Event Callback parameters
@@ -237,11 +244,13 @@ Whether or not you'd like to use TLS encrypted transport or not, default is `tru
 The following functions are callbacks that can be passed to the `init()` method. All are optional.
 
 #### `onEvent`
+
 ```dart
 void onEvent(PusherEvent event) {
   print("onEvent: $event");
 }
 ```
+
 Called when a event is received by the client.
 The global event handler will trigger on events from any channel.
 
@@ -252,6 +261,7 @@ void onSubscriptionSucceeded(String channelName, dynamic data) {
   print("onSubscriptionSucceeded: $channelName data: $data");
 }
 ```
+
 use this if you want to be informed of when a channel has successfully been subscribed to, which is useful if you want to perform actions that are only relevant after a subscription has succeeded. For example querying the members for presence channel.
 
 #### `onSubscriptionError`
@@ -261,6 +271,7 @@ void onSubscriptionError(String message, dynamic e) {
   print("onSubscriptionError: $message Exception: $e");
 }
 ```
+
 use this if you want to be informed of a failed subscription attempt, which you could use, for example, to then attempt another subscription or make a call to a service you use to track errors.
 
 #### `onDecryptionFailure`
@@ -270,6 +281,7 @@ void onDecryptionFailure(String event, String reason) {
   print("onDecryptionFailure: $event reason: $reason");
 }
 ```
+
 only used with private encrypted channels - use this if you want to be notified if any messages fail to decrypt.
 
 #### `onMemberAdded`
@@ -294,11 +306,14 @@ Called when a member is removed to the presence channel.
 
 #### `onAuthorizer`
 
+> :warning: Currently on web release/profile mode this doesn't work, we're investigating this.
+
 When passing the `onAuthorizer()` callback to the `init()` method, this callback is called to request auth information. For more information on how
 to generate the correct information, please look here:
 https://pusher.com/docs/channels/library_auth_reference/auth-signatures/
+
 ```dart
-dynamic onAuthorizer(String channelName, String socketId, dynamic options) {
+dynamic onAuthorizer(String channelName, String socketId, dynamic options) async {
   return {
     "auth": "foo:bar",
     "channel_data": '{"user_id": 1}',
@@ -314,6 +329,7 @@ void onConnectionStateChange(dynamic currentState, dynamic previousState) {
   print("Connection: $currentState");
 }
 ```
+
 use this if you want to use connection state changes to perform different actions / UI updates
 The different states that the connection can be in are:
 
@@ -330,6 +346,7 @@ void onError(String message, int? code, dynamic e) {
   print("onError: $message code: $code exception: $e");
 }
 ```
+
 use this if you want to be informed of errors received from Pusher Channels e.g. `Application is over connection quota`. You can find some of the possible errors listed [here](https://pusher.com/docs/channels/library_auth_reference/pusher-websockets-protocol#error-codes).
 
 ## Connection handling
@@ -390,7 +407,7 @@ The shared secret used to decrypt events is loaded from the same auth endpoint r
 
 #### Limitations
 
-* Client events are not supported on encrypted channels
+- Client events are not supported on encrypted channels
 
 ```dart
 final privateEncryptedChannel = await pusher.subscribe(channelName: "private-encrypted-my-channel")
@@ -526,7 +543,7 @@ class PusherEvent {
 
 #### Parsing event data
 
-The `data` property of  [`PusherEvent`](#pusherevent) contains the string representation of the data that you passed when you triggered the event. If you passed an object then that object will have been serialized to JSON. You can parse that JSON as appropriate.
+The `data` property of [`PusherEvent`](#pusherevent) contains the string representation of the data that you passed when you triggered the event. If you passed an object then that object will have been serialized to JSON. You can parse that JSON as appropriate.
 
 ### Receiving errors
 
@@ -555,9 +572,9 @@ await pusher.trigger(channelName: "my-channel", eventName: "client-my-event", da
 
 Events triggered by clients are called [client events](https://pusher.com/docs/channels/using_channels/events#triggering-client-events). Because they are being triggered from a client which may not be trusted there are a number of enforced rules when using them. Some of these rules include:
 
-* Event names must have a `client-` prefix
-* Rate limits
-* You can only trigger an event when the subscription has succeeded
+- Event names must have a `client-` prefix
+- Rate limits
+- You can only trigger an event when the subscription has succeeded
 
 For full details see the [client events documentation](https://pusher.com/docs/channels/using_channels/events#triggering-client-events).
 
@@ -568,7 +585,6 @@ To get the `PusherChannel` instance from the `Pusher` instance you can use the `
 ```dart
 final channel = pusher.getChannel("presence-channel");
 ```
-
 
 ## Socket information
 
