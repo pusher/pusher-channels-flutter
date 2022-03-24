@@ -190,7 +190,7 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
                     mutex.release()
                 }
 
-                override fun error(s: String?, s1: String?, o: Any?) {
+                override fun error(s: String, s1: String?, o: Any?) {
                     // Log.e(TAG, "ERROR: $s $s1 $o")
                     mutex.release()
                 }
