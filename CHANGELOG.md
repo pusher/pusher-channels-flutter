@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.4
+
+* [FIXED] Dependency issue on android
+* [FIXED] Compile issue on newer Kotlin versions
+* [IMPROVEMENT] Updated dependencies
+
 ## 1.0.3
 
 * [FIXED] release build issues on android
