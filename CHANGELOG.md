@@ -3,7 +3,7 @@
 ## 1.0.5
 
 * [FIXED] Android: Subscribing to private channels
-* [FIXED] Android: Receviving events
+* [FIXED] Android: Receiving events
 
 ## 1.0.4
 
