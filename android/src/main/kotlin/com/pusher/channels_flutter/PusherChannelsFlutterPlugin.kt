@@ -139,7 +139,7 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     }
 
     private fun subscribe(channelName: String, result: Result) {
-        when {
+        val channel = when {
             channelName.startsWith("private-") -> pusher!!.subscribePrivate(channelName, this)
             channelName.startsWith("private-encrypted-") -> pusher!!.subscribePrivateEncrypted(
                 channelName, this
@@ -149,6 +149,7 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
             )
             else -> pusher!!.subscribe(channelName, this)
         }
+        channel.bindGlobal(this)
         result.success(null)
     }
 
@@ -219,7 +220,8 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
             callback(
                 "onEvent", mapOf(
                     "channelName" to channelName,
-                    "eventName" to "pusher_internal:subscription_succeeded"
+                    "eventName" to "pusher_internal:subscription_succeeded",
+                    "data" to emptyMap<String,String>()
                 )
             )
         }
