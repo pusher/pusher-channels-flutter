@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.5
+
+* [FIXED] Android: Subscribing to private channels
+* [FIXED] Android: Receiving events
+
 ## 1.0.4
 
 * [FIXED] Dependency issue on android
