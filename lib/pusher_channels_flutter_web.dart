@@ -2,10 +2,10 @@
 library pusher_channels_flutter;
 
 import 'dart:async';
-import 'package:flutter/material.dart';
+import 'dart:convert';
 import 'package:js/js.dart';
 import 'package:js/js_util.dart' as js_util;
-// In order to *not* need this ignore, consider extracting the "web" version
+// In order to *not* need this ignore, consider extracting the 'web' version
 // of your plugin as a separate package, instead of inlining it in the same
 // package as the core of your plugin.
 // ignore: avoid_web_libraries_in_flutter
@@ -49,18 +49,6 @@ T dartify<T>(dynamic jsObject) {
     result[key] = dartify(js_util.getProperty(jsObject, key));
   }
   return result as T;
-}
-
-class PusherChannelsFlutterWebAuthorizer implements Authorizer {
-  final void Function(String socketId, AuthorizerCallback callback) _authorize;
-  PusherChannelsFlutterWebAuthorizer(
-      void Function(String socketId, AuthorizerCallback callback) authorize)
-      : _authorize = authorize;
-
-  @override
-  void authorize(String socketId, AuthorizerCallback callback) {
-    _authorize(socketId, callback);
-  }
 }
 
 /// A web implementation of the PusherChannelsFlutter plugin.
@@ -114,96 +102,104 @@ class PusherChannelsFlutterWeb {
 
   void assertPusher() {
     if (pusher == null) {
-      throw ArgumentError.notNull("Pusher not initialized");
+      throw ArgumentError.notNull('Pusher not initialized');
     }
   }
 
-  void assertChannel(channelName) {
+  void assertChannel(String channelName) {
     if (pusher!.channel(channelName) == null) {
-      throw ArgumentError.notNull("Not subscribed to channel: $channelName");
+      throw ArgumentError.notNull('Not subscribed to channel: $channelName');
     }
   }
 
-  void onError(err) {
-    methodChannel!.invokeMethod("onError", {
-      "message": err.data?.message,
-      "code": err.data?.code,
-      "error": dartify(err),
+  void onError(dynamic jsError) {
+    final Map<String, dynamic> error = dartify<Map<String, dynamic>>(jsError);
+    methodChannel!.invokeMethod('onError', {
+      'message': error['data']?['message'],
+      'code': error['data']?['code'],
+      'error': error,
     });
   }
 
-  void onMessage(msg) {
-    if (msg.event == 'pusher_internal:subscription_error') {
-      methodChannel!.invokeMethod("onSubscriptionError",
-          {"message": msg.error, "error": dartify(msg.data)});
-    } else if (msg.event == 'pusher_internal:member_added') {
-      methodChannel!.invokeMethod("onMemberAdded", {
-        "channelName": msg.channel,
-        "user": {
-          "userId": msg.data.user_id,
-          "userInfo": dartify(msg.data.user_info)
+  void onMessage(dynamic jsMessage) {
+    final Map<String, dynamic> msg = dartify<Map<String, dynamic>>(jsMessage);
+    final String event = msg['event'] ?? '';
+    final String channel = msg['channel'] ?? '';
+    final Map<String, dynamic> data = msg['data'] ?? {};
+    String? userId = data['user_id'];
+    final Map<String, dynamic>? userInfo = data['user_info'];
+    print('onMessage: ${jsonEncode(msg)}');
+
+    if (event == 'pusher_internal:subscription_error') {
+      methodChannel!.invokeMethod(
+          'onSubscriptionError', {'message': msg['error'], 'error': data});
+    } else if (event == 'pusher_internal:member_added') {
+      methodChannel!.invokeMethod('onMemberAdded', {
+        'channelName': channel,
+        'user': {
+          'userId': userId,
+          'userInfo': userInfo,
         }
       });
-    } else if (msg.event == 'pusher_internal:member_removed') {
-      methodChannel!.invokeMethod("onMemberRemoved", {
-        "channelName": msg.channel,
-        "user": {
-          "userId": msg.data.user_id,
-          "userInfo": dartify(msg.data.user_info)
+    } else if (event == 'pusher_internal:member_removed') {
+      methodChannel!.invokeMethod('onMemberRemoved', {
+        'channelName': channel,
+        'user': {
+          'userId': userId,
+          'userInfo': userInfo,
         }
       });
     } else {
-      if (msg.event == 'pusher_internal:subscription_succeeded') {
-        if (msg.channel.startsWith('presence-')) {
-          final presenceChannel =
-              pusher!.channel(msg.channel) as PresenceChannel;
-          msg.user_id = presenceChannel.members.myID;
+      if (event == 'pusher_internal:subscription_succeeded') {
+        if (channel.startsWith('presence-')) {
+          final presenceChannel = pusher!.channel(channel) as PresenceChannel;
+          userId = presenceChannel.members.myID;
         }
       }
-      methodChannel!.invokeMethod("onEvent", {
-        "channelName": msg.channel ?? '',
-        "eventName": msg.event,
-        "data": dartify(msg.data),
-        "userId": msg.user_id
+      methodChannel!.invokeMethod('onEvent', {
+        'channelName': channel,
+        'eventName': event,
+        'data': data,
+        'userId': userId,
       });
     }
   }
 
-  void onStateChange(state) {
-    final dartState = dartify(state);
-    methodChannel!.invokeMethod("onConnectionStateChange", {
-      "currentState": dartState["current"],
-      "previousState": dartState["previous"]
+  void onStateChange(dynamic jsState) {
+    final Map<String, dynamic> state =
+        dartify<Map<String, dynamic>>(jsState ?? {});
+    final String current = state['current'] ?? '';
+    final String previous = state['previous'] ?? '';
+    methodChannel!.invokeMethod('onConnectionStateChange', {
+      'currentState': current,
+      'previousState': previous,
     });
   }
 
-  void onConnected(state) {
-    print("Connected: " + stringify(state));
-  }
+  void onConnected(dynamic jsMessage) {}
 
-  void onDisconnected(state) {
-    print("Disconnected: " + stringify(state));
-  }
+  void onDisconnected() {}
 
   Authorizer onAuthorizer(Channel channel, AuthorizerOptions options) {
-    return PusherChannelsFlutterWebAuthorizer(
-        (String socketId, AuthorizerCallback callback) async {
-      try {
-        var authData = await methodChannel!.invokeMethod('onAuthorizer', {
-          "socketId": socketId,
-          "channelName": channel.name,
-          "options": dartify(options)
-        });
-        callback(
-            null,
-            AuthData(
-                auth: authData['auth'],
-                channel_data: authData['channel_data'],
-                shared_secret: authData['shared_secret']));
-      } catch (e) {
-        callback(PusherError(e.toString(), -1), AuthData(auth: ""));
-      }
-    });
+    return Authorizer(
+      authorize: allowInterop((socketId, callback) async {
+        try {
+          var authData = await methodChannel!.invokeMethod('onAuthorizer', {
+            'socketId': socketId,
+            'channelName': channel.name,
+            'options': options.toMap(),
+          });
+          callback(
+              null,
+              AuthData(
+                  auth: authData['auth'],
+                  channel_data: authData['channel_data'],
+                  shared_secret: authData['shared_secret']));
+        } catch (e) {
+          callback(PusherError(e.toString(), -1), AuthData(auth: ''));
+        }
+      }),
+    );
   }
 
   void subscribe(MethodCall call) {
@@ -216,13 +212,13 @@ class PusherChannelsFlutterWeb {
     var channelName = call.arguments['channelName'];
     var channel = pusher!.channel(channelName);
     pusher!.unsubscribe(channelName);
-    channel.unbind_all();
+    channel?.unbind_all();
   }
 
   void trigger(MethodCall call) {
     var channelName = call.arguments['channelName'];
     var channel = pusher!.channel(channelName);
-    channel.trigger(call.arguments['eventName'], call.arguments['data']);
+    channel?.trigger(call.arguments['eventName'], call.arguments['data']);
   }
 
   void init(MethodCall call) {
