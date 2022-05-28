@@ -8,25 +8,26 @@ class PusherEvent {
   String eventName;
   dynamic data;
   String? userId;
-  PusherEvent(
-      {required this.channelName,
-      required this.eventName,
-      this.data,
-      this.userId});
+  PusherEvent({
+    required this.channelName,
+    required this.eventName,
+    this.data,
+    this.userId,
+  });
+
   @override
-  String toString() {
-    return "{ channelName: $channelName, eventName: $eventName, data: $data, userId: $userId }";
-  }
+  String toString() =>
+      '{ channelName: $channelName, eventName: $eventName, data: $data, userId: $userId }';
 }
 
 class PusherMember {
   String userId;
   dynamic userInfo;
+
   PusherMember(this.userId, this.userInfo);
+
   @override
-  String toString() {
-    return "{ userId: $userId, userInfo: $userInfo }";
-  }
+  String toString() => '{ userId: $userId, userInfo: $userInfo }';
 }
 
 class PusherChannel {
@@ -38,13 +39,14 @@ class PusherChannel {
   Function(dynamic event)? onEvent;
   Function(PusherMember member)? onMemberAdded;
   Function(PusherMember member)? onMemberRemoved;
-  PusherChannel(
-      {required this.channelName,
-      this.onSubscriptionSucceeded,
-      this.onEvent,
-      this.onMemberAdded,
-      this.onMemberRemoved,
-      this.me});
+  PusherChannel({
+    required this.channelName,
+    this.onSubscriptionSucceeded,
+    this.onEvent,
+    this.onMemberAdded,
+    this.onMemberRemoved,
+    this.me,
+  });
 
   Future<void> unsubscribe() async {
     return PusherChannelsFlutter.getInstance()
