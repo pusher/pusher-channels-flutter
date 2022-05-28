@@ -10,5 +10,5 @@ typedef AuthTransport = void Function(
 // @anonymous
 // @JS()
 // abstract class AuthTransports {
-  
+
 // }

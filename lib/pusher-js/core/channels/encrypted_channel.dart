@@ -1,7 +1,6 @@
 @JS()
 library core.channels.encrypted_channel;
 
-
 import "package:js/js.dart";
 import "dart:typed_data";
 import "private_channel.dart" show PrivateChannel;
@@ -33,5 +32,3 @@ class EncryptedChannel extends PrivateChannel {
   /// return the utf-8 string
   external String getDataToEmit(Uint8List bytes);
 }
-
-
