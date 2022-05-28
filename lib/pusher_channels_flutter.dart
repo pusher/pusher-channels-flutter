@@ -195,8 +195,8 @@ class PusherChannelsFlutter {
         return Future.value(null);
       case 'onMemberAdded':
         var member = PusherMember(user["userId"], user["userInfo"]);
-        onMemberAdded?.call(channelName!, member);
         channels[channelName]?.members[member.userId] = member;
+        onMemberAdded?.call(channelName!, member);
         channels[channelName]?.onMemberAdded?.call(member);
         return Future.value(null);
       case 'onMemberRemoved':
