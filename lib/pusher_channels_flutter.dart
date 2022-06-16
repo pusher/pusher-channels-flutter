@@ -32,7 +32,7 @@ class PusherMember {
 
 class PusherChannel {
   String channelName;
-  Set<PusherMember> members = {};
+  Map<String, PusherMember> members = {};
   PusherMember? me;
 
   Function(dynamic data)? onSubscriptionSucceeded;
@@ -166,7 +166,7 @@ class PusherChannelsFlutter {
             var decodedData = data is Map ? data : jsonDecode(data);
             decodedData?["presence"]?["hash"]?.forEach((_userId, userInfo) {
               var member = PusherMember(_userId, userInfo);
-              channels[channelName]?.members.add(member);
+              channels[channelName]?.members[_userId] = member;
               if (_userId == userId) {
                 channels[channelName]?.me = member;
               }
@@ -195,12 +195,13 @@ class PusherChannelsFlutter {
         return Future.value(null);
       case 'onMemberAdded':
         var member = PusherMember(user["userId"], user["userInfo"]);
+        channels[channelName]?.members[member.userId] = member;
         onMemberAdded?.call(channelName!, member);
-        channels[channelName]?.members.add(member);
         channels[channelName]?.onMemberAdded?.call(member);
         return Future.value(null);
       case 'onMemberRemoved':
         var member = PusherMember(user["userId"], user["userInfo"]);
+        channels[channelName]?.members.remove(member.userId);
         onMemberRemoved?.call(channelName!, member);
         channels[channelName]?.onMemberRemoved?.call(member);
         return Future.value(null);
