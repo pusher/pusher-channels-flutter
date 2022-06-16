@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.1.0
+## 2.0.0
 
 * [BREAKING CHANGE] Convert channel member to Map (instead of Set)
 * [FIXED] Add internal member before calling onMemberAdded callback on channel
