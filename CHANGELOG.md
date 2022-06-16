@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.0
+
+* [BREAKING CHANGE] Convert channel member to Map (instead of Set)
+* [FIXED] Add internal member before calling onMemberAdded callback on channel
+* [FIXED] onAuthorizer() doesn't work in Flutter web profile/release mode
+
 ## 1.0.5
 
 * [FIXED] Android: Subscribing to private channels

@@ -1,6 +1,6 @@
 name: pusher_channels_flutter
 description: Pusher Channels Flutter Plugin
-version: 1.0.5
+version: 1.1.0
 homepage: https://github.com/pusher/pusher-channels-flutter
 repository: https://github.com/pusher/pusher-channels-flutter
 issue_tracker: https://github.com/pusher/pusher-channels-flutter/issues
