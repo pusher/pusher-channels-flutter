@@ -43,22 +43,22 @@ a minimal application to connect to a channel and send events.
     - [Web specific installation](#web-specific-installation)
   - [Initialization](#initialization)
   - [Configuration](#configuration)
-    - [`activityTimeout (double)`](#activitytimeout-double)
-    - [`apiKey (String)`](#apikey-string)
-    - [`authParams (Map)`](#authparams-map)
-    - [`authEndpoint (String)`](#authendpoint-string)
-    - [`cluster (String)`](#cluster-string)
-    - [`useTLS (bool)`](#usetls-bool)
+      - [`activityTimeout (double)`](#activitytimeout-double)
+      - [`apiKey (String)`](#apikey-string)
+      - [`authParams (Map)`](#authparams-map)
+      - [`authEndpoint (String)`](#authendpoint-string)
+      - [`cluster (String)`](#cluster-string)
+      - [`useTLS (bool)`](#usetls-bool)
   - [Event Callback parameters](#event-callback-parameters)
-    - [`onEvent`](#onevent)
-    - [`onSubscriptionSucceeded`](#onsubscriptionsucceeded)
-    - [`onSubscriptionError`](#onsubscriptionerror)
-    - [`onDecryptionFailure`](#ondecryptionfailure)
-    - [`onMemberAdded`](#onmemberadded)
-    - [`onMemberRemoved`](#onmemberremoved)
-    - [`onAuthorizer`](#onauthorizer)
-    - [`onConnectionStateChange`](#onconnectionstatechange)
-    - [`onError`](#onerror)
+      - [`onEvent`](#onevent)
+      - [`onSubscriptionSucceeded`](#onsubscriptionsucceeded)
+      - [`onSubscriptionError`](#onsubscriptionerror)
+      - [`onDecryptionFailure`](#ondecryptionfailure)
+      - [`onMemberAdded`](#onmemberadded)
+      - [`onMemberRemoved`](#onmemberremoved)
+      - [`onAuthorizer`](#onauthorizer)
+      - [`onConnectionStateChange`](#onconnectionstatechange)
+      - [`onError`](#onerror)
   - [Connection handling](#connection-handling)
     - [Connecting](#connecting)
     - [Disconnecting](#disconnecting)
@@ -77,6 +77,7 @@ a minimal application to connect to a channel and send events.
       - [Parsing event data](#parsing-event-data)
     - [Receiving errors](#receiving-errors)
   - [Triggering events](#triggering-events)
+  - [Get a channel by name](#get-a-channel-by-name)
   - [Socket information](#socket-information)
   - [Communication](#communication)
   - [Credits](#credits)
@@ -199,8 +200,8 @@ await pusher.init(
   apiKey: API_KEY,
   cluster: API_CLUSTER,
   authParams: {
-    params: { foo: 'bar' },
-    headers: { baz: 'boo' }
+    'params': { 'foo': 'bar' },
+    'headers': { 'baz': 'boo' }
   }
 });
 ```
@@ -216,8 +217,8 @@ final pusher = await pusher.init(
   apiKey: API_KEY,
   cluster: API_CLUSTER,
   authParams: {
-    params: { foo: 'bar' },
-    headers: { 'X-CSRF-Token': 'SOME_CSRF_TOKEN' }
+    'params': { 'foo': 'bar' },
+    'headers': { 'X-CSRF-Token': 'SOME_CSRF_TOKEN' }
   }
 );
 ```
