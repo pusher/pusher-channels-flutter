@@ -10,6 +10,7 @@ import "../auth/options.dart" show AuthorizerCallback;
 @JS()
 class PrivateChannel extends Channel {
   external factory PrivateChannel(String name, Pusher pusher);
+
   /// Authorizes the connection to use the channel.
   @override
   external authorize(String socketId, AuthorizerCallback callback);

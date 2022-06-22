@@ -9,11 +9,22 @@ import "../channels/channel.dart" show Channel;
 @anonymous
 @JS()
 abstract class AuthOptions {
-  external dynamic get params;
-  external set params(dynamic v);
-  external dynamic get headers;
-  external set headers(dynamic v);
-  external factory AuthOptions({dynamic params, dynamic headers});
+  external Map<String, dynamic> get params;
+  external set params(Map<String, dynamic> v);
+  external Map<String, dynamic> get headers;
+  external set headers(Map<String, dynamic> v);
+
+  external factory AuthOptions({
+    Map<String, dynamic> params,
+    Map<String, dynamic> headers,
+  });
+}
+
+extension AuthOptionsExt on AuthOptions {
+  Map<String, dynamic> toMap() => {
+        'params': params,
+        'headers': headers,
+      };
 }
 
 @anonymous
@@ -21,20 +32,30 @@ abstract class AuthOptions {
 abstract class AuthData {
   external String get auth;
   external set auth(String v);
-  external String get channel_data;
-  external set channel_data(String v);
-  external String get shared_secret;
-  external set shared_secret(String v);
-  external factory AuthData(
-      {String auth, String? channel_data, String? shared_secret});
+  external String? get channel_data;
+  external set channel_data(String? v);
+  external String? get shared_secret;
+  external set shared_secret(String? v);
+
+  external factory AuthData({
+    String auth,
+    String? channel_data,
+    String? shared_secret,
+  });
 }
 
 typedef AuthorizerCallback = void Function(Error? error, AuthData authData);
 
+typedef AuthorizeFunc = void Function(
+    String socketId, AuthorizerCallback callback);
+
 @anonymous
 @JS()
 abstract class Authorizer {
-  external void authorize(String socketId, AuthorizerCallback callback);
+  external set authorize(AuthorizeFunc v);
+  external AuthorizeFunc get authorize;
+
+  external factory Authorizer({AuthorizeFunc authorize});
 }
 
 typedef AuthorizerGenerator = Authorizer Function(
@@ -47,13 +68,22 @@ abstract class AuthorizerOptions {
   external set authTransport(String /*'ajax'|'jsonp'*/ v);
   external String get authEndpoint;
   external set authEndpoint(String v);
-  external AuthOptions get auth;
-  external set auth(AuthOptions v);
-  external AuthorizerGenerator get authorizer;
-  external set authorizer(AuthorizerGenerator v);
-  external factory AuthorizerOptions(
-      {String /*'ajax'|'jsonp'*/ authTransport,
-      String authEndpoint,
-      AuthOptions auth,
-      AuthorizerGenerator authorizer});
+  external AuthOptions? get auth;
+  external set auth(AuthOptions? v);
+  external AuthorizerGenerator? get authorizer;
+  external set authorizer(AuthorizerGenerator? v);
+  external factory AuthorizerOptions({
+    String /*'ajax'|'jsonp'*/ authTransport,
+    String authEndpoint,
+    AuthOptions? auth,
+    AuthorizerGenerator? authorizer,
+  });
+}
+
+extension AuthorizerOptionsExt on AuthorizerOptions {
+  Map<String, dynamic> toMap() => {
+        'authTransport': authTransport,
+        'authEndpoint': authEndpoint,
+        'auth': auth,
+      };
 }

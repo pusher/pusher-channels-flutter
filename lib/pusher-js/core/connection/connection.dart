@@ -49,7 +49,6 @@ class Connection extends Dispatcher implements Socket {
   external bindListeners();
   external handleCloseEvent(dynamic closeEvent);
 
-
   @override
   external bool sendRaw(dynamic payload);
   @override

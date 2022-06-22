@@ -7,7 +7,7 @@ import 'dart:html';
 
 import "package:js/js.dart";
 import 'package:pusher_channels_flutter/pusher-js/runtimes/web/dom/script_receiver_factory.dart';
-import "../core/auth/auth_transports.dart" show AuthTransports;
+import "../core/auth/auth_transports.dart" show AuthTransport;
 import "../core/timeline/timeline_transport.dart" show TimelineTransport;
 import "../core/http/ajax.dart" show Ajax;
 import "../core/socket.dart" show Socket;
@@ -36,7 +36,7 @@ abstract class Runtime {
   }*/
           PusherClass);
   external String getProtocol();
-  external AuthTransports getAuthorizers();
+  external Map<String, AuthTransport> getAuthorizers();
   external dynamic getLocalStorage();
   external TimelineTransport timelineTransport;
   //external set TimelineTransport(TimelineTransport v);
@@ -68,4 +68,3 @@ abstract class Runtime {
 }
 
 /* WARNING: export assignment not yet supported. */
-

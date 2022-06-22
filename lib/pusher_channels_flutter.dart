@@ -8,43 +8,45 @@ class PusherEvent {
   String eventName;
   dynamic data;
   String? userId;
-  PusherEvent(
-      {required this.channelName,
-      required this.eventName,
-      this.data,
-      this.userId});
+  PusherEvent({
+    required this.channelName,
+    required this.eventName,
+    this.data,
+    this.userId,
+  });
+
   @override
-  String toString() {
-    return "{ channelName: $channelName, eventName: $eventName, data: $data, userId: $userId }";
-  }
+  String toString() =>
+      '{ channelName: $channelName, eventName: $eventName, data: $data, userId: $userId }';
 }
 
 class PusherMember {
   String userId;
   dynamic userInfo;
+
   PusherMember(this.userId, this.userInfo);
+
   @override
-  String toString() {
-    return "{ userId: $userId, userInfo: $userInfo }";
-  }
+  String toString() => '{ userId: $userId, userInfo: $userInfo }';
 }
 
 class PusherChannel {
   String channelName;
-  Set<PusherMember> members = {};
+  Map<String, PusherMember> members = {};
   PusherMember? me;
 
   Function(dynamic data)? onSubscriptionSucceeded;
   Function(dynamic event)? onEvent;
   Function(PusherMember member)? onMemberAdded;
   Function(PusherMember member)? onMemberRemoved;
-  PusherChannel(
-      {required this.channelName,
-      this.onSubscriptionSucceeded,
-      this.onEvent,
-      this.onMemberAdded,
-      this.onMemberRemoved,
-      this.me});
+  PusherChannel({
+    required this.channelName,
+    this.onSubscriptionSucceeded,
+    this.onEvent,
+    this.onMemberAdded,
+    this.onMemberRemoved,
+    this.me,
+  });
 
   Future<void> unsubscribe() async {
     return PusherChannelsFlutter.getInstance()
@@ -164,7 +166,7 @@ class PusherChannelsFlutter {
             var decodedData = data is Map ? data : jsonDecode(data);
             decodedData?["presence"]?["hash"]?.forEach((_userId, userInfo) {
               var member = PusherMember(_userId, userInfo);
-              channels[channelName]?.members.add(member);
+              channels[channelName]?.members[_userId] = member;
               if (_userId == userId) {
                 channels[channelName]?.me = member;
               }
@@ -193,12 +195,13 @@ class PusherChannelsFlutter {
         return Future.value(null);
       case 'onMemberAdded':
         var member = PusherMember(user["userId"], user["userInfo"]);
+        channels[channelName]?.members[member.userId] = member;
         onMemberAdded?.call(channelName!, member);
-        channels[channelName]?.members.add(member);
         channels[channelName]?.onMemberAdded?.call(member);
         return Future.value(null);
       case 'onMemberRemoved':
         var member = PusherMember(user["userId"], user["userInfo"]);
+        channels[channelName]?.members.remove(member.userId);
         onMemberRemoved?.call(channelName!, member);
         channels[channelName]?.onMemberRemoved?.call(member);
         return Future.value(null);

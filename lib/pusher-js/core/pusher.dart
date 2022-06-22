@@ -58,7 +58,7 @@ class Pusher {
 //  external PeriodicTimer get timelineSenderTimer;
 //  external set timelineSenderTimer(PeriodicTimer v);
   external factory Pusher(String app_key, [Options options]);
-  external Channel channel(String name);
+  external Channel? channel(String name);
   external List<Channel> allChannels();
   external connect();
   external disconnect();
