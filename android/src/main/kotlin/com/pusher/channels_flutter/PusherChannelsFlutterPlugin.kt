@@ -10,6 +10,7 @@ import com.pusher.client.connection.ConnectionState
 import com.pusher.client.connection.ConnectionStateChange
 import com.pusher.client.util.HttpAuthorizer
 import io.flutter.Log
+import android.app.Activity
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
