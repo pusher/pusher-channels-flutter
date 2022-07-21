@@ -10,7 +10,7 @@ import com.pusher.client.connection.ConnectionState
 import com.pusher.client.connection.ConnectionStateChange
 import com.pusher.client.util.HttpAuthorizer
 import io.flutter.Log
-import io.flutter.embedding.android.FlutterActivity
+import android.app.Activity
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -26,7 +26,7 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     ConnectionEventListener, ChannelEventListener, SubscriptionEventListener,
     PrivateChannelEventListener, PrivateEncryptedChannelEventListener, PresenceChannelEventListener,
     Authorizer {
-    private var activity: FlutterActivity? = null
+    private var activity: Activity? = null
     private lateinit var methodChannel: MethodChannel
     private var pusher: Pusher? = null
     private val TAG = "PusherChannelsFlutter"
@@ -41,11 +41,11 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
-        activity = binding.activity as FlutterActivity
+        activity = binding.activity as Activity
     }
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
-        activity = binding.activity as FlutterActivity
+        activity = binding.activity as Activity
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
