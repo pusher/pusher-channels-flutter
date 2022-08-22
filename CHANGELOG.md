@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.1
+* [FIXED] Change `getSocketId` function to return a `Future<String>`
+* [FIXED] Replace `FlutterActivity` with general Activity
+* [FIXED] Compilation errors on Example App
+
 ## 2.0.0
 
 * [BREAKING CHANGE] Convert channel member to Map (instead of Set)
