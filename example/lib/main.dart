@@ -218,10 +218,9 @@ class _MyAppState extends State<MyApp> {
                               .channels[_channelName.text]?.members.length,
                           itemBuilder: (context, index) {
                             final member = pusher
-                                .channels[_channelName.text]!.members
-                                .elementAt(index);
+                                .channels[_channelName.text]!.members[index];
                             return ListTile(
-                                title: Text(member.userInfo.toString()),
+                                title: Text(member!.userInfo.toString()),
                                 subtitle: Text(member.userId));
                           }),
                       TextFormField(
