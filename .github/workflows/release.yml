@@ -37,7 +37,7 @@ jobs:
           format: true
           skipTests: true
           flutter: true
-          dryRunOnly: true
+          dryRunOnly: false
           accessToken: ${{ secrets.OAUTH_ACCESS_TOKEN }}
           refreshToken: ${{ secrets.OAUTH_REFRESH_TOKEN }}
 
