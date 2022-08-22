@@ -258,8 +258,8 @@ class PusherChannelsFlutter {
     }
   }
 
-  Future<void> getSocketId() async {
-    await methodChannel.invokeMethod('getSocketId');
+  Future<String> getSocketId() async {
+    return (await methodChannel.invokeMethod('getSocketId')).toString();
   }
 
   PusherChannel? getChannel(String channelName) {
