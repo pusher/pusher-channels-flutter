@@ -1,0 +1,34 @@
+name: Prepare release
+
+on:
+  pull_request:
+    types: [ labeled ]
+    branches:
+      - master
+
+jobs:
+  prepare-release:
+    name: Prepare release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get current version
+        run: |
+          CURRENT_VERSION=$(yq '.version' pubspec.yaml)
+          echo "CURRENT_VERSION=$CURRENT_VERSION" >> $GITHUB_ENV
+      - uses: actions/checkout@v2
+        with:
+          repository: pusher/public_actions
+          token: ${{ secrets.PUSHER_CI_GITHUB_PRIVATE_TOKEN }}
+          path: .github/actions
+      - uses: ./.github/actions/prepare-version-bump
+        id: bump
+        with:
+          current_version: ${{ env.CURRENT_VERSION }}
+      - name: Push
+        shell: bash
+        run: |
+          echo "$(yq '.version = "${{ steps.bump.outputs.new_version }}"' pubspec.yaml)" > pubspec.yaml 
+          git add pubspec.yaml CHANGELOG.md
+          git commit -m "Bump to version ${{ steps.bump.outputs.new_version }}"
+          git push
