@@ -2,7 +2,6 @@
 library pusher_channels_flutter;
 
 import 'dart:async';
-import 'dart:convert';
 import 'package:js/js.dart';
 import 'package:js/js_util.dart' as js_util;
 // In order to *not* need this ignore, consider extracting the 'web' version
