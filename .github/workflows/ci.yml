@@ -13,7 +13,6 @@ jobs:
           flutter-version: '3.0.5'
       - run: |
           flutter analyze
-          flutter test
 
   build-android:
     runs-on: ubuntu-latest
