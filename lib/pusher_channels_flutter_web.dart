@@ -128,7 +128,6 @@ class PusherChannelsFlutterWeb {
     final Map<String, dynamic> data = msg['data'] ?? {};
     String? userId = data['user_id'];
     final Map<String, dynamic>? userInfo = data['user_info'];
-    print('onMessage: ${jsonEncode(msg)}');
 
     if (event == 'pusher_internal:subscription_error') {
       methodChannel!.invokeMethod(
