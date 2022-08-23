@@ -4,7 +4,7 @@ include: package:flutter_lints/flutter.yaml
 # https://dart.dev/guides/language/analysis-options
 
 analyzer:
-  exclude: [lib/pusher-js]
+  exclude: [lib/pusher-js, example/**]
 
 linter:
   # The lint rules applied to this project can be customized in the
