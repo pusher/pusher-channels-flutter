@@ -46,6 +46,7 @@ jobs:
     - run: |
         flutter pub get
         flutter build ios --release --no-codesign
+
   build-web:
     runs-on: ubuntu-latest
     needs: analyze
