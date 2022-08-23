@@ -1,6 +1,6 @@
 name: pusher_channels_flutter
 description: Pusher Channels Flutter Plugin
-version: 2.0.1
+version: 2.1.0
 homepage: https://github.com/pusher/pusher-channels-flutter
 repository: https://github.com/pusher/pusher-channels-flutter
 issue_tracker: https://github.com/pusher/pusher-channels-flutter/issues
@@ -47,7 +47,6 @@ flutter:
 #
 # An image asset can refer to one or more resolution-specific "variants", see
 # https://flutter.dev/assets-and-images/#resolution-aware.
-
 # To add custom fonts to your plugin package, add a fonts section here,
 # in this "flutter" section. Each entry in this list should have a
 # "family" key with the font family name, and a "fonts" key with a

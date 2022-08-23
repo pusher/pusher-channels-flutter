@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.0
+
+* [CHANGED] Testing.
+
 ## 2.0.1
 * [FIXED] Change `getSocketId` function to return a `Future<String>`
 * [FIXED] Replace `FlutterActivity` with general Activity
