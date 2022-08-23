@@ -34,6 +34,7 @@ jobs:
           flutter pub get
           flutter build apk
           flutter build appbundle
+
   build-ios:
     runs-on: macos-latest
     needs: analyze
@@ -43,6 +44,7 @@ jobs:
         with:
           channel: 'stable'
           architecture: x64
+      - name: build ios
       - run: |
           flutter pub get
           flutter build ios --release --no-codesign
@@ -55,6 +57,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
+      - name: build web
       - run: |
           flutter pub get
           flutter build web
