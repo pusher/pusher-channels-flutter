@@ -12,6 +12,7 @@ jobs:
         with:
           flutter-version: '3.0.5'
       - run: |
+          flutter pub get
           flutter analyze
 
   build-android:
