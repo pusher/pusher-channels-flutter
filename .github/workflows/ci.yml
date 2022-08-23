@@ -38,14 +38,14 @@ jobs:
     runs-on: macos-latest
     needs: analyze
     steps:
-    - uses: actions/checkout@v3
-    - uses: subosito/flutter-action@v2
-      with:
-        channel: 'stable'
-        architecture: x64
-    - run: |
-        flutter pub get
-        flutter build ios --release --no-codesign
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          architecture: x64
+      - run: |
+          flutter pub get
+          flutter build ios --release --no-codesign
 
   build-web:
     runs-on: ubuntu-latest
