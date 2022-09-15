@@ -144,7 +144,6 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
                 channelName, this
             )
             channelName.startsWith("private-") -> pusher!!.subscribePrivate(channelName, this)
-            
             channelName.startsWith("presence-") -> pusher!!.subscribePresence(
                 channelName, this
             )
