@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.2
+
+* [FIXED] Fix private-encrypted channels subscriptions
+
 ## 2.0.1
 * [FIXED] Change `getSocketId` function to return a `Future<String>`
 * [FIXED] Replace `FlutterActivity` with general Activity
