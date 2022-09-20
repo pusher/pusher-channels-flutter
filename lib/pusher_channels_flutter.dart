@@ -170,10 +170,10 @@ class PusherChannelsFlutter {
           case 'pusher_internal:subscription_succeeded':
             // Depending on the platform implementation we get json or a Map.
             var decodedData = data is Map ? data : jsonDecode(data);
-            decodedData?["presence"]?["hash"]?.forEach((_userId, userInfo) {
-              var member = PusherMember(_userId, userInfo);
-              channels[channelName]?.members[_userId] = member;
-              if (_userId == userId) {
+            decodedData?["presence"]?["hash"]?.forEach((userId_, userInfo) {
+              var member = PusherMember(userId_, userInfo);
+              channels[channelName]?.members[userId_] = member;
+              if (userId_ == userId) {
                 channels[channelName]?.me = member;
               }
             });
