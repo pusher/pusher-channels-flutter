@@ -140,10 +140,10 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
 
     private fun subscribe(channelName: String, result: Result) {
         val channel = when {
-            channelName.startsWith("private-") -> pusher!!.subscribePrivate(channelName, this)
             channelName.startsWith("private-encrypted-") -> pusher!!.subscribePrivateEncrypted(
                 channelName, this
             )
+            channelName.startsWith("private-") -> pusher!!.subscribePrivate(channelName, this)
             channelName.startsWith("presence-") -> pusher!!.subscribePresence(
                 channelName, this
             )
@@ -160,9 +160,9 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
 
     private fun trigger(channelName: String, eventName: String, data: String, result: Result) {
         when {
+            channelName.startsWith("private-encrypted-") -> throw Exception("It's not currently possible to send a message using private encrypted channels.")
             channelName.startsWith("private-") -> pusher!!.getPrivateChannel(channelName)
                 .trigger(eventName, data)
-            channelName.startsWith("private-encrypted-") -> throw Exception("It's not currently possible to send a message using private encrypted channels.")
             channelName.startsWith("presence-") -> pusher!!.getPresenceChannel(channelName)
                 .trigger(eventName, data)
             else -> throw Exception("Messages can only be sent to private and presence channels.")

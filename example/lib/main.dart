@@ -218,8 +218,9 @@ class _MyAppState extends State<MyApp> {
                               .channels[_channelName.text]?.members.length,
                           itemBuilder: (context, index) {
                             final member = pusher
-                                .channels[_channelName.text]!.members
+                                .channels[_channelName.text]!.members.values
                                 .elementAt(index);
+
                             return ListTile(
                                 title: Text(member.userInfo.toString()),
                                 subtitle: Text(member.userId));

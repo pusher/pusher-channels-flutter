@@ -2,7 +2,6 @@
 library pusher_channels_flutter;
 
 import 'dart:async';
-import 'dart:convert';
 import 'package:js/js.dart';
 import 'package:js/js_util.dart' as js_util;
 // In order to *not* need this ignore, consider extracting the 'web' version
@@ -128,7 +127,6 @@ class PusherChannelsFlutterWeb {
     final Map<String, dynamic> data = msg['data'] ?? {};
     String? userId = data['user_id'];
     final Map<String, dynamic>? userInfo = data['user_info'];
-    print('onMessage: ${jsonEncode(msg)}');
 
     if (event == 'pusher_internal:subscription_error') {
       methodChannel!.invokeMethod(
