@@ -89,7 +89,7 @@ class PusherChannelsFlutterWeb {
         trigger(call);
         break;
       case 'getSocketId':
-        return pusher!.connection.socketId;
+        return pusher!.connection.socket_id;
       default:
         throw PlatformException(
           code: 'Unimplemented',
