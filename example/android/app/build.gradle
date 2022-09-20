@@ -42,7 +42,6 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.pusher.channels_flutter_example"
         minSdkVersion 16
         targetSdkVersion 31
