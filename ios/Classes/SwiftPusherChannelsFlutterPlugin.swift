@@ -6,6 +6,7 @@ import UIKit
 public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDelegate, Authorizer {
   private var pusher: Pusher!
   public var methodChannel: FlutterMethodChannel!
+  private var channels: [String] = []
 
   public static func register(with registrar: FlutterPluginRegistrar) {
     let instance = SwiftPusherChannelsFlutterPlugin()
@@ -35,7 +36,13 @@ public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDe
   }
 
   func initChannels(call: FlutterMethodCall, result: @escaping FlutterResult) {
-    if pusher == nil {
+    if pusher != nil {
+         for channel in channels {
+          pusher!.unsubscribe(channel)
+      }
+      channels.removeAll()
+      pusher!.disconnect()
+    }
       let args = call.arguments as! [String: Any]
       var authMethod: AuthMethod = .noMethod
       if args["authEndpoint"] is String {
@@ -94,7 +101,6 @@ public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDe
       pusher.connection.delegate = self
       pusher.bind(eventCallback: onEvent)
       result(nil)
-    }
   }
 
   public func fetchAuthValue(socketID: String, channelName: String, completionHandler: @escaping (PusherAuth?) -> Void) {
@@ -193,6 +199,9 @@ public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDe
   func subscribe(call: FlutterMethodCall, result: @escaping FlutterResult) {
     let args = call.arguments as! [String: String]
     let channelName: String = args["channelName"]!
+    if(channels.firstIndex(of: channelName) == nil) {
+      channels.append(channelName)
+    }
     if channelName.hasPrefix("presence-") {
       let onMemberAdded: (PusherPresenceChannelMember) -> Void = { user in
         self.methodChannel.invokeMethod("onMemberAdded", arguments: [
@@ -234,6 +243,10 @@ public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDe
     let args = call.arguments as! [String: String]
     let channelName: String = args["channelName"]!
     pusher.unsubscribe(channelName)
+    var index: Int? = channels.firstIndex(of: channelName)
+    if(index != nil) {
+       channels.remove(at: index!)
+    }
     result(nil)
   }
 
