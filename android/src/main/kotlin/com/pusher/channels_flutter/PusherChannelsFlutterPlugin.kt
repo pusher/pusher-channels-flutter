@@ -30,6 +30,7 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     private lateinit var methodChannel: MethodChannel
     private var pusher: Pusher? = null
     private val TAG = "PusherChannelsFlutter"
+    private val channels = mutableListOf<String>();
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         methodChannel =
@@ -97,7 +98,11 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
         result: Result
     ) {
         try {
-            if (pusher == null) {
+            if (pusher != null) {
+                channels.forEach { channel -> pusher!!.unsubscribe(channel) }
+                channels.clear()
+                pusher!!.disconnect()
+            }
                 val options = PusherOptions()
                 if (call.argument<String>("cluster") != null) options.setCluster(call.argument("cluster"))
                 if (call.argument<Boolean>("useTLS") != null) options.isUseTLS =
@@ -118,9 +123,6 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
                     options.proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(host, port.toInt()))
                 }
                 pusher = Pusher(call.argument("apiKey"), options)
-            } else {
-                throw Exception("Pusher Channels already initialized.")
-            }
             Log.i(TAG, "Start $pusher")
             result.success(null)
         } catch (e: Exception) {
@@ -149,12 +151,14 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
             )
             else -> pusher!!.subscribe(channelName, this)
         }
+        if (!channels.contains(channelName)) channels.add(channelName)
         channel.bindGlobal(this)
         result.success(null)
     }
 
     private fun unsubscribe(channelName: String, result: Result) {
         pusher!!.unsubscribe(channelName)
+        channels.remove(channelName)
         result.success(null)
     }
 
