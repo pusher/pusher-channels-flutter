@@ -220,7 +220,7 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
             callback(
                 "onEvent", mapOf(
                     "channelName" to channelName,
-                    "eventName" to "pusher_internal:subscription_succeeded",
+                    "eventName" to "pusher:subscription_succeeded",
                     "data" to emptyMap<String,String>()
                 )
             )
@@ -229,25 +229,12 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
 
     override fun onEvent(event: PusherEvent) {
         // Log.i(TAG, "Received event with data: $event")
-
-        // The java sdk transforms some events from pusher_internal
-        // to pusher:... events, we translate them back.
-        val finalEvent = if (event.eventName === "pusher:subscription_count") {
-            PusherEvent(
-                "pusher_internal:subscription_count",
-                event.channelName,
-                event.userId,
-                event.data)
-        } else {
-            event
-        }
-
         callback(
             "onEvent", mapOf(
-                "channelName" to finalEvent.channelName,
-                "eventName" to finalEvent.eventName,
-                "userId" to finalEvent.userId,
-                "data" to finalEvent.data
+                "channelName" to event.channelName,
+                "eventName" to event.eventName,
+                "userId" to event.userId,
+                "data" to event.data
             )
         )
     }
@@ -281,7 +268,7 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
         callback(
             "onEvent", mapOf(
                 "channelName" to channelName,
-                "eventName" to "pusher_internal:subscription_succeeded",
+                "eventName" to "pusher:subscription_succeeded",
                 "userId" to channel.me.id,
                 "data" to data
             )

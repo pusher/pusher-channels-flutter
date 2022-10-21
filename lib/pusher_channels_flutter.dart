@@ -167,6 +167,7 @@ class PusherChannelsFlutter {
         return Future.value(null);
       case 'onEvent':
         switch (eventName) {
+          case 'pusher:subscription_succeeded':
           case 'pusher_internal:subscription_succeeded':
             // Depending on the platform implementation we get json or a Map.
             var decodedData = data is Map ? data : jsonDecode(data);
@@ -180,7 +181,7 @@ class PusherChannelsFlutter {
             onSubscriptionSucceeded?.call(channelName!, decodedData);
             channels[channelName]?.onSubscriptionSucceeded?.call(decodedData);
             break;
-
+          case 'pusher:subscription_count':
           case 'pusher_internal:subscription_count':
             // Depending on the platform implementation we get json or a Map.
             var decodedData = data is Map ? data : jsonDecode(data);
@@ -189,16 +190,14 @@ class PusherChannelsFlutter {
             onSubscriptionCount?.call(channelName!, subscriptionCount);
             channels[channelName]?.onSubscriptionCount?.call(subscriptionCount);
             break;
-          default:
-            final event = PusherEvent(
-                channelName: channelName!,
-                eventName: eventName!,
-                data: data,
-                userId: call.arguments['userId']);
-            onEvent?.call(event);
-            channels[channelName]?.onEvent?.call(event);
-            break;
         }
+        final event = PusherEvent(
+            channelName: channelName!,
+            eventName: eventName!.replaceFirst("pusher_internal", "pusher"),
+            data: data,
+            userId: call.arguments['userId']);
+        onEvent?.call(event);
+        channels[channelName]?.onEvent?.call(event);
         return Future.value(null);
       case 'onSubscriptionError':
         onSubscriptionError?.call(

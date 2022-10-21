@@ -175,17 +175,15 @@ public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDe
 
   func onEvent(event: PusherEvent) {
     var userId: String?
-    var mappedEventName: String?
     if event.eventName == "pusher:subscription_succeeded" {
       if let channel = pusher.connection.channels.findPresence(name: event.channelName!) {
         userId = channel.myId
       }
-      mappedEventName = "pusher_internal:subscription_succeeded"
     }
     methodChannel.invokeMethod(
       "onEvent", arguments: [
         "channelName": event.channelName,
-        "eventName": mappedEventName ?? event.eventName,
+        "eventName": event.eventName,
         "userId": event.userId ?? userId,
         "data": event.data,
       ]
@@ -218,7 +216,7 @@ public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDe
         self.methodChannel.invokeMethod(
           "onEvent", arguments: [
             "channelName": channelName,
-            "eventName": "pusher_internal:subscription_count",
+            "eventName": "pusher:subscription_count",
             "userId": nil,
             "data": [
               "subscription_count": subscriptionCount,
