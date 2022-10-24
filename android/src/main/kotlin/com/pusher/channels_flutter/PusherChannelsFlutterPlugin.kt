@@ -1,14 +1,14 @@
 package com.pusher.channels_flutter
 
 import com.google.gson.Gson
-import com.pusher.client.Authorizer
+import com.pusher.client.ChannelAuthorizer
 import com.pusher.client.Pusher
 import com.pusher.client.PusherOptions
 import com.pusher.client.channel.*
 import com.pusher.client.connection.ConnectionEventListener
 import com.pusher.client.connection.ConnectionState
 import com.pusher.client.connection.ConnectionStateChange
-import com.pusher.client.util.HttpAuthorizer
+import com.pusher.client.util.HttpChannelAuthorizer
 import io.flutter.Log
 import android.app.Activity
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -25,7 +25,7 @@ import java.util.concurrent.Semaphore
 class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     ConnectionEventListener, ChannelEventListener, SubscriptionEventListener,
     PrivateChannelEventListener, PrivateEncryptedChannelEventListener, PresenceChannelEventListener,
-    Authorizer {
+    ChannelAuthorizer {
     private var activity: Activity? = null
     private lateinit var methodChannel: MethodChannel
     private var pusher: Pusher? = null
@@ -41,11 +41,11 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
-        activity = binding.activity as Activity
+        activity = binding.activity
     }
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
-        activity = binding.activity as Activity
+        activity = binding.activity
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
@@ -110,9 +110,9 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
                     call.argument("maxReconnectionAttempts")!!
                 if (call.argument<Int>("maxReconnectGapInSeconds") != null) options.maxReconnectGapInSeconds =
                     call.argument("maxReconnectGapInSeconds")!!
-                if (call.argument<String>("authEndpoint") != null) options.authorizer =
-                    HttpAuthorizer(call.argument("authEndpoint"))
-                if (call.argument<String>("authorizer") != null) options.authorizer = this
+                if (call.argument<String>("authEndpoint") != null) options.channelAuthorizer =
+                    HttpChannelAuthorizer(call.argument("authEndpoint"))
+                if (call.argument<String>("authorizer") != null) options.channelAuthorizer = this
                 if (call.argument<String>("proxy") != null) {
                     val (host, port) = call.argument<String>("proxy")!!.split(':')
                     options.proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(host, port.toInt()))
@@ -220,7 +220,7 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
             callback(
                 "onEvent", mapOf(
                     "channelName" to channelName,
-                    "eventName" to "pusher_internal:subscription_succeeded",
+                    "eventName" to "pusher:subscription_succeeded",
                     "data" to emptyMap<String,String>()
                 )
             )
@@ -268,7 +268,7 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
         callback(
             "onEvent", mapOf(
                 "channelName" to channelName,
-                "eventName" to "pusher_internal:subscription_succeeded",
+                "eventName" to "pusher:subscription_succeeded",
                 "userId" to channel.me.id,
                 "data" to data
             )

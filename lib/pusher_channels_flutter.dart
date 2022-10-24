@@ -34,17 +34,20 @@ class PusherChannel {
   String channelName;
   Map<String, PusherMember> members = {};
   PusherMember? me;
+  int subscriptionCount = 0;
 
   Function(dynamic data)? onSubscriptionSucceeded;
   Function(dynamic event)? onEvent;
   Function(PusherMember member)? onMemberAdded;
   Function(PusherMember member)? onMemberRemoved;
+  Function(int subscriptionCount)? onSubscriptionCount;
   PusherChannel({
     required this.channelName,
     this.onSubscriptionSucceeded,
     this.onEvent,
     this.onMemberAdded,
     this.onMemberRemoved,
+    this.onSubscriptionCount,
     this.me,
   });
 
@@ -76,6 +79,7 @@ class PusherChannelsFlutter {
   Function(String channelName, PusherMember member)? onMemberAdded;
   Function(String channelName, PusherMember member)? onMemberRemoved;
   Function(String channelName, String socketId, dynamic options)? onAuthorizer;
+  Function(String channelName, int subscriptionCount)? onSubscriptionCount;
 
   static PusherChannelsFlutter getInstance() {
     _instance ??= PusherChannelsFlutter();
@@ -110,6 +114,7 @@ class PusherChannelsFlutter {
     Function(String channelName, PusherMember member)? onMemberRemoved,
     Function(String channelName, String socketId, dynamic options)?
         onAuthorizer,
+    Function(String channelName, int subscriptionCount)? onSubscriptionCount,
   }) async {
     methodChannel.setMethodCallHandler(_platformCallHandler);
     this.onConnectionStateChange = onConnectionStateChange;
@@ -121,6 +126,7 @@ class PusherChannelsFlutter {
     this.onMemberAdded = onMemberAdded;
     this.onMemberRemoved = onMemberRemoved;
     this.onAuthorizer = onAuthorizer;
+    this.onSubscriptionCount = onSubscriptionCount;
     await methodChannel.invokeMethod('init', {
       "apiKey": apiKey,
       "cluster": cluster,
@@ -161,29 +167,37 @@ class PusherChannelsFlutter {
         return Future.value(null);
       case 'onEvent':
         switch (eventName) {
+          case 'pusher:subscription_succeeded':
           case 'pusher_internal:subscription_succeeded':
             // Depending on the platform implementation we get json or a Map.
             var decodedData = data is Map ? data : jsonDecode(data);
-            decodedData?["presence"]?["hash"]?.forEach((_userId, userInfo) {
-              var member = PusherMember(_userId, userInfo);
-              channels[channelName]?.members[_userId] = member;
-              if (_userId == userId) {
+            decodedData?["presence"]?["hash"]?.forEach((userId_, userInfo) {
+              var member = PusherMember(userId_, userInfo);
+              channels[channelName]?.members[userId_] = member;
+              if (userId_ == userId) {
                 channels[channelName]?.me = member;
               }
             });
             onSubscriptionSucceeded?.call(channelName!, decodedData);
             channels[channelName]?.onSubscriptionSucceeded?.call(decodedData);
             break;
-          default:
-            final event = PusherEvent(
-                channelName: channelName!,
-                eventName: eventName!,
-                data: data,
-                userId: call.arguments['userId']);
-            onEvent?.call(event);
-            channels[channelName]?.onEvent?.call(event);
+          case 'pusher:subscription_count':
+          case 'pusher_internal:subscription_count':
+            // Depending on the platform implementation we get json or a Map.
+            var decodedData = data is Map ? data : jsonDecode(data);
+            var subscriptionCount = decodedData['subscription_count'];
+            channels[channelName]?.subscriptionCount = subscriptionCount;
+            onSubscriptionCount?.call(channelName!, subscriptionCount);
+            channels[channelName]?.onSubscriptionCount?.call(subscriptionCount);
             break;
         }
+        final event = PusherEvent(
+            channelName: channelName!,
+            eventName: eventName!.replaceFirst("pusher_internal", "pusher"),
+            data: data,
+            userId: call.arguments['userId']);
+        onEvent?.call(event);
+        channels[channelName]?.onEvent?.call(event);
         return Future.value(null);
       case 'onSubscriptionError':
         onSubscriptionError?.call(
@@ -227,12 +241,14 @@ class PusherChannelsFlutter {
       var onSubscriptionError,
       var onMemberAdded,
       var onMemberRemoved,
-      var onEvent}) async {
+      var onEvent,
+      var onSubscriptionCount}) async {
     var channel = PusherChannel(
         channelName: channelName,
         onSubscriptionSucceeded: onSubscriptionSucceeded,
         onMemberAdded: onMemberAdded,
         onMemberRemoved: onMemberRemoved,
+        onSubscriptionCount: onSubscriptionCount,
         onEvent: onEvent);
     await methodChannel.invokeMethod("subscribe", {"channelName": channelName});
     channels[channelName] = channel;
