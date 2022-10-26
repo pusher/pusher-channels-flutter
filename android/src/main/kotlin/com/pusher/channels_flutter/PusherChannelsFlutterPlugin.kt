@@ -97,30 +97,29 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
         result: Result
     ) {
         try {
-            if (pusher == null) {
-                val options = PusherOptions()
-                if (call.argument<String>("cluster") != null) options.setCluster(call.argument("cluster"))
-                if (call.argument<Boolean>("useTLS") != null) options.isUseTLS =
-                    call.argument("useTLS")!!
-                if (call.argument<Long>("activityTimeout") != null) options.activityTimeout =
-                    call.argument("activityTimeout")!!
-                if (call.argument<Long>("pongTimeout") != null) options.pongTimeout =
-                    call.argument("pongTimeout")!!
-                if (call.argument<Int>("maxReconnectionAttempts") != null) options.maxReconnectionAttempts =
-                    call.argument("maxReconnectionAttempts")!!
-                if (call.argument<Int>("maxReconnectGapInSeconds") != null) options.maxReconnectGapInSeconds =
-                    call.argument("maxReconnectGapInSeconds")!!
-                if (call.argument<String>("authEndpoint") != null) options.channelAuthorizer =
-                    HttpChannelAuthorizer(call.argument("authEndpoint"))
-                if (call.argument<String>("authorizer") != null) options.channelAuthorizer = this
-                if (call.argument<String>("proxy") != null) {
-                    val (host, port) = call.argument<String>("proxy")!!.split(':')
-                    options.proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(host, port.toInt()))
-                }
-                pusher = Pusher(call.argument("apiKey"), options)
-            } else {
-                throw Exception("Pusher Channels already initialized.")
+            if (pusher != null) {
+                pusher!!.disconnect()
             }
+            val options = PusherOptions()
+            if (call.argument<String>("cluster") != null) options.setCluster(call.argument("cluster"))
+            if (call.argument<Boolean>("useTLS") != null) options.isUseTLS =
+                call.argument("useTLS")!!
+            if (call.argument<Long>("activityTimeout") != null) options.activityTimeout =
+                call.argument("activityTimeout")!!
+            if (call.argument<Long>("pongTimeout") != null) options.pongTimeout =
+                call.argument("pongTimeout")!!
+            if (call.argument<Int>("maxReconnectionAttempts") != null) options.maxReconnectionAttempts =
+                call.argument("maxReconnectionAttempts")!!
+            if (call.argument<Int>("maxReconnectGapInSeconds") != null) options.maxReconnectGapInSeconds =
+                call.argument("maxReconnectGapInSeconds")!!
+            if (call.argument<String>("authEndpoint") != null) options.channelAuthorizer =
+                HttpChannelAuthorizer(call.argument("authEndpoint"))
+            if (call.argument<String>("authorizer") != null) options.channelAuthorizer = this
+            if (call.argument<String>("proxy") != null) {
+                val (host, port) = call.argument<String>("proxy")!!.split(':')
+                options.proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(host, port.toInt()))
+            }
+            pusher = Pusher(call.argument("apiKey"), options)
             Log.i(TAG, "Start $pusher")
             result.success(null)
         } catch (e: Exception) {
