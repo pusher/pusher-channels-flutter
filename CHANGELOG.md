@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.0
+
+* [CHANGED] Allow reinitialization of the pusher singleton
+* [CHANGED] Add subscription count event handling ios/android
+* [CHANGED] Update flutter dependencies to the latest versions.
+
 ## 2.0.2
 
 * [FIXED] Fix private-encrypted channels subscriptions

@@ -35,66 +35,67 @@ public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDe
   }
 
   func initChannels(call: FlutterMethodCall, result: @escaping FlutterResult) {
-    if pusher == nil {
-      let args = call.arguments as! [String: Any]
-      var authMethod: AuthMethod = .noMethod
-      if args["authEndpoint"] is String {
-        authMethod = .endpoint(authEndpoint: args["authEndpoint"] as! String)
-      } else if args["authorizer"] is Bool {
-        authMethod = .authorizer(authorizer: self)
-      }
-      var host: PusherHost = .defaultHost
-      if args["host"] is String {
-        host = .host(args["host"] as! String)
-      } else if args["cluster"] != nil {
-        host = .cluster(args["cluster"] as! String)
-      }
-      var useTLS: Bool = true
-      if args["useTLS"] is Bool {
-        useTLS = args["useTLS"] as! Bool
-      }
-      var port: Int
-      if useTLS {
-        port = 443
-        if args["wssPort"] is Int {
-          port = args["wssPort"] as! Int
-        }
-      } else {
-        port = 80
-        if args["wsPort"] is Int {
-          port = args["wsPort"] as! Int
-        }
-      }
-      var activityTimeout: TimeInterval?
-      if args["activityTimeout"] is TimeInterval {
-        activityTimeout = args["activityTimeout"] as! Double / 1000.0
-      }
-      var path: String?
-      if args["path"] is String {
-        path = (args["path"] as! String)
-      }
-      let options = PusherClientOptions(
-        authMethod: authMethod,
-        host: host,
-        port: port,
-        path: path,
-        useTLS: useTLS,
-        activityTimeout: activityTimeout
-      )
-      pusher = Pusher(key: args["apiKey"] as! String, options: options)
-      if args["maxReconnectionAttempts"] is Int {
-        pusher.connection.reconnectAttemptsMax = (args["maxReconnectionAttempts"] as! Int)
-      }
-      if args["maxReconnectGapInSeconds"] is TimeInterval {
-        pusher.connection.maxReconnectGapInSeconds = (args["maxReconnectGapInSeconds"] as! TimeInterval)
-      }
-      if args["pongTimeout"] is Int {
-        pusher.connection.pongResponseTimeoutInterval = args["pongTimeout"] as! TimeInterval / 1000.0
-      }
-      pusher.connection.delegate = self
-      pusher.bind(eventCallback: onEvent)
-      result(nil)
+    if pusher != nil {
+        pusher.disconnect()
     }
+    let args = call.arguments as! [String: Any]
+    var authMethod: AuthMethod = .noMethod
+    if args["authEndpoint"] is String {
+      authMethod = .endpoint(authEndpoint: args["authEndpoint"] as! String)
+    } else if args["authorizer"] is Bool {
+      authMethod = .authorizer(authorizer: self)
+    }
+    var host: PusherHost = .defaultHost
+    if args["host"] is String {
+      host = .host(args["host"] as! String)
+    } else if args["cluster"] != nil {
+      host = .cluster(args["cluster"] as! String)
+    }
+    var useTLS: Bool = true
+    if args["useTLS"] is Bool {
+      useTLS = args["useTLS"] as! Bool
+    }
+    var port: Int
+    if useTLS {
+      port = 443
+      if args["wssPort"] is Int {
+        port = args["wssPort"] as! Int
+      }
+    } else {
+      port = 80
+      if args["wsPort"] is Int {
+        port = args["wsPort"] as! Int
+      }
+    }
+    var activityTimeout: TimeInterval?
+    if args["activityTimeout"] is TimeInterval {
+      activityTimeout = args["activityTimeout"] as! Double / 1000.0
+    }
+    var path: String?
+    if args["path"] is String {
+      path = (args["path"] as! String)
+    }
+    let options = PusherClientOptions(
+      authMethod: authMethod,
+      host: host,
+      port: port,
+      path: path,
+      useTLS: useTLS,
+      activityTimeout: activityTimeout
+    )
+    pusher = Pusher(key: args["apiKey"] as! String, options: options)
+    if args["maxReconnectionAttempts"] is Int {
+      pusher.connection.reconnectAttemptsMax = (args["maxReconnectionAttempts"] as! Int)
+    }
+    if args["maxReconnectGapInSeconds"] is TimeInterval {
+      pusher.connection.maxReconnectGapInSeconds = (args["maxReconnectGapInSeconds"] as! TimeInterval)
+    }
+    if args["pongTimeout"] is Int {
+      pusher.connection.pongResponseTimeoutInterval = args["pongTimeout"] as! TimeInterval / 1000.0
+    }
+    pusher.connection.delegate = self
+    pusher.bind(eventCallback: onEvent)
+    result(nil)
   }
 
   public func fetchAuthValue(socketID: String, channelName: String, completionHandler: @escaping (PusherAuth?) -> Void) {

@@ -220,6 +220,10 @@ class PusherChannelsFlutterWeb {
   }
 
   void init(MethodCall call) {
+    if (pusher != null) {
+      pusher!.unbind_all();
+      pusher!.disconnect();
+    }
     var options = Options();
     if (call.arguments['cluster'] != null) {
       options.cluster = call.arguments['cluster'];
