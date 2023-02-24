@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.2
+
+* [FIXED] Handle only  type on  callback function.
+
 ## 2.1.1
 
 * [CHANGED] Change call of activity.runOnUiThread to invoke methodChannel
