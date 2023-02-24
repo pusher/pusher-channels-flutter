@@ -87,7 +87,7 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     }
 
     private fun callback(method: String, args: Any) {
-        activity!!.runOnUiThread {
+        activity?.runOnUiThread {
             methodChannel.invokeMethod(method, args)
         }
     }
