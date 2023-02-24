@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.1
+
+* [CHANGED] Change call of activity.runOnUiThread to invoke methodChannel
+
 ## 2.1.0
 
 * [CHANGED] Allow reinitialization of the pusher singleton
