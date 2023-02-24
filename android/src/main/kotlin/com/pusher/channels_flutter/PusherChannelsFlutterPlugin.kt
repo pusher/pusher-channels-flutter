@@ -226,7 +226,6 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     }
 
     override fun onEvent(event: PusherEvent) {
-        // Log.i(TAG, "Received event with data: $event")
         callback(
             "onEvent", mapOf(
                 "channelName" to event.channelName,
