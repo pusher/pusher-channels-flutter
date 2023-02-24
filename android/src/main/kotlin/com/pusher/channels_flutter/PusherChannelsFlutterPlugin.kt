@@ -214,7 +214,6 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     }
 
     override fun onSubscriptionSucceeded(channelName: String) {
-        // For presence channels we wait for the onUsersInformationReceived event.
         if (!channelName.startsWith("presence-")) {
             callback(
                 "onEvent", mapOf(
@@ -239,17 +238,16 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     }
 
     override fun onAuthenticationFailure(message: String, e: Exception) {
-        // Log.e(TAG, "Authentication failure due to $message, exception was $e")
         callback(
             "onSubscriptionError", mapOf(
                 "message" to message,
                 "error" to e.toString()
             )
         )
-    } // Other ChannelEventListener methods
-
+    } 
+    
+    // Other ChannelEventListener methods
     override fun onUsersInformationReceived(channelName: String?, users: MutableSet<User>?) {
-        // Log.i(TAG, "Users received: $users")
         val gson = Gson()
         val channel = pusher!!.getPresenceChannel(channelName)
         val hash = mutableMapOf<String, Any?>()
@@ -275,7 +273,6 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     }
 
     override fun onDecryptionFailure(event: String?, reason: String?) {
-        // Log.e(TAG, "Decryption failure due to $event, exception was $reason")
         callback(
             "onDecryptionFailure", mapOf(
                 "event" to event,
@@ -285,7 +282,6 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     }
 
     override fun userSubscribed(channelName: String, user: User) {
-        // Log.i(TAG, "A new user joined channel [$channelName]: ${user.id}, ${user.info}")
         callback(
             "onMemberAdded", mapOf(
                 "channelName" to channelName,
@@ -298,7 +294,6 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     }
 
     override fun userUnsubscribed(channelName: String, user: User) {
-        // Log.i(TAG, "A user left channel [$channelName]: ${user.id}, ${user.info}")
         callback(
             "onMemberRemoved", mapOf(
                 "channelName" to channelName,
