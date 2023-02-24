@@ -113,11 +113,14 @@ class PusherChannelsFlutterWeb {
 
   void onError(dynamic jsError) {
     final Map<String, dynamic> error = dartify<Map<String, dynamic>>(jsError);
-    methodChannel!.invokeMethod('onError', {
-      'message': error['data']?['message'],
-      'code': error['data']?['code'],
-      'error': error,
-    });
+
+    if (error['type'] == 'PusherError') {
+      methodChannel!.invokeMethod('onError', {
+        'message': error['data']?['message'],
+        'code': error['data']?['code'],
+        'error': error,
+      });
+    }
   }
 
   void onMessage(dynamic jsMessage) {
