@@ -237,13 +237,13 @@ class PusherChannelsFlutter {
 
   Future<PusherChannel> subscribe(
       {required String channelName,
-      var onSubscriptionSucceeded,
+      dynamic Function(dynamic value)? onSubscriptionSucceeded,
       var onSubscriptionError,
-      var onMemberAdded,
-      var onMemberRemoved,
-      var onEvent,
-      var onSubscriptionCount}) async {
-    var channel = PusherChannel(
+      dynamic Function(PusherMember member)? onMemberAdded,
+      dynamic Function(PusherMember member)? onMemberRemoved,
+      dynamic Function(dynamic event)? onEvent,
+      dynamic Function(int subscriptionCount)? onSubscriptionCount}) async {
+    PusherChannel channel = PusherChannel(
         channelName: channelName,
         onSubscriptionSucceeded: onSubscriptionSucceeded,
         onMemberAdded: onMemberAdded,
