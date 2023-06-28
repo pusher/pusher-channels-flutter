@@ -128,7 +128,7 @@ class PusherChannelsFlutterWeb {
     final String event = msg['event'] ?? '';
     final String channel = msg['channel'] ?? '';
     final Map<String, dynamic> data = msg['data'] ?? {};
-    String? userId = data['user_id'];
+    int? userId = data['user_id'];
     final Map<String, dynamic>? userInfo = data['user_info'];
 
     if (event == 'pusher_internal:subscription_error') {
@@ -138,7 +138,7 @@ class PusherChannelsFlutterWeb {
       methodChannel!.invokeMethod('onMemberAdded', {
         'channelName': channel,
         'user': {
-          'userId': userId,
+          'userId': userId.toString(),
           'userInfo': userInfo,
         }
       });
@@ -146,7 +146,7 @@ class PusherChannelsFlutterWeb {
       methodChannel!.invokeMethod('onMemberRemoved', {
         'channelName': channel,
         'user': {
-          'userId': userId,
+          'userId': userId.toString(),
           'userInfo': userInfo,
         }
       });
@@ -161,7 +161,7 @@ class PusherChannelsFlutterWeb {
         'channelName': channel,
         'eventName': event,
         'data': data,
-        'userId': userId,
+        'userId': userId.toString(),
       });
     }
   }
