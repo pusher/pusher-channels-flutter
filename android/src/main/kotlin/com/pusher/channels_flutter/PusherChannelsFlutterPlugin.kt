@@ -175,8 +175,9 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     }
 
     override fun authorize(channelName: String?, socketId: String?): String? {
-        var result: String? = null
-        val mutex = Semaphore(0)
+    var result: String? = null
+    val mutex = Semaphore(0)
+    try {
         activity!!.runOnUiThread {
             methodChannel.invokeMethod("onAuthorizer", mapOf(
                 "channelName" to channelName,
@@ -186,22 +187,33 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
                     if (o != null) {
                         val gson = Gson()
                         result = gson.toJson(o)
+                    } else {
+                        result = "{ }"
                     }
                     mutex.release()
                 }
 
                 override fun error(s: String, s1: String?, o: Any?) {
+                    Log.i(TAG, "Pusher authorize error: " + s)
+                    result = "{ }"
                     mutex.release()
                 }
 
                 override fun notImplemented() {
+                    result = "{ }"
                     mutex.release()
                 }
             })
         }
-        mutex.acquire()
-        return result
+    } catch (exception: Exception) {
+        Log.i(TAG, "Pusher authorize error: " + exception.toString())
+
+        result = "{ }"
+        mutex.release()
     }
+    mutex.acquire()
+    return result
+}
 
     // Event handlers
     override fun onConnectionStateChange(change: ConnectionStateChange) {
