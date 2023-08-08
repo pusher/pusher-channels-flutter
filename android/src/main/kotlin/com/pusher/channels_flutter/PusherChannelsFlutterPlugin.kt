@@ -177,27 +177,36 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     override fun authorize(channelName: String?, socketId: String?): String? {
         var result: String? = null
         val mutex = Semaphore(0)
-        activity!!.runOnUiThread {
-            methodChannel.invokeMethod("onAuthorizer", mapOf(
-                "channelName" to channelName,
-                "socketId" to socketId
-            ), object : Result {
-                override fun success(o: Any?) {
-                    if (o != null) {
-                        val gson = Gson()
-                        result = gson.toJson(o)
+        try {
+            activity!!.runOnUiThread {
+                methodChannel.invokeMethod("onAuthorizer", mapOf(
+                    "channelName" to channelName,
+                    "socketId" to socketId
+                ), object : Result {
+                    override fun success(o: Any?) {
+                        if (o != null) {
+                            val gson = Gson()
+                            result = gson.toJson(o)
+                        } else {
+                            result = "{ }"
+                        }
+                        mutex.release()
                     }
-                    mutex.release()
-                }
-
-                override fun error(s: String, s1: String?, o: Any?) {
-                    mutex.release()
-                }
-
-                override fun notImplemented() {
-                    mutex.release()
-                }
-            })
+                    override fun error(s: String, s1: String?, o: Any?) {
+                        Log.i(TAG, "Pusher authorize error: " + s)
+                        result = "{ }"
+                        mutex.release()
+                    }
+                    override fun notImplemented() {
+                        result = "{ }"
+                        mutex.release()
+                    }
+                })
+            }
+        } catch (exception: Exception) {
+            Log.i(TAG, "Pusher authorize error: " + exception.toString())
+            result = "{ }"
+            mutex.release()
         }
         mutex.acquire()
         return result
