@@ -3,8 +3,8 @@ PODS:
   - NWWebSocket (0.5.3)
   - pusher_channels_flutter (0.0.1):
     - Flutter
-    - PusherSwift (~> 10.1.3)
-  - PusherSwift (10.1.3):
+    - PusherSwift (~> 10.1.4)
+  - PusherSwift (10.1.4):
     - NWWebSocket (~> 0.5.3)
     - TweetNacl (~> 1.0.0)
   - shared_preferences_ios (0.0.1):
@@ -31,10 +31,10 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/shared_preferences_ios/ios"
 
 SPEC CHECKSUMS:
-  Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
+  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   NWWebSocket: 05fc4419102f33934f87157d70228837e327064f
-  pusher_channels_flutter: 85853a5b348d4a4e2fd4ec5375bb4e87238f4b61
-  PusherSwift: 9083be278b87d2325c0fd8c4bdad0f54ffa8931a
+  pusher_channels_flutter: 2bc74ab92bacd0ac436e10fa326125408d3c7598
+  PusherSwift: 671c49e9c5441e30960d2e0282a879b2f8c80bcb
   shared_preferences_ios: 548a61f8053b9b8a49ac19c1ffbc8b92c50d68ad
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
 
