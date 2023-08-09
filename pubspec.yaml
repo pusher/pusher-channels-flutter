@@ -5,7 +5,7 @@ homepage: https://github.com/pusher/pusher-channels-flutter
 repository: https://github.com/pusher/pusher-channels-flutter
 issue_tracker: https://github.com/pusher/pusher-channels-flutter/issues
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=2.12.0 <4.0.0"
   flutter: ">=1.20.0"
 dependencies:
   flutter:
