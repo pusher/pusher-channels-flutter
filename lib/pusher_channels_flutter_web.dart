@@ -2,14 +2,15 @@
 library pusher_channels_flutter;
 
 import 'dart:async';
-import 'package:js/js.dart';
-import 'package:js/js_util.dart' as js_util;
+
 // In order to *not* need this ignore, consider extracting the 'web' version
 // of your plugin as a separate package, instead of inlining it in the same
 // package as the core of your plugin.
 // ignore: avoid_web_libraries_in_flutter
 import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:js/js.dart';
+import 'package:js/js_util.dart' as js_util;
 import 'package:pusher_channels_flutter/pusher-js/core/auth/options.dart';
 import 'package:pusher_channels_flutter/pusher-js/core/channels/channel.dart';
 import 'package:pusher_channels_flutter/pusher-js/core/channels/presence_channel.dart';
@@ -228,6 +229,16 @@ class PusherChannelsFlutterWeb {
       pusher!.disconnect();
     }
     var options = Options();
+    if (call.arguments['host'] != null) {
+      options.httpHost = call.arguments['host'];
+      options.wsHost = call.arguments['host'];
+    }
+    if (call.arguments['wsPort'] != null) {
+      options.wsPort = call.arguments['wsPort'];
+    }
+    if (call.arguments['wssPort'] != null) {
+      options.wssPort = call.arguments['wssPort'];
+    }
     if (call.arguments['cluster'] != null) {
       options.cluster = call.arguments['cluster'];
     }
