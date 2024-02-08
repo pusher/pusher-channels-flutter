@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.1
+
+* [CHANGED] Update PusherSwift SDK to 10.1.5 
+
 ## 2.2.0
 
 * [CHANGED] Bump PusherSwift version to 10.1.4, which solves a reconnection issue when WebSocketConnectionDelegate triggers webSocketDidReceiveError event due to any POSIX error, except for ENOTCONN
