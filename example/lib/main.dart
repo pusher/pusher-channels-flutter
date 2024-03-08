@@ -57,20 +57,26 @@ class _MyAppState extends State<MyApp> {
 
     try {
       await pusher.init(
-        apiKey: _apiKey.text,
-        cluster: _cluster.text,
-        onConnectionStateChange: onConnectionStateChange,
-        onError: onError,
-        onSubscriptionSucceeded: onSubscriptionSucceeded,
-        onEvent: onEvent,
-        onSubscriptionError: onSubscriptionError,
-        onDecryptionFailure: onDecryptionFailure,
-        onMemberAdded: onMemberAdded,
-        onMemberRemoved: onMemberRemoved,
-        onSubscriptionCount: onSubscriptionCount,
-        // authEndpoint: "<Your Authendpoint Url>",
-        // onAuthorizer: onAuthorizer
-      );
+          apiKey: _apiKey.text,
+          cluster: _cluster.text,
+          onConnectionStateChange: onConnectionStateChange,
+          onError: onError,
+          onSubscriptionSucceeded: onSubscriptionSucceeded,
+          onEvent: onEvent,
+          onSubscriptionError: onSubscriptionError,
+          onDecryptionFailure: onDecryptionFailure,
+          onMemberAdded: onMemberAdded,
+          onMemberRemoved: onMemberRemoved,
+          onSubscriptionCount: onSubscriptionCount,
+          host: "<Your Origin/Host Url>",
+          authEndpoint: "<Your Authendpoint Url>",
+          useTLS: true,
+          wsPort: 80,
+          wssPort: 443,
+          authParams: {
+            "headers": {"Authorization": "<Your Authorization Token>"}
+          },
+          onAuthorizer: onAuthorizer);
       await pusher.subscribe(channelName: _channelName.text);
       await pusher.connect();
     } catch (e) {

@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 
+// import 'dart:html';
+import 'dart:io';
+
 import 'package:flutter/services.dart';
 
 class PusherEvent {
@@ -8,6 +11,7 @@ class PusherEvent {
   String eventName;
   dynamic data;
   String? userId;
+
   PusherEvent({
     required this.channelName,
     required this.eventName,
@@ -41,6 +45,7 @@ class PusherChannel {
   Function(PusherMember member)? onMemberAdded;
   Function(PusherMember member)? onMemberRemoved;
   Function(int subscriptionCount)? onSubscriptionCount;
+
   PusherChannel({
     required this.channelName,
     this.onSubscriptionSucceeded,
@@ -88,7 +93,10 @@ class PusherChannelsFlutter {
 
   Future<void> init({
     required String apiKey,
-    required String cluster,
+    String? cluster,
+    String? host,
+    int? wsPort, // The port to which non TLS connections will be made.
+    int? wssPort, // The port to which encrypted connections will be made.
     bool? useTLS,
     int? activityTimeout,
     int? pongTimeout,
@@ -127,10 +135,27 @@ class PusherChannelsFlutter {
     this.onMemberRemoved = onMemberRemoved;
     this.onAuthorizer = onAuthorizer;
     this.onSubscriptionCount = onSubscriptionCount;
+    if (Platform.isAndroid || Platform.isIOS) {
+      if (authParams != null &&
+          authParams.isNotEmpty &&
+          authParams.containsKey("headers")) {
+        Map<String, String> headers = Map.of(authParams["headers"] ?? {});
+
+        assert(
+            !(headers.containsKey("Content-Type") ||
+                headers.containsKey("content-type") ||
+                (headers.containsValue("application/json") ||
+                    headers.containsValue("Application/json"))),
+            "::: Headers should not contain Content-Type key or Value as application/json :::");
+      }
+    }
     await methodChannel.invokeMethod('init', {
       "apiKey": apiKey,
       "cluster": cluster,
       "useTLS": useTLS,
+      "wsPort": wsPort ?? 80,
+      "wssPort": wssPort ?? 443,
+      "host": host ?? "ws.pusherapp.com",
       "activityTimeout": activityTimeout,
       "pongTimeout": pongTimeout,
       "maxReconnectionAttempts": maxReconnectionAttempts,

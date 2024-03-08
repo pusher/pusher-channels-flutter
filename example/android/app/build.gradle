@@ -43,7 +43,7 @@ android {
 
     defaultConfig {
         applicationId "com.pusher.channels_flutter_example"
-        minSdkVersion 16
+        minSdkVersion flutter.minSdkVersion
         targetSdkVersion 31
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
