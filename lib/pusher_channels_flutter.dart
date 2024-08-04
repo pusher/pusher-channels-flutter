@@ -15,9 +15,32 @@ class PusherEvent {
     this.userId,
   });
 
+  Map<String, dynamic> toMap() {
+    return {
+      'channelName': channelName,
+      'eventName': eventName,
+      'data': data,
+      'userId': userId,
+    };
+  }
+
+  factory PusherEvent.fromMap(Map<String, dynamic> map) {
+    return PusherEvent(
+      channelName: map['channelName'] ?? '',
+      eventName: map['eventName'] ?? '',
+      data: map['data'] ?? null,
+      userId: map['userId'],
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory PusherEvent.fromJson(String source) => PusherEvent.fromMap(json.decode(source));
+
   @override
-  String toString() =>
-      '{ channelName: $channelName, eventName: $eventName, data: $data, userId: $userId }';
+  String toString() {
+    return 'PusherEvent(channelName: $channelName, eventName: $eventName, data: $data, userId: $userId)';
+  }
 }
 
 class PusherMember {
