@@ -25,7 +25,8 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 34
+    namespace 'com.pusher_channels_flutter'
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
