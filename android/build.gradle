@@ -47,6 +47,6 @@ android {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    api 'com.pusher:pusher-java-client:2.2.4'
-    api 'com.google.code.gson:gson:2.7'
+    api 'com.pusher:pusher-java-client:2.4.4'
+    api 'com.google.code.gson:gson:2.11.0'
 }
