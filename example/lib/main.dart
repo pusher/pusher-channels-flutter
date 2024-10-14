@@ -1,15 +1,15 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
 
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';
 import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -30,7 +30,7 @@ class _MyAppState extends State<MyApp> {
   void log(String text) {
     print("LOG: $text");
     setState(() {
-      _log += text + "\n";
+      _log += "$text\n";
       Timer(
           const Duration(milliseconds: 100),
           () => _listViewController

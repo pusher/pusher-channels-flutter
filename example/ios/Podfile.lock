@@ -7,14 +7,15 @@ PODS:
   - PusherSwift (10.1.5):
     - NWWebSocket (~> 0.5.4)
     - TweetNacl (~> 1.0.0)
-  - shared_preferences_ios (0.0.1):
+  - shared_preferences_foundation (0.0.1):
     - Flutter
+    - FlutterMacOS
   - TweetNacl (1.0.2)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - pusher_channels_flutter (from `.symlinks/plugins/pusher_channels_flutter/ios`)
-  - shared_preferences_ios (from `.symlinks/plugins/shared_preferences_ios/ios`)
+  - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
 
 SPEC REPOS:
   trunk:
@@ -27,17 +28,17 @@ EXTERNAL SOURCES:
     :path: Flutter
   pusher_channels_flutter:
     :path: ".symlinks/plugins/pusher_channels_flutter/ios"
-  shared_preferences_ios:
-    :path: ".symlinks/plugins/shared_preferences_ios/ios"
+  shared_preferences_foundation:
+    :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
 
 SPEC CHECKSUMS:
-  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   NWWebSocket: 040d22f23438cc09aaeabf537beff67699c3c76d
   pusher_channels_flutter: 01297e6e420e0ad61a6e5901e27bb272a6f58ec2
   PusherSwift: cad631bad86cfff4b8458dce1310a7774e469b1f
-  shared_preferences_ios: 548a61f8053b9b8a49ac19c1ffbc8b92c50d68ad
+  shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
 
-PODFILE CHECKSUM: cc1f88378b4bfcf93a6ce00d2c587857c6008d3b
+PODFILE CHECKSUM: a57f30d18f102dd3ce366b1d62a55ecbef2158e5
 
-COCOAPODS: 1.14.3
+COCOAPODS: 1.15.2
