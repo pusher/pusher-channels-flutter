@@ -2,7 +2,7 @@ group 'com.pusher'
 version '1.0-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.8.20'
+    ext.kotlin_version = '1.9.20'
     repositories {
         google()
         mavenCentral()
@@ -31,7 +31,7 @@ android {
         namespace "com.pusher.channels_flutter"
     }
 
-    compileSdk 33
+    compileSdk 34
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

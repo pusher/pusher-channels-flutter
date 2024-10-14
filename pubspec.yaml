@@ -5,18 +5,18 @@ homepage: https://github.com/pusher/pusher-channels-flutter
 repository: https://github.com/pusher/pusher-channels-flutter
 issue_tracker: https://github.com/pusher/pusher-channels-flutter/issues
 environment:
-  sdk: ">=2.12.0 <4.0.0"
-  flutter: ">=1.20.0"
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.19.0"
 dependencies:
   flutter:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
-  js: ^0.6.3
+  js: ^0.7.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.1
+  flutter_lints: ^5.0.0
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
