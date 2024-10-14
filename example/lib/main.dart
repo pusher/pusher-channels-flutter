@@ -31,8 +31,10 @@ class _MyAppState extends State<MyApp> {
     print("LOG: $text");
     setState(() {
       _log += "$text\n";
-      Timer(const Duration(milliseconds: 100),
-          () => _listViewController.jumpTo(_listViewController.position.maxScrollExtent));
+      Timer(
+          const Duration(milliseconds: 100),
+          () => _listViewController
+              .jumpTo(_listViewController.position.maxScrollExtent));
     });
   }
 
@@ -115,7 +117,11 @@ class _MyAppState extends State<MyApp> {
   }
 
   dynamic onAuthorizer(String channelName, String socketId, dynamic options) {
-    return {"auth": "foo:bar", "channel_data": '{"user_id": 1}', "shared_secret": "foobar"};
+    return {
+      "auth": "foo:bar",
+      "channel_data": '{"user_id": 1}',
+      "shared_secret": "foobar"
+    };
   }
 
   void onTriggerEventPressed() async {
@@ -127,7 +133,10 @@ class _MyAppState extends State<MyApp> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString("eventName", _eventName.text);
     prefs.setString("data", _data.text);
-    pusher.trigger(PusherEvent(channelName: _channelName.text, eventName: _eventName.text, data: _data.text));
+    pusher.trigger(PusherEvent(
+        channelName: _channelName.text,
+        eventName: _eventName.text,
+        data: _data.text));
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -151,7 +160,9 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text(pusher.connectionState == 'DISCONNECTED' ? 'Pusher Channels Example' : _channelName.text),
+          title: Text(pusher.connectionState == 'DISCONNECTED'
+              ? 'Pusher Channels Example'
+              : _channelName.text),
         ),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -167,14 +178,19 @@ class _MyAppState extends State<MyApp> {
                         TextFormField(
                           controller: _apiKey,
                           validator: (String? value) {
-                            return (value != null && value.isEmpty) ? 'Please enter your API key.' : null;
+                            return (value != null && value.isEmpty)
+                                ? 'Please enter your API key.'
+                                : null;
                           },
-                          decoration: const InputDecoration(labelText: 'API Key'),
+                          decoration:
+                              const InputDecoration(labelText: 'API Key'),
                         ),
                         TextFormField(
                           controller: _cluster,
                           validator: (String? value) {
-                            return (value != null && value.isEmpty) ? 'Please enter your cluster.' : null;
+                            return (value != null && value.isEmpty)
+                                ? 'Please enter your cluster.'
+                                : null;
                           },
                           decoration: const InputDecoration(
                             labelText: 'Cluster',
@@ -183,7 +199,9 @@ class _MyAppState extends State<MyApp> {
                         TextFormField(
                           controller: _channelName,
                           validator: (String? value) {
-                            return (value != null && value.isEmpty) ? 'Please enter your channel name.' : null;
+                            return (value != null && value.isEmpty)
+                                ? 'Please enter your channel name.'
+                                : null;
                           },
                           decoration: const InputDecoration(
                             labelText: 'Channel',
@@ -201,16 +219,23 @@ class _MyAppState extends State<MyApp> {
                       ListView.builder(
                           scrollDirection: Axis.vertical,
                           shrinkWrap: true,
-                          itemCount: pusher.channels[_channelName.text]?.members.length,
+                          itemCount: pusher
+                              .channels[_channelName.text]?.members.length,
                           itemBuilder: (context, index) {
-                            final member = pusher.channels[_channelName.text]!.members.values.elementAt(index);
+                            final member = pusher
+                                .channels[_channelName.text]!.members.values
+                                .elementAt(index);
 
-                            return ListTile(title: Text(member.userInfo.toString()), subtitle: Text(member.userId));
+                            return ListTile(
+                                title: Text(member.userInfo.toString()),
+                                subtitle: Text(member.userId));
                           }),
                       TextFormField(
                         controller: _eventName,
                         validator: (String? value) {
-                          return (value != null && value.isEmpty) ? 'Please enter your event name.' : null;
+                          return (value != null && value.isEmpty)
+                              ? 'Please enter your event name.'
+                              : null;
                         },
                         decoration: const InputDecoration(
                           labelText: 'Event',
@@ -228,7 +253,8 @@ class _MyAppState extends State<MyApp> {
                       ),
                     ]),
                   ),
-                SingleChildScrollView(scrollDirection: Axis.vertical, child: Text(_log)),
+                SingleChildScrollView(
+                    scrollDirection: Axis.vertical, child: Text(_log)),
               ]),
         ),
       ),

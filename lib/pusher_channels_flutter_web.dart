@@ -1,5 +1,5 @@
 @JS()
-library pusher_channels_flutter;
+library;
 
 import 'dart:async';
 import 'package:js/js.dart';
