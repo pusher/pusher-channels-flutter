@@ -41,8 +41,13 @@ public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDe
     let args = call.arguments as! [String: Any]
     var authMethod: AuthMethod = .noMethod
     if args["authEndpoint"] is String {
-      authMethod = .endpoint(authEndpoint: args["authEndpoint"] as! String)
-    } else if args["authorizer"] is Bool {
+    authMethod = .endpoint(authEndpoint: args["authEndpoint"] as! String)
+       if let authParams = args["authParams"] as? [String: [String: String]],
+          let headers = authParams["headers"], !headers.isEmpty {
+           let pusherAuthRequestBuilder = PusherAuthRequestBuilder(baseURL: args["authEndpoint"] as! String, headers: headers)
+           authMethod = .authRequestBuilder(authRequestBuilder: pusherAuthRequestBuilder)
+       }
+    }else if args["authorizer"] is Bool {
       authMethod = .authorizer(authorizer: self)
     }
     var host: PusherHost = .defaultHost
@@ -247,4 +252,30 @@ public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDe
       channel.trigger(eventName: eventName, data: data as Any)
     }
   }
+}
+
+
+class PusherAuthRequestBuilder: NSObject, AuthRequestBuilderProtocol {
+    let baseURL: String
+    let headers: [String: String]
+    init(baseURL: String, headers: [String: String]) {
+        self.baseURL = baseURL
+        self.headers = headers
+    }
+
+    func requestFor(socketID: String, channelName: String) -> URLRequest? {
+        guard let url = URL(string: baseURL) else {
+            return nil
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.httpBody = "socket_id=\(socketID)&channel_name=\(channelName)".data(using: .utf8)
+
+        for (key, value) in headers {
+            request.addValue(value, forHTTPHeaderField: key)
+        }
+
+        return request
+    }
 }
