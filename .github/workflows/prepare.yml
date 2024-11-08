@@ -11,12 +11,12 @@ jobs:
     name: Prepare release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Get current version
         run: |
           CURRENT_VERSION=$(yq '.version' pubspec.yaml)
           echo "CURRENT_VERSION=$CURRENT_VERSION" >> $GITHUB_ENV
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           repository: pusher/public_actions
           token: ${{ secrets.PUSHER_CI_GITHUB_PRIVATE_TOKEN }}
@@ -28,7 +28,7 @@ jobs:
       - name: Push
         shell: bash
         run: |
-          echo "$(yq '.version = "${{ steps.bump.outputs.new_version }}"' pubspec.yaml)" > pubspec.yaml 
+          echo "$(yq '.version = "${{ steps.bump.outputs.new_version }}"' pubspec.yaml)" > pubspec.yaml
           git add pubspec.yaml CHANGELOG.md
           git commit -m "Bump to version ${{ steps.bump.outputs.new_version }}"
           git push

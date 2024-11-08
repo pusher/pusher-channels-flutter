@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.3.0
+
+* [CHANGED] Upgraded Flutter 3.24.3 https://github.com/pusher/pusher-channels-flutter/pull/176 Big thanks to @hamzamirai 
+* [CHANGED] Upgraded GH action/checkout@v3 to allow the release workflow to checkout PRs from forks
+
 ## 2.2.1
 
 * [CHANGED] Update PusherSwift SDK to 10.1.5 
