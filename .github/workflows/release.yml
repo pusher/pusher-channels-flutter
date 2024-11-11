@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
@@ -37,7 +37,7 @@ jobs:
     needs: check-release-tag
     if: ${{ needs.check-release-tag.outputs.tag }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: 'publish pusher-channels-flutter package'
         id: publish
         uses: k-paxian/dart-package-publisher@master
@@ -54,7 +54,7 @@ jobs:
     needs: publish
     if: ${{ needs.check-release-tag.outputs.tag }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Prepare tag
         run: |
           export TAG=v$(yq '.version' pubspec.yaml)
