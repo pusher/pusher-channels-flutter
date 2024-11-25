@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.4.0
+
+* [CHANGED] Describe your change here. Look at CHANGELOG.md to see the format.
+
 ## 2.3.1
 
 * [FIXED] `auth` options https://github.com/pusher/pusher-channels-flutter/pull/140
