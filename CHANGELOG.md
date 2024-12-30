@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.5.0
+
+* [CHANGED] bump js version
+* [CHANGED] readme pusher-js version in example
+
 ## 2.4.0
 
 * [FIXED] `auth` options https://github.com/pusher/pusher-channels-flutter/pull/140
