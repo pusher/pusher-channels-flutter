@@ -120,7 +120,7 @@ index.html page:
 <head>
   <script
     charset="utf-8"
-    src="https://js.pusher.com/7.0/pusher.min.js"
+    src="https://js.pusher.com/8.3.0/pusher.min.js"
   ></script>
   ...
 </head>
