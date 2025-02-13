@@ -1,11 +1,11 @@
 PODS:
   - Flutter (1.0.0)
-  - NWWebSocket (0.5.3)
+  - NWWebSocket (0.5.4)
   - pusher_channels_flutter (0.0.1):
     - Flutter
-    - PusherSwift (~> 10.1.4)
-  - PusherSwift (10.1.4):
-    - NWWebSocket (~> 0.5.3)
+    - PusherSwift (~> 10.1.5)
+  - PusherSwift (10.1.5):
+    - NWWebSocket (~> 0.5.4)
     - TweetNacl (~> 1.0.0)
   - shared_preferences_ios (0.0.1):
     - Flutter
@@ -32,12 +32,12 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
-  NWWebSocket: 05fc4419102f33934f87157d70228837e327064f
-  pusher_channels_flutter: 2bc74ab92bacd0ac436e10fa326125408d3c7598
-  PusherSwift: 671c49e9c5441e30960d2e0282a879b2f8c80bcb
+  NWWebSocket: 040d22f23438cc09aaeabf537beff67699c3c76d
+  pusher_channels_flutter: 01297e6e420e0ad61a6e5901e27bb272a6f58ec2
+  PusherSwift: cad631bad86cfff4b8458dce1310a7774e469b1f
   shared_preferences_ios: 548a61f8053b9b8a49ac19c1ffbc8b92c50d68ad
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
 
 PODFILE CHECKSUM: cc1f88378b4bfcf93a6ce00d2c587857c6008d3b
 
-COCOAPODS: 1.12.1
+COCOAPODS: 1.14.3
