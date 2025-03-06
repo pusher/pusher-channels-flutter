@@ -1,89 +1,122 @@
-// ignore_for_file: non_constant_identifier_names
+import 'dart:js_interop';
 
-@JS()
-library core.auth.options;
+import '../../error.dart';
 
-import "package:js/js.dart";
-import "../channels/channel.dart" show Channel;
+extension type ChannelAuthorizationData._(JSObject _) implements JSObject {
+  static ChannelAuthorizationData create({
+    required String auth,
+    String? channelData,
+    String? sharedSecret,
+  }) {
+    return (JSObject() as ChannelAuthorizationData)
+      ..auth = auth
+      ..channelData = channelData
+      ..sharedSecret = sharedSecret;
+  }
 
-@anonymous
-@JS()
-abstract class AuthOptions {
-  external Map<String, dynamic> get params;
-  external set params(Map<String, dynamic> v);
-  external Map<String, dynamic> get headers;
-  external set headers(Map<String, dynamic> v);
+  external String auth;
 
-  external factory AuthOptions({
-    Map<String, dynamic> params,
-    Map<String, dynamic> headers,
+  @JS('channel_data')
+  external String? channelData;
+
+  @JS('shared_secret')
+  external String? sharedSecret;
+}
+
+extension type ChannelAuthorizationCallback._(JSFunction _)
+    implements JSFunction {
+  void call(
+    JSError? error,
+    ChannelAuthorizationData? authData,
+  ) =>
+      callAsFunction(null, error, authData);
+}
+
+extension type ChannelAuthorizationRequestParams._(JSObject _)
+    implements JSObject {
+  external ChannelAuthorizationRequestParams({
+    String socketId,
+    String channelName,
   });
+
+  external String socketId;
+
+  external String channelName;
 }
 
-extension AuthOptionsExt on AuthOptions {
-  Map<String, dynamic> toMap() => {
-        'params': params,
-        'headers': headers,
-      };
+typedef DartChannelAuthorizationHandler = void Function(
+  ChannelAuthorizationRequestParams params,
+  ChannelAuthorizationCallback callback,
+);
+
+extension type ChannelAuthorizationHandler._(JSFunction _)
+    implements JSFunction {
+  static ChannelAuthorizationHandler create(
+    DartChannelAuthorizationHandler handler,
+  ) =>
+      handler.toJS as ChannelAuthorizationHandler;
 }
 
-@anonymous
-@JS()
-abstract class AuthData {
-  external String get auth;
-  external set auth(String v);
-  external String? get channel_data;
-  external set channel_data(String? v);
-  external String? get shared_secret;
-  external set shared_secret(String? v);
+extension type UserAuthenticationData._(JSObject _) implements JSObject {
+  static UserAuthenticationData create({
+    required String auth,
+    required String userData,
+  }) {
+    return (JSObject() as UserAuthenticationData)
+      ..auth = auth
+      ..userData = userData;
+  }
 
-  external factory AuthData({
-    String auth,
-    String? channel_data,
-    String? shared_secret,
-  });
+  external String auth;
+
+  @JS('user_data')
+  external String userData;
 }
 
-typedef AuthorizerCallback = void Function(Error? error, AuthData authData);
-
-typedef AuthorizeFunc = void Function(
-    String socketId, AuthorizerCallback callback);
-
-@anonymous
-@JS()
-abstract class Authorizer {
-  external set authorize(AuthorizeFunc v);
-  external AuthorizeFunc get authorize;
-
-  external factory Authorizer({AuthorizeFunc authorize});
+extension type UserAuthenticationCallback._(JSFunction _)
+    implements JSFunction {
+  void call(
+    JSError? error,
+    UserAuthenticationData? authData,
+  ) =>
+      callAsFunction(null, error, authData);
 }
 
-typedef AuthorizerGenerator = Authorizer Function(
-    Channel channel, AuthorizerOptions options);
-
-@anonymous
-@JS()
-abstract class AuthorizerOptions {
-  external String /*'ajax'|'jsonp'*/ get authTransport;
-  external set authTransport(String /*'ajax'|'jsonp'*/ v);
-  external String get authEndpoint;
-  external set authEndpoint(String v);
-  external AuthOptions? get auth;
-  external set auth(AuthOptions? v);
-  external AuthorizerGenerator? get authorizer;
-  external set authorizer(AuthorizerGenerator? v);
-  external factory AuthorizerOptions({
-    String /*'ajax'|'jsonp'*/ authTransport,
-    String authEndpoint,
-    AuthOptions? auth,
-    AuthorizerGenerator? authorizer,
-  });
+extension type UserAuthenticationRequestParams._(JSObject _)
+    implements JSObject {
+  external String socketId;
 }
 
-extension AuthorizerOptionsExt on AuthorizerOptions {
-  Map<String, dynamic> toMap() => {
-        'authTransport': authTransport,
-        'authEndpoint': authEndpoint,
-        'auth': auth?.toMap(),
-      };
+typedef DartUserAuthenticationHandler = void Function(
+  UserAuthenticationRequestParams params,
+  UserAuthenticationCallback callback,
+);
+
+extension type UserAuthenticationHandler._(JSFunction _) implements JSFunction {
+  static UserAuthenticationHandler create(
+    DartUserAuthenticationHandler handler,
+  ) =>
+      handler.toJS as UserAuthenticationHandler;
+}
+
+typedef UserAuthenticationOptions = AuthOptionsT<UserAuthenticationHandler>;
+
+typedef ChannelAuthorizationOptions = AuthOptionsT<ChannelAuthorizationHandler>;
+
+extension type AuthOptionsT<AuthHandler extends JSObject>._(JSObject _)
+    implements JSObject {
+  // Allow 'ajax' | 'jsonp'
+  external String transport;
+
+  external String endpoint;
+
+  external JSAny params;
+
+  external JSAny headers;
+
+  external JSFunction? paramsProvider;
+
+  external JSFunction? headersProvider;
+
+  external AuthHandler? customHandler;
 }

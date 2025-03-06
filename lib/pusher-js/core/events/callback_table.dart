@@ -1,12 +1,9 @@
-@JS()
-library core.events.callback_table;
+import 'dart:js_interop';
 
-import "package:js/js.dart";
+import 'callback.dart';
 
-@anonymous
-@JS()
-abstract class CallbackTable {
-  /* Index signature is not yet supported by JavaScript interop. */
+extension type CallbackTable._(JSObject _) implements JSObject {
+  external Callback? operator [](String index);
+
+  external void operator []=(String index, Callback value);
 }
-
-/* WARNING: export assignment not yet supported. */

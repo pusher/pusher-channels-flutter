@@ -1,16 +1,7 @@
-@JS()
-library core.events.callback;
+import 'dart:js_interop';
 
-import "package:js/js.dart";
+extension type Callback._(JSObject _) implements JSObject {
+  external JSFunction fn;
 
-@anonymous
-@JS()
-abstract class Callback {
-  external Function get fn;
-  external set fn(Function v);
-  external dynamic get context;
-  external set context(dynamic v);
-  external factory Callback({Function fn, dynamic context});
+  external JSAny? context;
 }
-
-/* WARNING: export assignment not yet supported. */

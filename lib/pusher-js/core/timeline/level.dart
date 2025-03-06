@@ -1,13 +1,9 @@
-// ignore_for_file: non_constant_identifier_names
+enum TimelineLevel {
+  error(3),
+  info(6),
+  debug(7);
 
-@JS()
-library core.timeline.level;
+  const TimelineLevel(this.value);
 
-import "package:js/js.dart";
-
-@JS()
-class TimelineLevel {
-  external static num get ERROR;
-  external static num get INFO;
-  external static num get DEBUG;
-} /* WARNING: export assignment not yet supported. */
+  final int value;
+}

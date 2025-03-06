@@ -1,14 +1,9 @@
-@JS()
-library core.strategies.strategy;
+import 'dart:js_interop';
 
-import "package:js/js.dart";
-import "strategy_runner.dart" show StrategyRunner;
+import 'strategy_runner.dart';
 
-@anonymous
-@JS()
-abstract class Strategy {
+extension type Strategy._(JSObject _) implements JSObject {
   external bool isSupported();
-  external StrategyRunner connect(num minPriority, Function callback);
-}
 
-/* WARNING: export assignment not yet supported. */
+  external StrategyRunner connect(num minPriority, JSFunction callback);
+}

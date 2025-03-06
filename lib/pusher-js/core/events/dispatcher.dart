@@ -1,26 +1,32 @@
-// ignore_for_file: non_constant_identifier_names
+import 'dart:js_interop';
 
-@JS()
-library core.events.dispatcher;
+import '../channels/metadata.dart';
+import 'callback_registry.dart';
 
-import "package:js/js.dart";
-import "callback_registry.dart" show CallbackRegistry;
-import "../channels/metadata.dart" show Metadata;
+extension type Dispatcher._(JSObject _) implements JSObject {
+  external Dispatcher([JSFunction? failThrough]);
 
-/// Manages callback bindings and event emitting.
-@JS()
-class Dispatcher {
-  external CallbackRegistry get callbacks;
-  external set callbacks(CallbackRegistry v);
-  external List<Function> get global_callbacks;
-  external set global_callbacks(List<Function> v);
-  external Function get failThrough;
-  external set failThrough(Function v);
-  external factory Dispatcher([Function failThrough]);
-  external bind(String eventName, Function callback, [dynamic context]);
-  external bind_global(Function callback);
-  external unbind([String eventName, Function callback, dynamic context]);
-  external unbind_global([Function callback]);
-  external unbind_all();
-  external Dispatcher emit(String eventName, [dynamic data, Metadata metadata]);
+  external CallbackRegistry callbacks;
+
+  @JS('global_callbacks')
+  external JSArray<JSFunction> globalCallbacks;
+
+  external JSFunction failThrough;
+
+  external Dispatcher bind(String eventName, JSFunction callback,
+      [JSAny? context]);
+
+  @JS('bind_global')
+  external Dispatcher bindGlobal(JSFunction callback);
+
+  external Dispatcher unbind(
+      [String? eventName, JSFunction? callback, JSAny? context]);
+
+  @JS('unbind_global')
+  external Dispatcher unbindGlobal([JSFunction? callback]);
+
+  @JS('unbind_all')
+  external Dispatcher unbindAll();
+
+  external Dispatcher emit(String eventName, [JSAny? data, Metadata? metadata]);
 }

@@ -1,32 +1,27 @@
-@JS()
-library pusher_channels_flutter;
-
 import 'dart:async';
-import 'package:js/js.dart';
-import 'package:js/js_util.dart' as js_util;
+import 'dart:js_interop';
+import 'dart:js_util' as js_util;
+
 // In order to *not* need this ignore, consider extracting the 'web' version
 // of your plugin as a separate package, instead of inlining it in the same
 // package as the core of your plugin.
 // ignore: avoid_web_libraries_in_flutter
 import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
-import 'package:pusher_channels_flutter/pusher-js/core/auth/options.dart';
-import 'package:pusher_channels_flutter/pusher-js/core/channels/channel.dart';
-import 'package:pusher_channels_flutter/pusher-js/core/channels/presence_channel.dart';
-import 'package:pusher_channels_flutter/pusher-js/core/options.dart';
-import 'package:pusher_channels_flutter/pusher-js/core/pusher.dart';
 
-class PusherError extends Error {
-  String message;
-  int code;
-  PusherError(this.message, this.code);
-}
+import 'pusher-js/core/auth/deprecated_channel_authorizer.dart';
+import 'pusher-js/core/auth/options.dart';
+import 'pusher-js/core/channels/channel.dart';
+import 'pusher-js/core/channels/presence_channel.dart';
+import 'pusher-js/core/options.dart';
+import 'pusher-js/core/pusher.dart';
+import 'pusher-js/error.dart';
 
 @JS('JSON.stringify')
-external String stringify(Object obj);
+external String stringify(JSObject obj);
 
 @JS('Object.keys')
-external List<String> objectKeys(object);
+external JSArray<JSString> objectKeys(JSObject object);
 
 bool _isBasicType(value) {
   if (value == null || value is num || value is bool || value is String) {
@@ -44,7 +39,7 @@ T dartify<T>(dynamic jsObject) {
   }
   var keys = objectKeys(jsObject);
   var result = <String, dynamic>{};
-  for (var key in keys) {
+  for (var key in keys.toDart.map((e) => e.toDart)) {
     result[key] = dartify(js_util.getProperty(jsObject, key));
   }
   return result as T;
@@ -89,7 +84,7 @@ class PusherChannelsFlutterWeb {
         trigger(call);
         break;
       case 'getSocketId':
-        return pusher!.connection.socket_id;
+        return pusher!.connection.socketId;
       default:
         throw PlatformException(
           code: 'Unimplemented',
@@ -111,7 +106,7 @@ class PusherChannelsFlutterWeb {
     }
   }
 
-  void onError(dynamic jsError) {
+  void onError(JSAny? jsError) {
     final Map<String, dynamic> error = dartify<Map<String, dynamic>>(jsError);
 
     if (error['type'] == 'PusherError') {
@@ -123,7 +118,7 @@ class PusherChannelsFlutterWeb {
     }
   }
 
-  void onMessage(dynamic jsMessage) {
+  void onMessage(JSAny? jsMessage) {
     final Map<String, dynamic> msg = dartify<Map<String, dynamic>>(jsMessage);
     final String event = msg['event'] ?? '';
     final String channel = msg['channel'] ?? '';
@@ -154,7 +149,10 @@ class PusherChannelsFlutterWeb {
       if (event == 'pusher_internal:subscription_succeeded') {
         if (channel.startsWith('presence-')) {
           final presenceChannel = pusher!.channel(channel) as PresenceChannel;
-          userId = presenceChannel.members.myID;
+          final id = presenceChannel.members.myId;
+          if (id.isA<JSString>()) {
+            userId = (id as JSString).toDart;
+          }
         }
       }
       methodChannel!.invokeMethod('onEvent', {
@@ -166,7 +164,7 @@ class PusherChannelsFlutterWeb {
     }
   }
 
-  void onStateChange(dynamic jsState) {
+  void onStateChange(JSAny? jsState) {
     final Map<String, dynamic> state =
         dartify<Map<String, dynamic>>(jsState ?? {});
     final String current = state['current'] ?? '';
@@ -177,31 +175,21 @@ class PusherChannelsFlutterWeb {
     });
   }
 
-  void onConnected(dynamic jsMessage) {}
+  void onConnected(JSAny? jsMessage) {}
 
   void onDisconnected() {}
 
-  Authorizer onAuthorizer(Channel channel, AuthorizerOptions options) {
-    return Authorizer(
-      authorize: allowInterop((socketId, callback) async {
-        try {
-          var authData = await methodChannel!.invokeMethod('onAuthorizer', {
-            'socketId': socketId,
-            'channelName': channel.name,
-            'options': options.toMap(),
-          });
-          callback(
-              null,
-              AuthData(
-                  auth: authData['auth'],
-                  channel_data: authData['channel_data'],
-                  shared_secret: authData['shared_secret']));
-        } catch (e) {
-          callback(PusherError(e.toString(), -1), AuthData(auth: ''));
-        }
-      }),
-    );
-  }
+  DeprecatedChannelAuthorizer onAuthorizer(
+    Channel channel,
+    DeprecatedAuthorizerOptions options,
+  ) =>
+      DeprecatedChannelAuthorizer.create(
+        FlutterDartDeprecatedChannelAuthorizer(
+          methodChannel: methodChannel!,
+          channel: channel,
+          options: options,
+        ),
+      );
 
   void subscribe(MethodCall call) {
     assertPusher();
@@ -213,7 +201,7 @@ class PusherChannelsFlutterWeb {
     var channelName = call.arguments['channelName'];
     var channel = pusher!.channel(channelName);
     pusher!.unsubscribe(channelName);
-    channel?.unbind_all();
+    channel?.unbindAll();
   }
 
   void trigger(MethodCall call) {
@@ -224,7 +212,7 @@ class PusherChannelsFlutterWeb {
 
   void init(MethodCall call) {
     if (pusher != null) {
-      pusher!.unbind_all();
+      pusher!.unbindAll();
       pusher!.disconnect();
     }
     var options = Options();
@@ -262,13 +250,53 @@ class PusherChannelsFlutterWeb {
       Pusher.logToConsole = call.arguments['logToConsole'];
     }
     if (call.arguments['authorizer'] != null) {
-      options.authorizer = allowInterop(onAuthorizer);
+      options.authorizer = ChannelAuthorizerGenerator.create(onAuthorizer);
     }
     pusher = Pusher(call.arguments['apiKey'], options);
-    pusher!.connection.bind('error', allowInterop(onError));
-    pusher!.connection.bind('message', allowInterop(onMessage));
-    pusher!.connection.bind('state_change', allowInterop(onStateChange));
-    pusher!.connection.bind('connected', allowInterop(onConnected));
-    pusher!.connection.bind('disconnected', allowInterop(onDisconnected));
+    pusher!.connection.bind('error', onError.toJS);
+    pusher!.connection.bind('message', onMessage.toJS);
+    pusher!.connection.bind('state_change', onStateChange.toJS);
+    pusher!.connection.bind('connected', onConnected.toJS);
+    pusher!.connection.bind('disconnected', onDisconnected.toJS);
+  }
+}
+
+final class FlutterDartDeprecatedChannelAuthorizer
+    implements DartDeprecatedChannelAuthorizer {
+  const FlutterDartDeprecatedChannelAuthorizer({
+    required this.methodChannel,
+    required this.channel,
+    required this.options,
+  });
+
+  final MethodChannel methodChannel;
+  final Channel channel;
+  final DeprecatedAuthorizerOptions options;
+
+  @override
+  void authorize(String socketId, ChannelAuthorizationCallback callback) async {
+    try {
+      var authData = await methodChannel.invokeMethod('onAuthorizer', {
+        'socketId': socketId,
+        'channelName': channel.name,
+        'options': options.toMap(),
+      });
+      callback.call(
+        null,
+        ChannelAuthorizationData.create(
+          auth: authData['auth'],
+          channelData: authData['channel_data'],
+          sharedSecret: authData['shared_secret'],
+        ),
+      );
+    } catch (e, stackTrace) {
+      callback.call(
+        JSError.create(
+          message: '$e',
+          stackTrace: stackTrace,
+        ),
+        null,
+      );
+    }
   }
 }

@@ -1,16 +1,6 @@
-// ignore_for_file: non_constant_identifier_names
+import 'dart:js_interop';
 
-@JS()
-library core.channels.metadata;
-
-import "package:js/js.dart";
-
-@anonymous
-@JS()
-abstract class Metadata {
-  external String get user_id;
-  external set user_id(String v);
-  external factory Metadata({String user_id});
+extension type Metadata._(JSObject _) implements JSObject {
+  @JS('user_id')
+  external String? userId;
 }
-
-/* WARNING: export assignment not yet supported. */
