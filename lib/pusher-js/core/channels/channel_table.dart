@@ -1,12 +1,9 @@
-@JS()
-library core.channels.channel_table;
+import 'dart:js_interop';
 
-import "package:js/js.dart";
+import 'channel.dart';
 
-@anonymous
-@JS()
-abstract class ChannelTable {
-  /* Index signature is not yet supported by JavaScript interop. */
+extension type ChannelTable._(JSObject _) implements JSObject {
+  external Channel? operator [](String index);
+
+  external void operator []=(String index, Channel value);
 }
-
-/* WARNING: export assignment not yet supported. */

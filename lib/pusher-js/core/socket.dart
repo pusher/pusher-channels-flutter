@@ -1,20 +1,26 @@
-@JS()
-library core.socket;
+import 'dart:js_interop';
 
-import "package:js/js.dart";
-
-@anonymous
-@JS()
 abstract class Socket {
   external void send(dynamic payload);
-  external void ping();
-  external void close([dynamic code, dynamic reason]);
-  external bool sendRaw(dynamic payload);
-  external Function([dynamic evt])? onopen;
-  external Function(dynamic error)? onerror;
-  external Function(dynamic closeEvent)? onclose;
-  external Function(dynamic message)? onmessage;
-  external Function? onactivity;
-}
 
-/* WARNING: export assignment not yet supported. */
+  external void Function()? ping;
+
+  external dynamic close([dynamic code, dynamic reason]);
+
+  external bool Function(dynamic payload)? sendRaw;
+
+  @JS('onopen')
+  external void Function([dynamic evt])? onOpen;
+
+  @JS('onerror')
+  external void Function(dynamic error)? onerror;
+
+  @JS('onclose')
+  external void Function(dynamic closeEvent)? onclose;
+
+  @JS('onmessage')
+  external void Function(dynamic message)? onMessage;
+
+  @JS('onactivity')
+  external void Function()? onActivity;
+}

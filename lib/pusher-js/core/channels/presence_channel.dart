@@ -1,32 +1,25 @@
-@JS()
-library core.channels.presence_channel;
+import 'dart:js_interop';
 
-import "package:js/js.dart";
-import "private_channel.dart" show PrivateChannel;
-import "members.dart" show Members;
-import "../pusher.dart" show Pusher;
-import "../connection/protocol/message-types.dart" show PusherEvent;
+import '../connection/protocol/message_types.dart';
+import '../pusher.dart';
+import 'members.dart';
+import 'private_channel.dart';
 
-@JS()
-class PresenceChannel extends PrivateChannel {
-  external Members get members;
-  external set members(Members v);
+extension type PresenceChannel._(PrivateChannel _) implements PrivateChannel {
+  external PresenceChannel({
+    String name,
+    Pusher pusher,
+  });
 
-  /// Adds presence channel functionality to private channels.
-  external factory PresenceChannel(String name, Pusher pusher);
+  external Members members;
 
-  /// Authenticates the connection as a member of the channel.
-  @override
-  external authorize(String socketId, Function callback);
+  external void authorize(String socketId, JSFunction callback);
 
-  /// Handles presence and subscription events. For internal use only.
-  @override
-  external handleEvent(PusherEvent event);
-  external handleInternalEvent(PusherEvent event);
-  @override
-  external handleSubscriptionSucceededEvent(PusherEvent event);
+  external void handleEvent(PusherEvent event);
 
-  /// Resets the channel state, including members map. For internal use only.
-  @override
-  external disconnect();
+  external void handleInternalEvent(PusherEvent event);
+
+  external void handleSubscriptionSucceededEvent(PusherEvent event);
+
+  external void disconnect();
 }

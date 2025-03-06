@@ -1,64 +1,31 @@
-// ignore_for_file: non_constant_identifier_names
+import 'dart:js_interop';
 
-@JS()
-library core.connection.connection;
+import '../events/dispatcher.dart';
 
-import "package:js/js.dart";
-import "../events/dispatcher.dart" show Dispatcher;
-import "../socket.dart" show Socket;
-import "../transports/transport_connection.dart" show TransportConnection;
+extension type Connection._(Dispatcher _) implements Dispatcher {
+  external Connection(
+    String id,
+    // TransportConnection transport,
+  );
 
-/// Provides Pusher protocol interface for transports.
-/// Emits following events:
-/// - message - on received messages
-/// - ping - on ping requests
-/// - pong - on pong responses
-/// - error - when the transport emits an error
-/// - closed - after closing the transport
-/// It also emits more events when connection closes with a code.
-/// See Protocol.getCloseAction to get more details.
-@JS()
-class Connection extends Dispatcher implements Socket {
-  external String get id;
-  external set id(String v);
-  external TransportConnection get transport;
-  external set transport(TransportConnection v);
-  external num get activityTimeout;
-  external set activityTimeout(num v);
-  external factory Connection(String id, TransportConnection transport);
+  external String id;
 
-  /// Returns whether used transport handles activity checks by itself
-  external handlesActivityChecks();
+  // external TransportConnection transport;
 
-  /// Sends raw data.
-  @override
-  external bool send(dynamic data);
+  external num activityTimeout;
 
-  /// Sends an event.
-  external bool send_event(String name, dynamic data, [String channel]);
+  external bool handlesActivityChecks();
 
-  /// Sends a ping message to the server.
-  /// Basing on the underlying transport, it might send either transport's
-  /// protocol-specific ping or pusher:ping event.
-  @override
-  external ping();
+  external bool send(JSAny? data);
 
-  /// Closes the connection.
-  @override
-  external close([dynamic code, dynamic reason]);
-  external bindListeners();
-  external handleCloseEvent(dynamic closeEvent);
+  @JS('send_event')
+  external bool sendEvent(
+    String name,
+    JSAny? data, [
+    String? channel,
+  ]);
 
-  @override
-  external bool sendRaw(dynamic payload);
-  @override
-  external Function([dynamic evt])? onopen;
-  @override
-  external Function(dynamic)? onerror;
-  @override
-  external Function(dynamic)? onclose;
-  @override
-  external Function(dynamic)? onmessage;
-  @override
-  external Function? onactivity;
+  external void ping();
+
+  external void close();
 }

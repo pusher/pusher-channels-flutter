@@ -1,30 +1,32 @@
-@JS()
-library core.timeline.timeline_sender;
+import 'dart:js_interop';
 
-import "package:js/js.dart";
-import "timeline.dart" show Timeline;
+import 'timeline.dart';
 
-@anonymous
-@JS()
-abstract class TimelineSenderOptions {
-  external String get host;
-  external set host(String v);
-  external num get port;
-  external set port(num v);
-  external String get path;
-  external set path(String v);
-  external factory TimelineSenderOptions({String host, num port, String path});
+extension type TimelineSenderOptions._(JSObject _) implements JSObject {
+  external TimelineSenderOptions({
+    String? host,
+    num? port,
+    String? path,
+  });
+
+  external String? host;
+
+  external num? port;
+
+  external String? path;
 }
 
-@JS()
-class TimelineSender {
-  external Timeline get timeline;
-  external set timeline(Timeline v);
-  external TimelineSenderOptions get options;
-  external set options(TimelineSenderOptions v);
-  external String get host;
-  external set host(String v);
-  external factory TimelineSender(
-      Timeline timeline, TimelineSenderOptions options);
-  external send(bool useTLS, [Function callback]);
+extension type TimelineSender._(JSObject _) implements JSObject {
+  external TimelineSender({
+    Timeline timeline,
+    TimelineSenderOptions options,
+  });
+
+  external Timeline timeline;
+
+  external TimelineSenderOptions options;
+
+  external String host;
+
+  external void send(bool useTls, [JSFunction? callback]);
 }
