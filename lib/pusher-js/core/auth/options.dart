@@ -84,6 +84,6 @@ extension AuthorizerOptionsExt on AuthorizerOptions {
   Map<String, dynamic> toMap() => {
         'authTransport': authTransport,
         'authEndpoint': authEndpoint,
-        'auth': auth,
+        'auth': auth?.toMap(),
       };
 }

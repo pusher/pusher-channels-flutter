@@ -87,7 +87,7 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     }
 
     private fun callback(method: String, args: Any) {
-        activity!!.runOnUiThread {
+        activity?.runOnUiThread {
             methodChannel.invokeMethod(method, args)
         }
     }
@@ -180,27 +180,36 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     override fun authorize(channelName: String?, socketId: String?): String? {
         var result: String? = null
         val mutex = Semaphore(0)
-        activity!!.runOnUiThread {
-            methodChannel.invokeMethod("onAuthorizer", mapOf(
-                "channelName" to channelName,
-                "socketId" to socketId
-            ), object : Result {
-                override fun success(o: Any?) {
-                    if (o != null) {
-                        val gson = Gson()
-                        result = gson.toJson(o)
+        try {
+            activity!!.runOnUiThread {
+                methodChannel.invokeMethod("onAuthorizer", mapOf(
+                    "channelName" to channelName,
+                    "socketId" to socketId
+                ), object : Result {
+                    override fun success(o: Any?) {
+                        if (o != null) {
+                            val gson = Gson()
+                            result = gson.toJson(o)
+                        } else {
+                            result = "{ }"
+                        }
+                        mutex.release()
                     }
-                    mutex.release()
-                }
-
-                override fun error(s: String, s1: String?, o: Any?) {
-                    mutex.release()
-                }
-
-                override fun notImplemented() {
-                    mutex.release()
-                }
-            })
+                    override fun error(s: String, s1: String?, o: Any?) {
+                        Log.i(TAG, "Pusher authorize error: " + s)
+                        result = "{ }"
+                        mutex.release()
+                    }
+                    override fun notImplemented() {
+                        result = "{ }"
+                        mutex.release()
+                    }
+                })
+            }
+        } catch (exception: Exception) {
+            Log.i(TAG, "Pusher authorize error: " + exception.toString())
+            result = "{ }"
+            mutex.release()
         }
         mutex.acquire()
         return result
@@ -217,7 +226,6 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     }
 
     override fun onSubscriptionSucceeded(channelName: String) {
-        // For presence channels we wait for the onUsersInformationReceived event.
         if (!channelName.startsWith("presence-")) {
             callback(
                 "onEvent", mapOf(
@@ -230,7 +238,6 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     }
 
     override fun onEvent(event: PusherEvent) {
-        // Log.i(TAG, "Received event with data: $event")
         callback(
             "onEvent", mapOf(
                 "channelName" to event.channelName,
@@ -242,17 +249,16 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     }
 
     override fun onAuthenticationFailure(message: String, e: Exception) {
-        // Log.e(TAG, "Authentication failure due to $message, exception was $e")
         callback(
             "onSubscriptionError", mapOf(
                 "message" to message,
                 "error" to e.toString()
             )
         )
-    } // Other ChannelEventListener methods
-
+    } 
+    
+    // Other ChannelEventListener methods
     override fun onUsersInformationReceived(channelName: String?, users: MutableSet<User>?) {
-        // Log.i(TAG, "Users received: $users")
         val gson = Gson()
         val channel = pusher!!.getPresenceChannel(channelName)
         val hash = mutableMapOf<String, Any?>()
@@ -278,7 +284,6 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     }
 
     override fun onDecryptionFailure(event: String?, reason: String?) {
-        // Log.e(TAG, "Decryption failure due to $event, exception was $reason")
         callback(
             "onDecryptionFailure", mapOf(
                 "event" to event,
@@ -288,7 +293,6 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     }
 
     override fun userSubscribed(channelName: String, user: User) {
-        // Log.i(TAG, "A new user joined channel [$channelName]: ${user.id}, ${user.info}")
         callback(
             "onMemberAdded", mapOf(
                 "channelName" to channelName,
@@ -301,7 +305,6 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     }
 
     override fun userUnsubscribed(channelName: String, user: User) {
-        // Log.i(TAG, "A user left channel [$channelName]: ${user.id}, ${user.info}")
         callback(
             "onMemberRemoved", mapOf(
                 "channelName" to channelName,

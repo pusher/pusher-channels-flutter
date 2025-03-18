@@ -120,7 +120,7 @@ index.html page:
 <head>
   <script
     charset="utf-8"
-    src="https://js.pusher.com/7.0/pusher.min.js"
+    src="https://js.pusher.com/8.3.0/pusher.min.js"
   ></script>
   ...
 </head>
@@ -598,6 +598,7 @@ final socketId = await pusher.getSocketId();
 - If you have found a bug, please open an issue.
 - If you have a feature request, please open an issue.
 - If you want to contribute, please submit a pull request.
+- If you do not receive a timely response, feel free to check our [support portal](https://docs.bird.com/pusher).
 
 ## Credits
 
