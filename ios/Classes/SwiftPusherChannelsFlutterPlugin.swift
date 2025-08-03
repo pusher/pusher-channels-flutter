@@ -161,12 +161,12 @@ public class SwiftPusherChannelsFlutterPlugin: NSObject, FlutterPlugin, PusherDe
   }
 
   func connect(result: @escaping FlutterResult) {
-    pusher.connect()
+    pusher?.connect()
     result(nil)
   }
 
   func disconnect(result: @escaping FlutterResult) {
-    pusher.disconnect()
+    pusher?.disconnect()
     result(nil)
   }
 
