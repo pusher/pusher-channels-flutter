@@ -1,43 +1,44 @@
 PODS:
   - Flutter (1.0.0)
-  - NWWebSocket (0.5.4)
+  - NWWebSocket (0.5.9)
   - pusher_channels_flutter (0.0.1):
     - Flutter
-    - PusherSwift (~> 10.1.5)
-  - PusherSwift (10.1.5):
-    - NWWebSocket (~> 0.5.4)
-    - TweetNacl (~> 1.0.0)
-  - shared_preferences_ios (0.0.1):
+    - PusherSwift (~> 10.1.9)
+  - PusherSwift (10.1.9):
+    - NWWebSocket (~> 0.5.9)
+    - PusherTweetNacl (~> 1.2.0)
+  - PusherTweetNacl (1.2.0)
+  - shared_preferences_foundation (0.0.1):
     - Flutter
-  - TweetNacl (1.0.2)
+    - FlutterMacOS
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - pusher_channels_flutter (from `.symlinks/plugins/pusher_channels_flutter/ios`)
-  - shared_preferences_ios (from `.symlinks/plugins/shared_preferences_ios/ios`)
+  - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
 
 SPEC REPOS:
   trunk:
     - NWWebSocket
     - PusherSwift
-    - TweetNacl
+    - PusherTweetNacl
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
   pusher_channels_flutter:
     :path: ".symlinks/plugins/pusher_channels_flutter/ios"
-  shared_preferences_ios:
-    :path: ".symlinks/plugins/shared_preferences_ios/ios"
+  shared_preferences_foundation:
+    :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
 
 SPEC CHECKSUMS:
-  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
-  NWWebSocket: 040d22f23438cc09aaeabf537beff67699c3c76d
-  pusher_channels_flutter: 01297e6e420e0ad61a6e5901e27bb272a6f58ec2
-  PusherSwift: cad631bad86cfff4b8458dce1310a7774e469b1f
-  shared_preferences_ios: 548a61f8053b9b8a49ac19c1ffbc8b92c50d68ad
-  TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  NWWebSocket: 01dead025db38f26693d4fa0b4d5869c8013eae0
+  pusher_channels_flutter: 2723222f2686852dd91d13780938d11cca114a39
+  PusherSwift: 84a45a6b62c137c52ca948626817989d3127c022
+  PusherTweetNacl: 015f56f2cf010e718703f2bd9bca66fdcc91b208
+  shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
 
 PODFILE CHECKSUM: cc1f88378b4bfcf93a6ce00d2c587857c6008d3b
 
-COCOAPODS: 1.14.3
+COCOAPODS: 1.16.2
