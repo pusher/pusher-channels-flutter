@@ -4,6 +4,7 @@
 
 * [CHANGED] Upgrade Swift SDK to version 10.1.9.
 * [CHANGED] Upgrade flutter version in Github Actions.
+* [CHANGED] Fix release action.
 
 ## 2.5.0
 

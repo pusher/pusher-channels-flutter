@@ -38,17 +38,25 @@ jobs:
     if: ${{ needs.check-release-tag.outputs.tag }}
     steps:
       - uses: actions/checkout@v3
-      - name: 'publish pusher-channels-flutter package'
-        id: publish
-        uses: k-paxian/dart-package-publisher@master
+      - uses: subosito/flutter-action@v2
         with:
-          format: true
-          skipTests: true
-          flutter: true
-          flutterVersion: '3.24.0'
-          dryRunOnly: false
-          accessToken: ${{ secrets.OAUTH_ACCESS_TOKEN }}
-          refreshToken: ${{ secrets.OAUTH_REFRESH_TOKEN }}
+          flutter-version: '3.24.0'
+      - name: Setup pub credentials
+        run: |
+          mkdir -p $HOME/.config/dart
+          cat <<EOF > $HOME/.config/dart/pub-credentials.json
+          {
+            "accessToken": "${{ secrets.OAUTH_ACCESS_TOKEN }}",
+            "refreshToken": "${{ secrets.OAUTH_REFRESH_TOKEN }}",
+            "tokenEndpoint": "https://accounts.google.com/o/oauth2/token",
+            "scopes": ["openid", "https://www.googleapis.com/auth/userinfo.email"],
+            "expiration": 0
+          }
+          EOF
+      - name: Publish to pub.dev
+        run: |
+          flutter pub get
+          flutter pub publish --force
 
   create-github-release:
     runs-on: ubuntu-latest

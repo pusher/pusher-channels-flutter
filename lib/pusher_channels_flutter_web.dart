@@ -182,7 +182,7 @@ class PusherChannelsFlutterWeb {
 
   Authorizer onAuthorizer(Channel channel, AuthorizerOptions options) {
     return Authorizer(
-      authorize: allowInterop((socketId, callback) async {
+      authorize: js_util.allowInterop((socketId, callback) async {
         try {
           var authData = await methodChannel!.invokeMethod('onAuthorizer', {
             'socketId': socketId,
@@ -261,13 +261,13 @@ class PusherChannelsFlutterWeb {
       Pusher.logToConsole = call.arguments['logToConsole'];
     }
     if (call.arguments['authorizer'] != null) {
-      options.authorizer = allowInterop(onAuthorizer);
+      options.authorizer = js_util.allowInterop(onAuthorizer);
     }
     pusher = Pusher(call.arguments['apiKey'], options);
-    pusher!.connection.bind('error', allowInterop(onError));
-    pusher!.connection.bind('message', allowInterop(onMessage));
-    pusher!.connection.bind('state_change', allowInterop(onStateChange));
-    pusher!.connection.bind('connected', allowInterop(onConnected));
-    pusher!.connection.bind('disconnected', allowInterop(onDisconnected));
+    pusher!.connection.bind('error', js_util.allowInterop(onError));
+    pusher!.connection.bind('message', js_util.allowInterop(onMessage));
+    pusher!.connection.bind('state_change', js_util.allowInterop(onStateChange));
+    pusher!.connection.bind('connected', js_util.allowInterop(onConnected));
+    pusher!.connection.bind('disconnected', js_util.allowInterop(onDisconnected));
   }
 }
