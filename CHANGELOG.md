@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.6.0
+
+* [CHANGED] Upgrade Swift SDK to version 10.1.9.
+* [CHANGED] Upgrade flutter version in Github Actions.
+
 ## 2.5.0
 
 * [CHANGED] bump js version
