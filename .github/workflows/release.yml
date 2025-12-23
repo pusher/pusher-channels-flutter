@@ -45,6 +45,7 @@ jobs:
           format: true
           skipTests: true
           flutter: true
+          flutterVersion: '3.24.0'
           dryRunOnly: false
           accessToken: ${{ secrets.OAUTH_ACCESS_TOKEN }}
           refreshToken: ${{ secrets.OAUTH_REFRESH_TOKEN }}
