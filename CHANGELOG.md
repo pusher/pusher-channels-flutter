@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.7.0
+
+* [CHANGED] Migrate to built-in Kotlin (AGP 9.0 compatibility).
+* [CHANGED] Remove `apply plugin: "kotlin-android"` and the Kotlin Gradle Plugin classpath from `android/build.gradle` and the example app.
+* [CHANGED] Bump minimum Dart SDK to 3.12.0 and minimum Flutter version to 3.44.0, as required by the new `kotlin.compilerOptions` DSL.
+
 ## 2.6.0
 
 * [CHANGED] Upgrade Swift SDK to version 10.1.9.
