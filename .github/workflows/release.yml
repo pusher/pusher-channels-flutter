@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -28,7 +28,7 @@ jobs:
         id: release_output
         if: ${{ steps.prepare_tag.outcome == 'success' }}
         run: |
-          echo "::set-output name=tag::${{ env.TAG }}"
+          echo "tag=${{ env.TAG }}" >> $GITHUB_OUTPUT
 
     outputs:
       tag: ${{ steps.release_output.outputs.tag }}
@@ -37,7 +37,7 @@ jobs:
     needs: check-release-tag
     if: ${{ needs.check-release-tag.outputs.tag }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.24.0'
@@ -63,7 +63,7 @@ jobs:
     needs: publish
     if: ${{ needs.check-release-tag.outputs.tag }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Prepare tag
         run: |
           export TAG=v$(yq '.version' pubspec.yaml)
@@ -81,12 +81,10 @@ jobs:
           csplit -s CHANGELOG.md "/##/" {1}
           cat xx01 > CHANGELOG.tmp
       - name: Create Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.TAG }}
-          release_name: ${{ env.TAG }}
+          name: ${{ env.TAG }}
           body_path: CHANGELOG.tmp
           draft: false
           prerelease: ${{ env.PRE_RELEASE }}
