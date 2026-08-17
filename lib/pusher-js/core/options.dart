@@ -1,12 +1,35 @@
-@JS()
-library core.options;
+import 'dart:js_interop';
 
-import "package:js/js.dart";
-import "auth/options.dart" show AuthOptions, AuthorizerGenerator;
+import 'auth/options.dart' show AuthOptions, AuthorizerGenerator;
 
-@anonymous
 @JS()
-abstract class Options {
+extension type Options._(JSObject _) implements JSObject {
+  external factory Options(
+      {num activityTimeout,
+      AuthOptions auth,
+      String authEndpoint,
+      String /*'ajax'|'jsonp'*/ authTransport,
+      AuthorizerGenerator authorizer,
+      String cluster,
+      bool enableStats,
+      bool disableStats,
+      JSArray<JSString> disabledTransports,
+      JSArray<JSString> enabledTransports,
+      bool forceTLS,
+      String httpHost,
+      String httpPath,
+      num httpPort,
+      num httpsPort,
+      bool ignoreNullOrigin,
+      num pongTimeout,
+      String statsHost,
+      JSAny? timelineParams,
+      num unavailableTimeout,
+      String wsHost,
+      String wsPath,
+      num wsPort,
+      num wssPort});
+
   external num get activityTimeout;
   external set activityTimeout(num v);
   external AuthOptions get auth;
@@ -23,14 +46,10 @@ abstract class Options {
   external set enableStats(bool v);
   external bool get disableStats;
   external set disableStats(bool v);
-  external List<String /*'ws'|'wss'|'xhr_streaming'|'xhr_polling'|'sockjs'*/ >
-      get disabledTransports;
-  external set disabledTransports(
-      List<String /*'ws'|'wss'|'xhr_streaming'|'xhr_polling'|'sockjs'*/ > v);
-  external List<String /*'ws'|'wss'|'xhr_streaming'|'xhr_polling'|'sockjs'*/ >
-      get enabledTransports;
-  external set enabledTransports(
-      List<String /*'ws'|'wss'|'xhr_streaming'|'xhr_polling'|'sockjs'*/ > v);
+  external JSArray<JSString> get disabledTransports;
+  external set disabledTransports(JSArray<JSString> v);
+  external JSArray<JSString> get enabledTransports;
+  external set enabledTransports(JSArray<JSString> v);
   external bool get forceTLS;
   external set forceTLS(bool v);
   external String get httpHost;
@@ -43,14 +62,12 @@ abstract class Options {
   external set httpsPort(num v);
   external bool get ignoreNullOrigin;
   external set ignoreNullOrigin(bool v);
-//  external nacl get nacl;
-//  external set nacl(nacl v);
   external num get pongTimeout;
   external set pongTimeout(num v);
   external String get statsHost;
   external set statsHost(String v);
-  external dynamic get timelineParams;
-  external set timelineParams(dynamic v);
+  external JSAny? get timelineParams;
+  external set timelineParams(JSAny? v);
   external num get unavailableTimeout;
   external set unavailableTimeout(num v);
   external String get wsHost;
@@ -61,31 +78,4 @@ abstract class Options {
   external set wsPort(num v);
   external num get wssPort;
   external set wssPort(num v);
-  external factory Options(
-      {num activityTimeout,
-      AuthOptions auth,
-      String authEndpoint,
-      String /*'ajax'|'jsonp'*/ authTransport,
-      AuthorizerGenerator authorizer,
-      String cluster,
-      bool enableStats,
-      bool disableStats,
-      List<String /*'ws'|'wss'|'xhr_streaming'|'xhr_polling'|'sockjs'*/ >
-          disabledTransports,
-      List<String /*'ws'|'wss'|'xhr_streaming'|'xhr_polling'|'sockjs'*/ >
-          enabledTransports,
-      bool forceTLS,
-      String httpHost,
-      String httpPath,
-      num httpPort,
-      num httpsPort,
-      bool ignoreNullOrigin,
-      num pongTimeout,
-      String statsHost,
-      dynamic timelineParams,
-      num unavailableTimeout,
-      String wsHost,
-      String wsPath,
-      num wsPort,
-      num wssPort});
 }

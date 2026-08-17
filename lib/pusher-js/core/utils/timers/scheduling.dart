@@ -1,9 +1,4 @@
-// ignore_for_file: non_constant_identifier_names
+import 'dart:js_interop';
 
-@JS()
-library core.utils.timers.scheduling;
-
-import "package:js/js.dart";
-
-typedef num Scheduler(TimedCallback, number);
-typedef void Canceller(number); /*export type Delay = number;*/
+typedef Scheduler = JSFunction;
+typedef Canceller = JSFunction;

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
+import 'package:vs_pusher_channels_flutter/vs_pusher_channels_flutter.dart';
 
 void main() {
   runApp(const MyApp());
@@ -50,10 +49,6 @@ class _MyAppState extends State<MyApp> {
     }
     // Remove keyboard
     FocusScope.of(context).requestFocus(FocusNode());
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString("apiKey", _apiKey.text);
-    prefs.setString("cluster", _cluster.text);
-    prefs.setString("channelName", _channelName.text);
 
     try {
       await pusher.init(
@@ -130,9 +125,6 @@ class _MyAppState extends State<MyApp> {
     if (!eventFormValidated) {
       return;
     }
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString("eventName", _eventName.text);
-    prefs.setString("data", _data.text);
     pusher.trigger(PusherEvent(
         channelName: _channelName.text,
         eventName: _eventName.text,
@@ -145,13 +137,11 @@ class _MyAppState extends State<MyApp> {
     // message was in flight, we want to discard the reply rather than calling
     // setState to update our non-existent appearance.
     if (!mounted) return;
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      _apiKey.text = prefs.getString("apiKey") ?? '';
-      _cluster.text = prefs.getString("cluster") ?? 'eu';
-      _channelName.text = prefs.getString("channelName") ?? 'my-channel';
-      _eventName.text = prefs.getString("eventName") ?? 'client-event';
-      _data.text = prefs.getString("data") ?? 'test';
+      _cluster.text = 'eu';
+      _channelName.text = 'my-channel';
+      _eventName.text = 'client-event';
+      _data.text = 'test';
     });
   }
 

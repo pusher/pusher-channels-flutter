@@ -1,17 +1,17 @@
 // ignore_for_file: non_constant_identifier_names
 
-@JS()
-library core.connection.connection_manager;
+import 'dart:js_interop';
 
-import "package:js/js.dart";
-import "../events/dispatcher.dart" show Dispatcher;
-import "connection_manager_options.dart" show ConnectionManagerOptions;
-import "connection.dart" show Connection;
-import "../timeline/timeline.dart" show Timeline;
-import "../strategies/strategy.dart" show Strategy;
-import "../strategies/strategy_runner.dart" show StrategyRunner;
-import "../utils/timers/abstract_timer.dart" show Timer;
-import "callbacks.dart"
+import '../channels/metadata.dart' show Metadata;
+import '../events/callback_registry.dart' show CallbackRegistry;
+import '../events/dispatcher.dart' show Dispatcher;
+import 'connection_manager_options.dart' show ConnectionManagerOptions;
+import 'connection.dart' show Connection;
+import '../timeline/timeline.dart' show Timeline;
+import '../strategies/strategy.dart' show Strategy;
+import '../strategies/strategy_runner.dart' show StrategyRunner;
+import '../utils/timers/abstract_timer.dart' show Timer;
+import 'callbacks.dart'
     show ErrorCallbacks, HandshakeCallbacks, ConnectionCallbacks;
 
 /// Manages connection to Pusher.
@@ -33,7 +33,10 @@ import "callbacks.dart"
 /// - activityTimeout - time after which ping message should be sent
 /// - pongTimeout - time for Pusher to respond with pong before reconnecting
 @JS()
-class ConnectionManager extends Dispatcher {
+extension type ConnectionManager._(JSObject _) implements JSObject {
+  external factory ConnectionManager(
+      String key, ConnectionManagerOptions options);
+
   external String get key;
   external set key(String v);
   external ConnectionManagerOptions get options;
@@ -66,41 +69,56 @@ class ConnectionManager extends Dispatcher {
   external set handshakeCallbacks(HandshakeCallbacks v);
   external ConnectionCallbacks get connectionCallbacks;
   external set connectionCallbacks(ConnectionCallbacks v);
-  external factory ConnectionManager(
-      String key, ConnectionManagerOptions options);
 
   /// Establishes a connection to Pusher.
   /// Does nothing when connection is already established. See top-level doc
   /// to find events emitted on connection attempts.
-  external connect();
+  external void connect();
 
   /// Sends raw data.
-  external send(data);
+  external void send(JSAny? data);
 
   /// Sends an event.
-  external send_event(String name, dynamic data, [String channel]);
+  external void send_event(String name, JSAny? data, [String? channel]);
 
   /// Closes the connection.
-  external disconnect();
-  external isUsingTLS();
-  external startConnecting();
-  external abortConnecting();
-  external disconnectInternally();
-  external updateStrategy();
-  external retryIn(delay);
-  external clearRetryTimer();
-  external setUnavailableTimer();
-  external clearUnavailableTimer();
-  external sendActivityCheck();
-  external resetActivityCheck();
-  external stopActivityCheck();
+  external void disconnect();
+  external void isUsingTLS();
+  external void startConnecting();
+  external void abortConnecting();
+  external void disconnectInternally();
+  external void updateStrategy();
+  external void retryIn(num delay);
+  external void clearRetryTimer();
+  external void setUnavailableTimer();
+  external void clearUnavailableTimer();
+  external void sendActivityCheck();
+  external void resetActivityCheck();
+  external void stopActivityCheck();
   external ConnectionCallbacks buildConnectionCallbacks(
       ErrorCallbacks errorCallbacks);
   external HandshakeCallbacks buildHandshakeCallbacks(
       ErrorCallbacks errorCallbacks);
   external ErrorCallbacks buildErrorCallbacks();
-  external setConnection(connection);
-  external abandonConnection();
-  external updateState(String newState, [dynamic data]);
+  external void setConnection(Connection? connection);
+  external void abandonConnection();
+  external void updateState(String newState, [JSAny? data]);
   external bool shouldRetry();
+
+  // Flattened from Dispatcher (extension types can't inherit via `extends`).
+  external CallbackRegistry get callbacks;
+  external set callbacks(CallbackRegistry v);
+  external JSArray<JSFunction> get global_callbacks;
+  external set global_callbacks(JSArray<JSFunction> v);
+  external JSFunction get failThrough;
+  external set failThrough(JSFunction v);
+  external Dispatcher bind(String eventName, JSFunction callback,
+      [JSAny? context]);
+  external Dispatcher bind_global(JSFunction callback);
+  external Dispatcher unbind(
+      [String? eventName, JSFunction? callback, JSAny? context]);
+  external Dispatcher unbind_global([JSFunction? callback]);
+  external Dispatcher unbind_all();
+  external Dispatcher emit(String eventName,
+      [JSAny? data, Metadata? metadata]);
 }

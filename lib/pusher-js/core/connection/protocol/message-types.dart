@@ -1,21 +1,18 @@
 // ignore_for_file: non_constant_identifier_names, file_names
 
-@JS()
-library core.connection.protocol.message_types;
+import 'dart:js_interop';
 
-import "package:js/js.dart";
-
-@anonymous
 @JS()
-abstract class PusherEvent {
+extension type PusherEvent._(JSObject _) implements JSObject {
+  external factory PusherEvent(
+      {String event, String channel, JSAny? data, String user_id});
+
   external String get event;
   external set event(String v);
   external String get channel;
   external set channel(String v);
-  external dynamic get data;
-  external set data(dynamic v);
+  external JSAny? get data;
+  external set data(JSAny? v);
   external String get user_id;
   external set user_id(String v);
-  external factory PusherEvent(
-      {String event, String channel, dynamic data, String user_id});
 }

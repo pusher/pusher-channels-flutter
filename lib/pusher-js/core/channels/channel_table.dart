@@ -1,12 +1,6 @@
+import 'dart:js_interop';
+
+/// Index signature is not directly representable in JS interop; this is a
+/// typed opaque handle only (`{[key: string]: Channel}` in the JS source).
 @JS()
-library core.channels.channel_table;
-
-import "package:js/js.dart";
-
-@anonymous
-@JS()
-abstract class ChannelTable {
-  /* Index signature is not yet supported by JavaScript interop. */
-}
-
-/* WARNING: export assignment not yet supported. */
+extension type ChannelTable(JSObject _) implements JSObject {}

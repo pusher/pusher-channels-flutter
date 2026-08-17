@@ -1,24 +1,21 @@
-@JS()
-library core.utils.timers.abstract_timer;
+import 'dart:js_interop';
 
-import "package:js/js.dart";
-import "scheduling.dart" show Canceller, Scheduler;
-import "timed_callback.dart" show TimedCallback;
+import 'scheduling.dart' show Canceller, Scheduler;
+import 'timed_callback.dart' show TimedCallback;
 
 @JS()
-abstract class Timer {
-  external Canceller get clear;
-  external set clear(Canceller v);
-  external dynamic /*num|void*/ get timer;
-  external set timer(dynamic /*num|void*/ v);
+extension type Timer._(JSObject _) implements JSObject {
   external factory Timer(
       Scheduler set, Canceller clear, num delay, TimedCallback callback);
+
+  external Canceller get clear;
+  external set clear(Canceller v);
+  external JSAny? get timer;
+  external set timer(JSAny? v);
 
   /// Returns whether the timer is still running.
   external bool isRunning();
 
   /// Aborts a timer when it's running.
-  external ensureAborted();
+  external void ensureAborted();
 }
-
-/* WARNING: export assignment not yet supported. */

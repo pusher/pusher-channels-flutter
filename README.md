@@ -1,13 +1,13 @@
-# Pusher Channels Flutter Client
+# Pusher Channels Flutter Client (VividSoda fork)
 
-[![Latest Release](https://img.shields.io/github/v/release/pusher/pusher-channels-flutter)](https://github.com/pusher/pusher-channels-flutter/releases)
-[![Twitter](https://img.shields.io/badge/twitter-@Pusher-blue.svg?style=flat)](http://twitter.com/Pusher)
-[![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://raw.githubusercontent.com/pusher/pusher-channels-flutter/master/LICENSE)
-[![likes](https://badges.bar/pusher_channels_flutter/likes)](https://pub.dev/packages/pusher_channels_flutter/score)
-[![popularity](https://badges.bar/pusher_channels_flutter/popularity)](https://pub.dev/packages/pusher_channels_flutter/score)
-[![pub points](https://badges.bar/pusher_channels_flutter/pub%20points)](https://pub.dev/packages/pusher_channels_flutter/score)
+[![Latest Release](https://img.shields.io/github/v/release/VividSoda/pusher-channels-flutter)](https://github.com/VividSoda/pusher-channels-flutter/releases)
+[![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://raw.githubusercontent.com/VividSoda/pusher-channels-flutter/master/LICENSE)
+[![likes](https://badges.bar/vs_pusher_channels_flutter/likes)](https://pub.dev/packages/vs_pusher_channels_flutter/score)
+[![popularity](https://badges.bar/vs_pusher_channels_flutter/popularity)](https://pub.dev/packages/vs_pusher_channels_flutter/score)
+[![pub points](https://badges.bar/vs_pusher_channels_flutter/pub%20points)](https://pub.dev/packages/vs_pusher_channels_flutter/score)
 
-This is the [Pusher Channels](https://pusher.com/channels) Flutter client.
+This is a VividSoda fork of the [Pusher Channels](https://pusher.com/channels) Flutter client, migrated to
+the latest Flutter/Android/iOS tooling. See [CHANGELOG.md](CHANGELOG.md) for what's changed from upstream.
 
 For tutorials and more in-depth information about Pusher Channels, visit our [official docs](https://pusher.com/docs/channels).
 
@@ -90,20 +90,26 @@ to add the plugin to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  pusher_channels_flutter: '^1.0.1'
+  vs_pusher_channels_flutter: '^2.7.0'
 ```
 
 ### iOS specific installation
 
-The Pusher Channels Flutter plugin adds the
-pusher-websocket-swift cocoapod to your project.
-You probably need to run a
+The plugin supports both CocoaPods and Swift Package Manager for its
+PusherSwift dependency, so it works with either dependency manager.
+
+If your app uses CocoaPods (the default), the plugin adds the
+pusher-websocket-swift cocoapod to your project. You probably need to run a
 
 ```bash
 $ pod install
 ```
 
 in the ios directory.
+
+If your app has [Swift Package Manager support enabled](https://docs.flutter.dev/packages-and-plugins/swift-package-manager/for-app-developers)
+(`flutter config --enable-swift-package-manager`), no CocoaPods step is
+needed — Flutter resolves the plugin's `Package.swift` automatically.
 
 ### Android specific installation
 
@@ -125,6 +131,8 @@ index.html page:
   ...
 </head>
 ```
+
+The Dart-side bindings for pusher-js use `dart:js_interop`, so the plugin compiles for both dart2js (`flutter build web`) and WebAssembly (`flutter build web --wasm`).
 
 ## Initialization
 
@@ -337,6 +345,15 @@ The different states that the connection can be in are:
 - `DISCONNECTING` - the connection has been instructed to disconnect and it is just about to do so
 - `DISCONNECTED` - the connection has disconnected and no attempt will be made to reconnect automatically
 - `RECONNECTING` - an attempt is going to be made to try and re-establish the connection
+
+These are also available as a typed `PusherConnectionState` enum via
+`pusher.connectionStateEnum`, if you'd rather not match on the raw string:
+
+```dart
+if (pusher.connectionStateEnum == PusherConnectionState.connected) {
+  // ...
+}
+```
 
 #### `onError`
 

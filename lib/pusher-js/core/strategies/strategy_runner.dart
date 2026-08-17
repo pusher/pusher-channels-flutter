@@ -1,17 +1,12 @@
-@JS()
-library core.strategies.strategy_runner;
+import 'dart:js_interop';
 
-import "package:js/js.dart";
-
-@anonymous
 @JS()
-abstract class StrategyRunner {
-  external void Function(dynamic) get forceMinPriority;
-  external set forceMinPriority(void Function(dynamic) v);
-  external void Function() get abort;
-  external set abort(void Function() v);
+extension type StrategyRunner._(JSObject _) implements JSObject {
   external factory StrategyRunner(
-      {void Function(dynamic) forceMinPriority, void Function() abort});
-}
+      {JSFunction forceMinPriority, JSFunction abort});
 
-/* WARNING: export assignment not yet supported. */
+  external JSFunction get forceMinPriority;
+  external set forceMinPriority(JSFunction v);
+  external JSFunction get abort;
+  external set abort(JSFunction v);
+}

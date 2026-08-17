@@ -1,9 +1,7 @@
-@JS()
-library core.config;
+import 'dart:js_interop';
 
-import "package:js/js.dart";
-import "auth/options.dart" show AuthOptions, AuthorizerGenerator;
-import "options.dart" show Options;
+import 'auth/options.dart' show AuthOptions, AuthorizerGenerator;
+import 'options.dart' show Options;
 
 /*export type AuthTransport = 'ajax' | 'jsonp';*/
 /*export type Transport =
@@ -13,9 +11,34 @@ import "options.dart" show Options;
   | 'xhr_polling'
   | 'sockjs';
 */
-@anonymous
 @JS()
-abstract class Config {
+extension type Config._(JSObject _) implements JSObject {
+  external factory Config(
+      {num activityTimeout,
+      String authEndpoint,
+      String /*'ajax'|'jsonp'*/ authTransport,
+      bool enableStats,
+      String httpHost,
+      String httpPath,
+      num httpPort,
+      num httpsPort,
+      num pongTimeout,
+      String statsHost,
+      num unavailableTimeout,
+      bool useTLS,
+      String wsHost,
+      String wsPath,
+      num wsPort,
+      num wssPort,
+      bool forceTLS,
+      AuthOptions auth,
+      AuthorizerGenerator authorizer,
+      String cluster,
+      JSArray<JSString> disabledTransports,
+      JSArray<JSString> enabledTransports,
+      bool ignoreNullOrigin,
+      JSAny? timelineParams});
+
   /// these are all 'required' config parameters, it's not necessary for the user
   /// to set them, but they have configured defaults.
   external num get activityTimeout;
@@ -61,48 +84,14 @@ abstract class Config {
   external set authorizer(AuthorizerGenerator v);
   external String get cluster;
   external set cluster(String v);
-  external List<String /*'ws'|'wss'|'xhr_streaming'|'xhr_polling'|'sockjs'*/ >
-      get disabledTransports;
-  external set disabledTransports(
-      List<String /*'ws'|'wss'|'xhr_streaming'|'xhr_polling'|'sockjs'*/ > v);
-  external List<String /*'ws'|'wss'|'xhr_streaming'|'xhr_polling'|'sockjs'*/ >
-      get enabledTransports;
-  external set enabledTransports(
-      List<String /*'ws'|'wss'|'xhr_streaming'|'xhr_polling'|'sockjs'*/ > v);
+  external JSArray<JSString> get disabledTransports;
+  external set disabledTransports(JSArray<JSString> v);
+  external JSArray<JSString> get enabledTransports;
+  external set enabledTransports(JSArray<JSString> v);
   external bool get ignoreNullOrigin;
   external set ignoreNullOrigin(bool v);
-//  external nacl get nacl;
-//  external set nacl(nacl v);
-  external dynamic get timelineParams;
-  external set timelineParams(dynamic v);
-  external factory Config(
-      {num activityTimeout,
-      String authEndpoint,
-      String /*'ajax'|'jsonp'*/ authTransport,
-      bool enableStats,
-      String httpHost,
-      String httpPath,
-      num httpPort,
-      num httpsPort,
-      num pongTimeout,
-      String statsHost,
-      num unavailableTimeout,
-      bool useTLS,
-      String wsHost,
-      String wsPath,
-      num wsPort,
-      num wssPort,
-      bool forceTLS,
-      AuthOptions auth,
-      AuthorizerGenerator authorizer,
-      String cluster,
-      List<String /*'ws'|'wss'|'xhr_streaming'|'xhr_polling'|'sockjs'*/ >
-          disabledTransports,
-      List<String /*'ws'|'wss'|'xhr_streaming'|'xhr_polling'|'sockjs'*/ >
-          enabledTransports,
-      bool ignoreNullOrigin,
-//      nacl nacl,
-      dynamic timelineParams});
+  external JSAny? get timelineParams;
+  external set timelineParams(JSAny? v);
 }
 
 @JS()

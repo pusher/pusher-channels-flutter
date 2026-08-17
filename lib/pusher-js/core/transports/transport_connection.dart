@@ -1,12 +1,14 @@
-@JS()
-library core.transports.transport_connection;
+// ignore_for_file: non_constant_identifier_names
 
-import "package:js/js.dart";
-import "../events/dispatcher.dart" show Dispatcher;
-import "transport_hooks.dart" show TransportHooks;
-import "transport_connection_options.dart" show TransportConnectionOptions;
-import "../timeline/timeline.dart" show Timeline;
-import "../socket.dart" show Socket;
+import 'dart:js_interop';
+
+import '../events/callback_registry.dart' show CallbackRegistry;
+import '../events/dispatcher.dart' show Dispatcher;
+import 'transport_hooks.dart' show TransportHooks;
+import 'transport_connection_options.dart' show TransportConnectionOptions;
+import '../timeline/timeline.dart' show Timeline;
+import '../socket.dart' show Socket;
+import '../channels/metadata.dart' show Metadata;
 
 /// Provides universal API for transport connections.
 /// Transport connection is a low-level object that wraps a connection method
@@ -28,7 +30,10 @@ import "../socket.dart" show Socket;
 /// - hostTLS - host to connect to when connection is over TLS
 /// - hostNonTLS - host to connect to when connection is over TLS
 @JS()
-class TransportConnection extends Dispatcher {
+extension type TransportConnection._(JSObject _) implements JSObject {
+  external factory TransportConnection(TransportHooks hooks, String name,
+      num priority, String key, TransportConnectionOptions options);
+
   external TransportHooks get hooks;
   external set hooks(TransportHooks v);
   external String get name;
@@ -49,12 +54,10 @@ class TransportConnection extends Dispatcher {
   external set id(num v);
   external Socket get socket;
   external set socket(Socket v);
-  external Function get beforeOpen;
-  external set beforeOpen(Function v);
-  external Function get initialize;
-  external set initialize(Function v);
-  external factory TransportConnection(TransportHooks hooks, String name,
-      num priority, String key, TransportConnectionOptions options);
+  external JSFunction get beforeOpen;
+  external set beforeOpen(JSFunction v);
+  external JSFunction get initialize;
+  external set initialize(JSFunction v);
 
   /// Checks whether the transport handles activity checks by itself.
   external bool handlesActivityChecks();
@@ -69,17 +72,34 @@ class TransportConnection extends Dispatcher {
   external bool close();
 
   /// Sends data over the open connection.
-  external bool send(dynamic data);
+  external bool send(JSAny? data);
 
   /// Sends a ping if the connection is open and transport supports it.
-  external ping();
-  external onOpen();
-  external onError(error);
-  external onClose([dynamic closeEvent]);
-  external onMessage(message);
-  external onActivity();
-  external bindListeners();
-  external unbindListeners();
-  external changeState(String state, [dynamic params]);
-  external dynamic buildTimelineMessage(message);
+  external void ping();
+  external void onOpen();
+  external void onError(JSAny? error);
+  external void onClose([JSAny? closeEvent]);
+  external void onMessage(JSAny? message);
+  external void onActivity();
+  external void bindListeners();
+  external void unbindListeners();
+  external void changeState(String state, [JSAny? params]);
+  external JSAny? buildTimelineMessage(JSAny? message);
+
+  // Flattened from Dispatcher (extension types can't inherit via `extends`).
+  external CallbackRegistry get callbacks;
+  external set callbacks(CallbackRegistry v);
+  external JSArray<JSFunction> get global_callbacks;
+  external set global_callbacks(JSArray<JSFunction> v);
+  external JSFunction get failThrough;
+  external set failThrough(JSFunction v);
+  external Dispatcher bind(String eventName, JSFunction callback,
+      [JSAny? context]);
+  external Dispatcher bind_global(JSFunction callback);
+  external Dispatcher unbind(
+      [String? eventName, JSFunction? callback, JSAny? context]);
+  external Dispatcher unbind_global([JSFunction? callback]);
+  external Dispatcher unbind_all();
+  external Dispatcher emit(String eventName,
+      [JSAny? data, Metadata? metadata]);
 }

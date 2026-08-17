@@ -1,40 +1,38 @@
-@JS()
-library core.channels.members;
-
-import "package:js/js.dart";
+import 'dart:js_interop';
 
 /// Represents a collection of members of a presence channel.
 @JS()
-class Members {
-  external dynamic get members;
-  external set members(dynamic v);
+extension type Members._(JSObject _) implements JSObject {
+  external factory Members();
+
+  external JSAny? get members;
+  external set members(JSAny? v);
   external num get count;
   external set count(num v);
-  external dynamic get myID;
-  external set myID(dynamic v);
-  external dynamic get me;
-  external set me(dynamic v);
-  external factory Members();
+  external JSAny? get myID;
+  external set myID(JSAny? v);
+  external JSAny? get me;
+  external set me(JSAny? v);
 
   /// Returns member's info for given id.
   /// Resulting object containts two fields - id and info.
-  external dynamic get(String id);
+  external JSAny? get(String id);
 
   /// Calls back for each member in unspecified order.
-  external each(Function callback);
+  external void each(JSFunction callback);
 
   /// Updates the id for connected member. For internal use only.
-  external setMyID(String id);
+  external void setMyID(String id);
 
   /// Handles subscription data. For internal use only.
-  external onSubscription(dynamic subscriptionData);
+  external void onSubscription(JSAny? subscriptionData);
 
   /// Adds a new member to the collection. For internal use only.
-  external addMember(dynamic memberData);
+  external void addMember(JSAny? memberData);
 
   /// Adds a member from the collection. For internal use only.
-  external removeMember(dynamic memberData);
+  external void removeMember(JSAny? memberData);
 
   /// Resets the collection to the initial state. For internal use only.
-  external reset();
+  external void reset();
 }

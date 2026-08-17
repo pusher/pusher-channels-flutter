@@ -1,20 +1,24 @@
 // ignore_for_file: non_constant_identifier_names
 
-@JS()
-library core.timeline.timeline;
-
-import "package:js/js.dart";
+import 'dart:js_interop';
 
 @JS()
-class Level {
+extension type Level._(JSObject _) implements JSObject {
   external static num get ERROR;
   external static num get INFO;
   external static num get DEBUG;
 }
 
-@anonymous
 @JS()
-abstract class TimelineOptions {
+extension type TimelineOptions._(JSObject _) implements JSObject {
+  external factory TimelineOptions(
+      {Level level,
+      num limit,
+      String version,
+      String cluster,
+      JSArray<JSString> features,
+      JSAny? params});
+
   external Level get level;
   external set level(Level v);
   external num get limit;
@@ -23,39 +27,33 @@ abstract class TimelineOptions {
   external set version(String v);
   external String get cluster;
   external set cluster(String v);
-  external List<String> get features;
-  external set features(List<String> v);
-  external dynamic get params;
-  external set params(dynamic v);
-  external factory TimelineOptions(
-      {Level level,
-      num limit,
-      String version,
-      String cluster,
-      List<String> features,
-      dynamic params});
+  external JSArray<JSString> get features;
+  external set features(JSArray<JSString> v);
+  external JSAny? get params;
+  external set params(JSAny? v);
 }
 
 @JS()
-class Timeline {
+extension type Timeline._(JSObject _) implements JSObject {
+  external factory Timeline(String key, num session, TimelineOptions options);
+
   external String get key;
   external set key(String v);
   external num get session;
   external set session(num v);
-  external List<dynamic> get events;
-  external set events(List<dynamic> v);
+  external JSArray<JSAny?> get events;
+  external set events(JSArray<JSAny?> v);
   external TimelineOptions get options;
   external set options(TimelineOptions v);
   external num get sent;
   external set sent(num v);
   external num get uniqueID;
   external set uniqueID(num v);
-  external factory Timeline(String key, num session, TimelineOptions options);
-  external log(level, event);
-  external error(event);
-  external info(event);
-  external debug(event);
-  external isEmpty();
-  external send(sendfn, callback);
+  external void log(JSAny? level, JSAny? event);
+  external void error(JSAny? event);
+  external void info(JSAny? event);
+  external void debug(JSAny? event);
+  external bool isEmpty();
+  external void send(JSFunction sendfn, JSFunction callback);
   external num generateUniqueID();
 }

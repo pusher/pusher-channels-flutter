@@ -1,13 +1,10 @@
-@JS()
-library core.transports.transport_hooks;
+import 'dart:js_interop';
 
-import "package:js/js.dart";
-import "url_scheme.dart" show URLScheme;
-import "../socket.dart" show Socket;
+import 'url_scheme.dart' show URLScheme;
+import '../socket.dart' show Socket;
 
-@anonymous
 @JS()
-abstract class TransportHooks {
+extension type TransportHooks(JSObject _) implements JSObject {
   external String get file;
   external set file(String v);
   external URLScheme get urls;
@@ -17,10 +14,8 @@ abstract class TransportHooks {
   external bool get supportsPing;
   external set supportsPing(bool v);
   external bool isInitialized();
-  external bool isSupported([dynamic environment]);
-  external Socket getSocket(String url, [dynamic options]);
-  external Function get beforeOpen;
-  external set beforeOpen(Function v);
+  external bool isSupported([JSAny? environment]);
+  external Socket getSocket(String url, [JSAny? options]);
+  external JSFunction get beforeOpen;
+  external set beforeOpen(JSFunction v);
 }
-
-/* WARNING: export assignment not yet supported. */

@@ -1,55 +1,52 @@
 // ignore_for_file: non_constant_identifier_names
 
-@JS()
-library core.connection.callbacks;
+import 'dart:js_interop';
 
-import "package:js/js.dart";
-import "handshake/handshake_payload.dart" show HandshakePayload;
-
-@anonymous
 @JS()
-abstract class ErrorCallbacks {
-  external void Function(dynamic /*Action|HandshakePayload*/) get tls_only;
-  external set tls_only(void Function(dynamic /*Action|HandshakePayload*/) v);
-  external void Function(dynamic /*Action|HandshakePayload*/) get refused;
-  external set refused(void Function(dynamic /*Action|HandshakePayload*/) v);
-  external void Function(dynamic /*Action|HandshakePayload*/) get backoff;
-  external set backoff(void Function(dynamic /*Action|HandshakePayload*/) v);
-  external void Function(dynamic /*Action|HandshakePayload*/) get retry;
-  external set retry(void Function(dynamic /*Action|HandshakePayload*/) v);
+extension type ErrorCallbacks._(JSObject _) implements JSObject {
   external factory ErrorCallbacks(
-      {void Function(dynamic /*Action|HandshakePayload*/) tls_only,
-      void Function(dynamic /*Action|HandshakePayload*/) refused,
-      void Function(dynamic /*Action|HandshakePayload*/) backoff,
-      void Function(dynamic /*Action|HandshakePayload*/) retry});
+      {JSFunction tls_only,
+      JSFunction refused,
+      JSFunction backoff,
+      JSFunction retry});
+
+  /// `void Function(Action|HandshakePayload)` in the original JS source.
+  external JSFunction get tls_only;
+  external set tls_only(JSFunction v);
+  external JSFunction get refused;
+  external set refused(JSFunction v);
+  external JSFunction get backoff;
+  external set backoff(JSFunction v);
+  external JSFunction get retry;
+  external set retry(JSFunction v);
 }
 
-@anonymous
 @JS()
-abstract class HandshakeCallbacks {
-  external void Function(HandshakePayload) get connected;
-  external set connected(void Function(HandshakePayload) v);
-  external factory HandshakeCallbacks(
-      {void Function(HandshakePayload) connected});
+extension type HandshakeCallbacks._(JSObject _) implements JSObject {
+  external factory HandshakeCallbacks({JSFunction connected});
+
+  /// `void Function(HandshakePayload)` in the original JS source.
+  external JSFunction get connected;
+  external set connected(JSFunction v);
 }
 
-@anonymous
 @JS()
-abstract class ConnectionCallbacks {
-  external void Function(dynamic) get message;
-  external set message(void Function(dynamic) v);
-  external void Function() get ping;
-  external set ping(void Function() v);
-  external void Function() get activity;
-  external set activity(void Function() v);
-  external void Function(dynamic) get error;
-  external set error(void Function(dynamic) v);
-  external void Function() get closed;
-  external set closed(void Function() v);
+extension type ConnectionCallbacks._(JSObject _) implements JSObject {
   external factory ConnectionCallbacks(
-      {void Function(dynamic) message,
-      void Function() ping,
-      void Function() activity,
-      void Function(dynamic) error,
-      void Function() closed});
+      {JSFunction message,
+      JSFunction ping,
+      JSFunction activity,
+      JSFunction error,
+      JSFunction closed});
+
+  external JSFunction get message;
+  external set message(JSFunction v);
+  external JSFunction get ping;
+  external set ping(JSFunction v);
+  external JSFunction get activity;
+  external set activity(JSFunction v);
+  external JSFunction get error;
+  external set error(JSFunction v);
+  external JSFunction get closed;
+  external set closed(JSFunction v);
 }
