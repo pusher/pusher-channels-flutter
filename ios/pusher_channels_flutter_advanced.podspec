@@ -1,19 +1,19 @@
 #
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html.
-# Run `pod lib lint pusher_channels.podspec` to validate before publishing.
+# Run `pod lib lint pusher_channels_flutter_advanced.podspec` to validate before publishing.
 #
 Pod::Spec.new do |s|
-  s.name             = 'pusher_channels_flutter'
-  s.version          = '0.0.1'
+  s.name             = 'pusher_channels_flutter_advanced'
+  s.version          = '3.0.0'
   s.summary          = 'Pusher Channels Flutter integration.'
   s.description      = <<-DESC
-A new flutter plugin project.
+A Flutter plugin for Pusher Channels.
                        DESC
-  s.homepage         = 'https://github.com/pusher/pusher-channels-flutter'
+  s.homepage         = 'https://github.com/nafiskabbo/pusher_channels_flutter_advanced'
   s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Pusher' => 'info@pusher.com' }
+  s.author           = { 'Nafis Kabbo' => 'nafiskabbo30@gmail.com' }
   s.source           = { :path => '.' }
-  s.source_files = 'Classes/**/*'
+  s.source_files = 'pusher_channels_flutter_advanced/Sources/pusher_channels_flutter_advanced/**/*'
   s.dependency 'Flutter'
   s.dependency 'PusherSwift', '~> 10.1.9'
   s.platform = :ios, '13.0'

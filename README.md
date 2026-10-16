@@ -1,13 +1,16 @@
 # Pusher Channels Flutter Client
 
-[![Latest Release](https://img.shields.io/github/v/release/pusher/pusher-channels-flutter)](https://github.com/pusher/pusher-channels-flutter/releases)
+[![pub package](https://img.shields.io/pub/v/pusher_channels_flutter_advanced.svg?logo=dart)](https://pub.dev/packages/pusher_channels_flutter_advanced)
+[![Latest Release](https://img.shields.io/github/v/release/nafiskabbo/pusher_channels_flutter_advanced)](https://github.com/nafiskabbo/pusher_channels_flutter_advanced/releases)
 [![Twitter](https://img.shields.io/badge/twitter-@Pusher-blue.svg?style=flat)](http://twitter.com/Pusher)
-[![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://raw.githubusercontent.com/pusher/pusher-channels-flutter/master/LICENSE)
-[![likes](https://badges.bar/pusher_channels_flutter/likes)](https://pub.dev/packages/pusher_channels_flutter/score)
-[![popularity](https://badges.bar/pusher_channels_flutter/popularity)](https://pub.dev/packages/pusher_channels_flutter/score)
-[![pub points](https://badges.bar/pusher_channels_flutter/pub%20points)](https://pub.dev/packages/pusher_channels_flutter/score)
+[![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://raw.githubusercontent.com/nafiskabbo/pusher_channels_flutter_advanced/master/LICENSE)
+[![likes](https://badges.bar/pusher_channels_flutter_advanced/likes)](https://pub.dev/packages/pusher_channels_flutter_advanced/score)
+[![popularity](https://badges.bar/pusher_channels_flutter_advanced/popularity)](https://pub.dev/packages/pusher_channels_flutter_advanced/score)
+[![pub points](https://badges.bar/pusher_channels_flutter_advanced/pub%20points)](https://pub.dev/packages/pusher_channels_flutter_advanced/score)
 
 This is the [Pusher Channels](https://pusher.com/channels) Flutter client.
+
+Community-maintained fork of [pusher/pusher-channels-flutter](https://github.com/pusher/pusher-channels-flutter), republished as **`pusher_channels_flutter_advanced`** on [pub.dev](https://pub.dev/packages/pusher_channels_flutter_advanced). Maintained by [Nafis Kabbo](https://github.com/nafiskabbo). Issues and pull requests are welcome at [nafiskabbo/pusher_channels_flutter_advanced](https://github.com/nafiskabbo/pusher_channels_flutter_advanced).
 
 For tutorials and more in-depth information about Pusher Channels, visit our [official docs](https://pusher.com/docs/channels).
 
@@ -28,7 +31,7 @@ For tutorials and more in-depth information about Pusher Channels, visit our [of
 By cloning this repository you can check the Flutter example application,
 a minimal application to connect to a channel and send events.
 
-- https://github.com/pusher/pusher-channels-flutter/tree/master/example
+- https://github.com/nafiskabbo/pusher_channels_flutter_advanced/tree/master/example
 
 ## Table of Contents
 
@@ -38,6 +41,7 @@ a minimal application to connect to a channel and send events.
   - [Example Application](#example-application)
   - [Table of Contents](#table-of-contents)
   - [Installation](#installation)
+    - [Migrating from `pusher_channels_flutter`](#migrating-from-pusher_channels_flutter)
     - [iOS specific installation](#ios-specific-installation)
     - [Android specific installation](#android-specific-installation)
     - [Web specific installation](#web-specific-installation)
@@ -90,7 +94,15 @@ to add the plugin to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  pusher_channels_flutter: '^1.0.1'
+  pusher_channels_flutter_advanced: ^3.0.0
+```
+
+### Migrating from `pusher_channels_flutter`
+
+Replace the dependency name in `pubspec.yaml`. Dart APIs are unchanged; update the import URI:
+
+```dart
+import 'package:pusher_channels_flutter_advanced/pusher_channels_flutter_advanced.dart';
 ```
 
 ### iOS specific installation
@@ -602,8 +614,8 @@ final socketId = await pusher.getSocketId();
 
 ## Credits
 
-PusherChannelsFlutter is owned and maintained by [Pusher](https://pusher.com).
+PusherChannelsFlutter is a community-maintained fork of the original plugin owned by [Pusher](https://pusher.com). This package is maintained by [Nafis Kabbo](https://github.com/nafiskabbo).
 
 ## License
 
-PusherChannelsFlutter is released under the MIT license. See [LICENSE](https://github.com/pusher/pusher-channels-flutter/blob/master/LICENSE) for details.
+PusherChannelsFlutter is released under the MIT license. See [LICENSE](https://github.com/nafiskabbo/pusher_channels_flutter_advanced/blob/master/LICENSE) for details.

@@ -1,7 +1,7 @@
 # pusher_channels_flutter_example
 
-Demonstrates how to use the pusher_channels_flutter plugin
-at https://github.com/pusher/pusher-channels-flutter
+Demonstrates how to use the pusher_channels_flutter_advanced plugin
+at https://github.com/nafiskabbo/pusher_channels_flutter_advanced
 
 ## Getting Started
 
@@ -18,12 +18,12 @@ this can be done by setting the `authEndPoint` parameter
 (see `main.dart`). For setting up an auth endpoint please
 check:
 
-https://github.com/pusher/pusher-channels-flutter#authendpoint-string
+https://github.com/nafiskabbo/pusher_channels_flutter_advanced#authendpoint-string
 
 It's also possible to authenticate in the app itself, by
 implementing the `onAuthorizer` callback, for more information see here:
 
-https://github.com/pusher/pusher-channels-flutter#onauthorizer
+https://github.com/nafiskabbo/pusher_channels_flutter_advanced#onauthorizer
 
 ## Communication
 
@@ -33,8 +33,8 @@ https://github.com/pusher/pusher-channels-flutter#onauthorizer
 
 ## Credits
 
-PusherChannelsFlutter is owned and maintained by [Pusher](https://pusher.com).
+PusherChannelsFlutter is a community-maintained fork of the original plugin owned by [Pusher](https://pusher.com). This package is maintained by [Nafis Kabbo](https://github.com/nafiskabbo).
 
 ## License
 
-PusherChannelsFlutter is released under the MIT license. See [LICENSE](https://github.com/pusher/pusher-channels-flutter/blob/master/LICENSE) for details.
+PusherChannelsFlutter is released under the MIT license. See [LICENSE](https://github.com/nafiskabbo/pusher_channels_flutter_advanced/blob/master/LICENSE) for details.

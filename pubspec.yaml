@@ -1,9 +1,9 @@
-name: pusher_channels_flutter
+name: pusher_channels_flutter_advanced
 description: Pusher Channels Flutter Plugin
-version: 2.6.0
-homepage: https://github.com/pusher/pusher-channels-flutter
-repository: https://github.com/pusher/pusher-channels-flutter
-issue_tracker: https://github.com/pusher/pusher-channels-flutter/issues
+version: 3.0.0
+homepage: https://github.com/nafiskabbo/pusher_channels_flutter_advanced
+repository: https://github.com/nafiskabbo/pusher_channels_flutter_advanced
+issue_tracker: https://github.com/nafiskabbo/pusher_channels_flutter_advanced/issues
 environment:
   sdk: ">=3.5.0 <4.0.0"
   flutter: ">=1.20.0"
@@ -31,7 +31,7 @@ flutter:
       android:
         package: com.pusher.channels_flutter
         pluginClass: PusherChannelsFlutterPlugin
-        fileName: pusher_channels_flutter.dart
+        fileName: pusher_channels_flutter_advanced.dart
       ios:
         pluginClass: PusherChannelsFlutterPlugin
       web:

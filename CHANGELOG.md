@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.0.0
+
+- **Package renamed** from `pusher_channels_flutter` to [`pusher_channels_flutter_advanced`](https://pub.dev/packages/pusher_channels_flutter_advanced) for independent publication on pub.dev
+- **Fork lineage:** community-maintained continuation of [pusher/pusher-channels-flutter](https://github.com/pusher/pusher-channels-flutter)
+- **Maintainer:** [Nafis Kabbo](mailto:nafiskabbo30@gmail.com)
+- Adds iOS Swift Package Manager (SPM) support alongside CocoaPods
+
 ## 2.6.0
 
 * [CHANGED] Upgrade Swift SDK to version 10.1.9.

@@ -1,5 +1,8 @@
 .DS_Store
 .dart_tool/
+.build/
+.swiftpm/
+ios/FlutterFramework/
 
 .packages
 .pub/
