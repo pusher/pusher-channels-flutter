@@ -33,7 +33,7 @@ flutter:
         pluginClass: PusherChannelsFlutterPlugin
         fileName: pusher_channels_flutter_advanced.dart
       ios:
-        pluginClass: PusherChannelsFlutterPlugin
+        pluginClass: SwiftPusherChannelsFlutterPlugin
       web:
         pluginClass: PusherChannelsFlutterWeb
         fileName: pusher_channels_flutter_web.dart
