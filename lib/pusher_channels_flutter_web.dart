@@ -266,8 +266,10 @@ class PusherChannelsFlutterWeb {
     pusher = Pusher(call.arguments['apiKey'], options);
     pusher!.connection.bind('error', js_util.allowInterop(onError));
     pusher!.connection.bind('message', js_util.allowInterop(onMessage));
-    pusher!.connection.bind('state_change', js_util.allowInterop(onStateChange));
+    pusher!.connection
+        .bind('state_change', js_util.allowInterop(onStateChange));
     pusher!.connection.bind('connected', js_util.allowInterop(onConnected));
-    pusher!.connection.bind('disconnected', js_util.allowInterop(onDisconnected));
+    pusher!.connection
+        .bind('disconnected', js_util.allowInterop(onDisconnected));
   }
 }
