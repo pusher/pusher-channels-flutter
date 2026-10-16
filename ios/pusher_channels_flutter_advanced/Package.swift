@@ -19,7 +19,7 @@ let package = Package(
             name: "pusher_channels_flutter_advanced",
             dependencies: [
                 .product(name: "FlutterFramework", package: "FlutterFramework"),
-                "PusherSwift",
+                .product(name: "PusherSwift", package: "pusher-websocket-swift"),
             ],
             resources: []
         )
