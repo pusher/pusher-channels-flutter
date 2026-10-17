@@ -1,5 +1,27 @@
 # Changelog
 
+## 3.1.0
+
+- Migrate web from discontinued `package:js` to `dart:js_interop`
+- Bind directly to the loaded pusher-js client instead of generated `package:js` wrappers
+
+## 3.0.2
+
+- Expand the package description and use HTTPS-only README links
+- Hide pusher-js web internals from the public API so dartdoc coverage meets pub scoring
+- Migrate Android to built-in Kotlin and require Flutter 3.44 / Dart 3.12
+
+## 3.0.1
+
+- Upgrade package dependencies (`flutter_lints` ^6.0.0)
+
+## 3.0.0
+
+- **Package renamed** from `pusher_channels_flutter` to [`pusher_channels_flutter_advanced`](https://pub.dev/packages/pusher_channels_flutter_advanced) for independent publication on pub.dev
+- **Fork lineage:** community-maintained continuation of [pusher/pusher-channels-flutter](https://github.com/pusher/pusher-channels-flutter)
+- **Maintainer:** [Nafis Kabbo](mailto:nafiskabbo30@gmail.com)
+- Adds iOS Swift Package Manager (SPM) support alongside CocoaPods
+
 ## 2.6.0
 
 * [CHANGED] Upgrade Swift SDK to version 10.1.9.

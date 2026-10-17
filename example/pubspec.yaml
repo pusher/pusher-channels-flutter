@@ -6,7 +6,7 @@ description: Demonstrates how to use the pusher_channels plugin.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 environment:
-  sdk: ">=3.5.0 <4.0.0"
+  sdk: ^3.12.0
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -19,9 +19,9 @@ dependencies:
     sdk: flutter
   shared_preferences: ^2.3.2
 
-  pusher_channels_flutter:
+  pusher_channels_flutter_advanced:
     # When depending on this package from a real application you should use:
-    #   pusher_channels: ^x.y.z
+    #   pusher_channels_flutter_advanced: ^x.y.z
     # See https://dart.dev/tools/pub/dependencies#version-constraints
     # The example app is bundled with the plugin so we use a path dependency on
     # the parent directory to use the current plugin's version.

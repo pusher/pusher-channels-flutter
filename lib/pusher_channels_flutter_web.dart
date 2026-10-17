@@ -1,59 +1,70 @@
-@JS()
-
 import 'dart:async';
-import 'package:js/js.dart';
-import 'package:js/js_util.dart' as js_util;
-// In order to *not* need this ignore, consider extracting the 'web' version
-// of your plugin as a separate package, instead of inlining it in the same
-// package as the core of your plugin.
-// ignore: avoid_web_libraries_in_flutter
+import 'dart:js_interop';
+import 'dart:js_interop_unsafe';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
-import 'package:pusher_channels_flutter/pusher-js/core/auth/options.dart';
-import 'package:pusher_channels_flutter/pusher-js/core/channels/channel.dart';
-import 'package:pusher_channels_flutter/pusher-js/core/channels/presence_channel.dart';
-import 'package:pusher_channels_flutter/pusher-js/core/options.dart';
-import 'package:pusher_channels_flutter/pusher-js/core/pusher.dart';
 
+/// Error forwarded from the pusher-js web client.
 class PusherError extends Error {
+  /// Human-readable error message.
   String message;
+
+  /// Numeric error code from pusher-js, or `-1` when unknown.
   int code;
+
+  /// Creates a web client error.
   PusherError(this.message, this.code);
 }
 
-@JS('JSON.stringify')
-external String stringify(Object obj);
-
-@JS('Object.keys')
-external List<String> objectKeys(object);
-
-bool _isBasicType(value) {
-  if (value == null || value is num || value is bool || value is String) {
-    return true;
-  }
-  return false;
+@JS('Pusher')
+extension type _JSPusher._(JSObject _) implements JSObject {
+  external factory _JSPusher(String appKey, [JSAny? options]);
+  external static set logToConsole(bool v);
+  external _JSConnection get connection;
+  external void connect();
+  external void disconnect();
+  external JSAny? subscribe(String channelName);
+  external void unsubscribe(String channelName);
+  external _JSChannel? channel(String name);
+  @JS('unbind_all')
+  external _JSPusher unbindAll([JSFunction? callback]);
 }
 
-T dartify<T>(dynamic jsObject) {
-  if (_isBasicType(jsObject)) {
-    return jsObject as T;
+@JS()
+extension type _JSConnection._(JSObject _) implements JSObject {
+  @JS('socket_id')
+  external String get socketId;
+  external JSAny bind(String eventName, JSFunction callback);
+}
+
+@JS()
+extension type _JSChannel._(JSObject _) implements JSObject {
+  external String get name;
+  external void trigger(String event, JSAny? data);
+  @JS('unbind_all')
+  external void unbindAll();
+  external _JSMembers get members;
+}
+
+@JS()
+extension type _JSMembers._(JSObject _) implements JSObject {
+  external JSAny? get myID;
+}
+
+Map<String, dynamic> _asStringKeyedMap(Object? value) {
+  if (value is Map) {
+    return value.map((key, val) => MapEntry(key.toString(), val));
   }
-  if (jsObject is List) {
-    return jsObject.map(dartify).toList() as T;
-  }
-  var keys = objectKeys(jsObject);
-  var result = <String, dynamic>{};
-  for (var key in keys) {
-    result[key] = dartify(js_util.getProperty(jsObject, key));
-  }
-  return result as T;
+  return <String, dynamic>{};
 }
 
 /// A web implementation of the PusherChannelsFlutter plugin.
 class PusherChannelsFlutterWeb {
-  Pusher? pusher;
+  _JSPusher? _pusher;
   MethodChannel? methodChannel;
 
+  /// Registers this implementation with the Flutter web plugin registrar.
   static void registerWith(Registrar registrar) {
     final pluginInstance = PusherChannelsFlutterWeb();
     pluginInstance.methodChannel = MethodChannel(
@@ -61,8 +72,9 @@ class PusherChannelsFlutterWeb {
       const StandardMethodCodec(),
       registrar,
     );
-    pluginInstance.methodChannel!
-        .setMethodCallHandler(pluginInstance.handleMethodCall);
+    pluginInstance.methodChannel!.setMethodCallHandler(
+      pluginInstance.handleMethodCall,
+    );
   }
 
   Future<dynamic> handleMethodCall(MethodCall call) async {
@@ -72,11 +84,11 @@ class PusherChannelsFlutterWeb {
         break;
       case 'connect':
         assertPusher();
-        pusher!.connect();
+        _pusher!.connect();
         break;
       case 'disconnect':
         assertPusher();
-        pusher!.disconnect();
+        _pusher!.disconnect();
         break;
       case 'subscribe':
         subscribe(call);
@@ -88,7 +100,7 @@ class PusherChannelsFlutterWeb {
         trigger(call);
         break;
       case 'getSocketId':
-        return pusher!.connection.socket_id;
+        return _pusher!.connection.socketId;
       default:
         throw PlatformException(
           code: 'Unimplemented',
@@ -99,61 +111,63 @@ class PusherChannelsFlutterWeb {
   }
 
   void assertPusher() {
-    if (pusher == null) {
+    if (_pusher == null) {
       throw ArgumentError.notNull('Pusher not initialized');
     }
   }
 
   void assertChannel(String channelName) {
-    if (pusher!.channel(channelName) == null) {
+    if (_pusher!.channel(channelName) == null) {
       throw ArgumentError.notNull('Not subscribed to channel: $channelName');
     }
   }
 
-  void onError(dynamic jsError) {
-    final Map<String, dynamic> error = dartify<Map<String, dynamic>>(jsError);
+  void onError(JSAny jsError) {
+    final Map<String, dynamic> error = _asStringKeyedMap(jsError.dartify());
 
     if (error['type'] == 'PusherError') {
+      final data = _asStringKeyedMap(error['data']);
       methodChannel!.invokeMethod('onError', {
-        'message': error['data']?['message'],
-        'code': error['data']?['code'],
+        'message': data['message'],
+        'code': data['code'],
         'error': error,
       });
     }
   }
 
-  void onMessage(dynamic jsMessage) {
-    final Map<String, dynamic> msg = dartify<Map<String, dynamic>>(jsMessage);
+  void onMessage(JSAny jsMessage) {
+    final Map<String, dynamic> msg = _asStringKeyedMap(jsMessage.dartify());
     final String event = msg['event'] ?? '';
     final String channel = msg['channel'] ?? '';
-    final Map<String, dynamic> data = msg['data'] ?? {};
-    String? userId = data['user_id'];
-    final Map<String, dynamic>? userInfo = data['user_info'];
+    final Map<String, dynamic> data = _asStringKeyedMap(msg['data']);
+    String? userId = data['user_id']?.toString();
+    final Map<String, dynamic>? userInfo = data['user_info'] is Map
+        ? _asStringKeyedMap(data['user_info'])
+        : null;
 
     if (event == 'pusher_internal:subscription_error') {
-      methodChannel!.invokeMethod(
-          'onSubscriptionError', {'message': msg['error'], 'error': data});
+      methodChannel!.invokeMethod('onSubscriptionError', {
+        'message': msg['error'],
+        'error': data,
+      });
     } else if (event == 'pusher_internal:member_added') {
       methodChannel!.invokeMethod('onMemberAdded', {
         'channelName': channel,
-        'user': {
-          'userId': userId,
-          'userInfo': userInfo,
-        }
+        'user': {'userId': userId, 'userInfo': userInfo},
       });
     } else if (event == 'pusher_internal:member_removed') {
       methodChannel!.invokeMethod('onMemberRemoved', {
         'channelName': channel,
-        'user': {
-          'userId': userId,
-          'userInfo': userInfo,
-        }
+        'user': {'userId': userId, 'userInfo': userInfo},
       });
     } else {
       if (event == 'pusher_internal:subscription_succeeded') {
         if (channel.startsWith('presence-')) {
-          final presenceChannel = pusher!.channel(channel) as PresenceChannel;
-          userId = presenceChannel.members.myID;
+          final presenceChannel = _pusher!.channel(channel);
+          final myId = presenceChannel?.members.myID?.dartify();
+          if (myId != null) {
+            userId = myId.toString();
+          }
         }
       }
       methodChannel!.invokeMethod('onEvent', {
@@ -165,9 +179,8 @@ class PusherChannelsFlutterWeb {
     }
   }
 
-  void onStateChange(dynamic jsState) {
-    final Map<String, dynamic> state =
-        dartify<Map<String, dynamic>>(jsState ?? {});
+  void onStateChange(JSAny jsState) {
+    final Map<String, dynamic> state = _asStringKeyedMap(jsState.dartify());
     final String current = state['current'] ?? '';
     final String previous = state['previous'] ?? '';
     methodChannel!.invokeMethod('onConnectionStateChange', {
@@ -176,98 +189,120 @@ class PusherChannelsFlutterWeb {
     });
   }
 
-  void onConnected(dynamic jsMessage) {}
+  void onConnected(JSAny jsMessage) {}
 
   void onDisconnected() {}
 
-  Authorizer onAuthorizer(Channel channel, AuthorizerOptions options) {
-    return Authorizer(
-      authorize: js_util.allowInterop((socketId, callback) async {
-        try {
-          var authData = await methodChannel!.invokeMethod('onAuthorizer', {
-            'socketId': socketId,
-            'channelName': channel.name,
-            'options': options.toMap(),
-          });
-          callback(
-              null,
-              AuthData(
-                  auth: authData['auth'],
-                  channel_data: authData['channel_data'],
-                  shared_secret: authData['shared_secret']));
-        } catch (e) {
-          callback(PusherError(e.toString(), -1), AuthData(auth: ''));
-        }
-      }),
-    );
+  JSObject onAuthorizer(JSAny channel, JSAny options) {
+    void authorize(JSString socketId, JSFunction callback) {
+      unawaited(_authorize(channel, options, socketId.toDart, callback));
+    }
+
+    final authorizer = JSObject();
+    authorizer['authorize'] = authorize.toJS;
+    return authorizer;
+  }
+
+  Future<void> _authorize(
+    JSAny channel,
+    JSAny options,
+    String socketId,
+    JSFunction callback,
+  ) async {
+    try {
+      final channelName = (channel as JSObject)['name']?.dartify()?.toString();
+      var authData = await methodChannel!.invokeMethod('onAuthorizer', {
+        'socketId': socketId,
+        'channelName': channelName,
+        'options': _asStringKeyedMap(options.dartify()),
+      });
+      callback.callAsFunction(
+        null,
+        null,
+        {
+          'auth': authData['auth'],
+          'channel_data': authData['channel_data'],
+          'shared_secret': authData['shared_secret'],
+        }.jsify(),
+      );
+    } catch (e) {
+      callback.callAsFunction(null, e.toString().toJS, {'auth': ''}.jsify());
+    }
   }
 
   void subscribe(MethodCall call) {
     assertPusher();
     var channelName = call.arguments['channelName'];
-    pusher!.subscribe(channelName);
+    _pusher!.subscribe(channelName);
   }
 
   void unsubscribe(MethodCall call) {
     var channelName = call.arguments['channelName'];
-    var channel = pusher!.channel(channelName);
-    pusher!.unsubscribe(channelName);
-    channel?.unbind_all();
+    var channel = _pusher!.channel(channelName);
+    _pusher!.unsubscribe(channelName);
+    channel?.unbindAll();
   }
 
   void trigger(MethodCall call) {
     var channelName = call.arguments['channelName'];
-    var channel = pusher!.channel(channelName);
-    channel?.trigger(call.arguments['eventName'], call.arguments['data']);
+    var channel = _pusher!.channel(channelName);
+    channel?.trigger(
+      call.arguments['eventName'],
+      (call.arguments['data'] as Object?).jsify(),
+    );
   }
 
   void init(MethodCall call) {
-    if (pusher != null) {
-      pusher!.unbind_all();
-      pusher!.disconnect();
+    if (_pusher != null) {
+      _pusher!.unbindAll();
+      _pusher!.disconnect();
     }
-    var options = Options();
+    final options = JSObject();
     if (call.arguments['cluster'] != null) {
-      options.cluster = call.arguments['cluster'];
+      options['cluster'] = (call.arguments['cluster'] as String).toJS;
     }
     if (call.arguments['forceTLS'] != null) {
-      options.forceTLS = call.arguments['forceTLS'];
+      options['forceTLS'] = (call.arguments['forceTLS'] as bool).toJS;
     }
     if (call.arguments['pongTimeout'] != null) {
-      options.pongTimeout = call.arguments['pongTimeout'];
+      options['pongTimeout'] = (call.arguments['pongTimeout'] as num).toJS;
     }
     if (call.arguments['enableStats'] != null) {
-      options.enableStats = call.arguments['enableStats'];
+      options['enableStats'] = (call.arguments['enableStats'] as bool).toJS;
     }
     if (call.arguments['disabledTransports'] != null) {
-      options.disabledTransports = call.arguments['disabledTransports'];
+      options['disabledTransports'] =
+          (call.arguments['disabledTransports'] as Object).jsify();
     }
     if (call.arguments['enabledTransports'] != null) {
-      options.enabledTransports = call.arguments['enabledTransports'];
+      options['enabledTransports'] =
+          (call.arguments['enabledTransports'] as Object).jsify();
     }
     if (call.arguments['ignoreNullOrigin'] != null) {
-      options.ignoreNullOrigin = call.arguments['ignoreNullOrigin'];
+      options['ignoreNullOrigin'] =
+          (call.arguments['ignoreNullOrigin'] as bool).toJS;
     }
     if (call.arguments['authTransport'] != null) {
-      options.authTransport = call.arguments['authTransport'];
+      options['authTransport'] =
+          (call.arguments['authTransport'] as String).toJS;
     }
     if (call.arguments['authEndpoint'] != null) {
-      options.authEndpoint = call.arguments['authEndpoint'];
+      options['authEndpoint'] = (call.arguments['authEndpoint'] as String).toJS;
     }
     if (call.arguments['authParams'] != null) {
-      options.auth = call.arguments['authParams'];
+      options['auth'] = (call.arguments['authParams'] as Object).jsify();
     }
     if (call.arguments['logToConsole'] != null) {
-      Pusher.logToConsole = call.arguments['logToConsole'];
+      _JSPusher.logToConsole = call.arguments['logToConsole'];
     }
     if (call.arguments['authorizer'] != null) {
-      options.authorizer = js_util.allowInterop(onAuthorizer);
+      options['authorizer'] = onAuthorizer.toJS;
     }
-    pusher = Pusher(call.arguments['apiKey'], options);
-    pusher!.connection.bind('error', js_util.allowInterop(onError));
-    pusher!.connection.bind('message', js_util.allowInterop(onMessage));
-    pusher!.connection.bind('state_change', js_util.allowInterop(onStateChange));
-    pusher!.connection.bind('connected', js_util.allowInterop(onConnected));
-    pusher!.connection.bind('disconnected', js_util.allowInterop(onDisconnected));
+    _pusher = _JSPusher(call.arguments['apiKey'], options);
+    _pusher!.connection.bind('error', onError.toJS);
+    _pusher!.connection.bind('message', onMessage.toJS);
+    _pusher!.connection.bind('state_change', onStateChange.toJS);
+    _pusher!.connection.bind('connected', onConnected.toJS);
+    _pusher!.connection.bind('disconnected', onDisconnected.toJS);
   }
 }

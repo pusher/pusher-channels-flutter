@@ -1,22 +1,21 @@
-name: pusher_channels_flutter
-description: Pusher Channels Flutter Plugin
-version: 2.6.0
-homepage: https://github.com/pusher/pusher-channels-flutter
-repository: https://github.com/pusher/pusher-channels-flutter
-issue_tracker: https://github.com/pusher/pusher-channels-flutter/issues
+name: pusher_channels_flutter_advanced
+description: Flutter plugin for Pusher Channels realtime messaging on Android, iOS, and web.
+version: 3.1.0
+homepage: https://github.com/nafiskabbo/pusher_channels_flutter_advanced
+repository: https://github.com/nafiskabbo/pusher_channels_flutter_advanced
+issue_tracker: https://github.com/nafiskabbo/pusher_channels_flutter_advanced/issues
 environment:
-  sdk: ">=3.5.0 <4.0.0"
-  flutter: ">=1.20.0"
+  sdk: ^3.12.0
+  flutter: ">=3.44.0"
 dependencies:
   flutter:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
-  js: ^0.7.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -31,9 +30,9 @@ flutter:
       android:
         package: com.pusher.channels_flutter
         pluginClass: PusherChannelsFlutterPlugin
-        fileName: pusher_channels_flutter.dart
+        fileName: pusher_channels_flutter_advanced.dart
       ios:
-        pluginClass: PusherChannelsFlutterPlugin
+        pluginClass: SwiftPusherChannelsFlutterPlugin
       web:
         pluginClass: PusherChannelsFlutterWeb
         fileName: pusher_channels_flutter_web.dart
