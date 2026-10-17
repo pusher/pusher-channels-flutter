@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.1.0
+
+- Migrate web from discontinued `package:js` to `dart:js_interop`
+- Bind directly to the loaded pusher-js client instead of generated `package:js` wrappers
+
 ## 3.0.2
 
 - Expand the package description and use HTTPS-only README links

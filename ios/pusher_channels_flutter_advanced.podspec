@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'pusher_channels_flutter_advanced'
-  s.version          = '3.0.2'
+  s.version          = '3.1.0'
   s.summary          = 'Pusher Channels Flutter integration.'
   s.description      = <<-DESC
 A Flutter plugin for Pusher Channels.

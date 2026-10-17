@@ -93,7 +93,7 @@ to add the plugin to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  pusher_channels_flutter_advanced: ^3.0.2
+  pusher_channels_flutter_advanced: ^3.1.0
 ```
 
 ### Migrating from `pusher_channels_flutter`
