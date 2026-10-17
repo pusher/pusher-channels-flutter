@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.0.2
+
+- Expand the package description and use HTTPS-only README links
+- Hide pusher-js web internals from the public API so dartdoc coverage meets pub scoring
+- Migrate Android to built-in Kotlin and require Flutter 3.44 / Dart 3.12
+
 ## 3.0.1
 
 - Upgrade package dependencies (`flutter_lints` ^6.0.0)

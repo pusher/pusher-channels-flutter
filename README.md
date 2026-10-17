@@ -2,7 +2,6 @@
 
 [![pub package](https://img.shields.io/pub/v/pusher_channels_flutter_advanced.svg?logo=dart)](https://pub.dev/packages/pusher_channels_flutter_advanced)
 [![Latest Release](https://img.shields.io/github/v/release/nafiskabbo/pusher_channels_flutter_advanced)](https://github.com/nafiskabbo/pusher_channels_flutter_advanced/releases)
-[![Twitter](https://img.shields.io/badge/twitter-@Pusher-blue.svg?style=flat)](http://twitter.com/Pusher)
 [![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://raw.githubusercontent.com/nafiskabbo/pusher_channels_flutter_advanced/master/LICENSE)
 [![likes](https://badges.bar/pusher_channels_flutter_advanced/likes)](https://pub.dev/packages/pusher_channels_flutter_advanced/score)
 [![popularity](https://badges.bar/pusher_channels_flutter_advanced/popularity)](https://pub.dev/packages/pusher_channels_flutter_advanced/score)
@@ -94,7 +93,7 @@ to add the plugin to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  pusher_channels_flutter_advanced: ^3.0.1
+  pusher_channels_flutter_advanced: ^3.0.2
 ```
 
 ### Migrating from `pusher_channels_flutter`
@@ -218,7 +217,7 @@ await pusher.init(
 });
 ```
 
-Additional parameters to be sent when the channel authentication endpoint is called. When using [ajax authentication](https://pusher.com/docs/authenticating_users#ajax_authentication) the parameters are passed as additional `POST` parameters. When using [jsonp authentication](http://pusher.com/docs/authenticating_users#jsonp_authentication) the parameters are passed as `GET` parameters. This can be useful with web application frameworks that guard against [CSRF (Cross-site request forgery)](http://en.wikipedia.org/wiki/Cross-site_request_forgery).
+Additional parameters to be sent when the channel authentication endpoint is called. When using [ajax authentication](https://pusher.com/docs/authenticating_users#ajax_authentication) the parameters are passed as additional `POST` parameters. When using [jsonp authentication](https://pusher.com/docs/authenticating_users#jsonp_authentication) the parameters are passed as `GET` parameters. This can be useful with web application frameworks that guard against [CSRF (Cross-site request forgery)](https://en.wikipedia.org/wiki/Cross-site_request_forgery).
 
 CSRF
 

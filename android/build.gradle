@@ -1,17 +1,15 @@
 group 'com.pusher.channels_flutter'
-//group 'com.pusher'
 version '1.0-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.9.10'
+    ext.kotlin_version = '2.2.20'
     repositories {
         google()
         mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.7.0'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.android.tools.build:gradle:8.11.1'
     }
 }
 
@@ -23,7 +21,6 @@ rootProject.allprojects {
 }
 
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
 
 android {
     if (project.android.hasProperty("namespace")) {
@@ -37,16 +34,18 @@ android {
         targetCompatibility JavaVersion.VERSION_11
     }
 
-    kotlinOptions {
-        jvmTarget = '11'
-    }
-
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
 
     defaultConfig {
         minSdkVersion 16
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
     }
 }
 

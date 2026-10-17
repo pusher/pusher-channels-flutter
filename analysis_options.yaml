@@ -5,7 +5,7 @@ include: package:flutter_lints/flutter.yaml
 
 analyzer:
   exclude:
-    - lib/pusher-js/**
+    - lib/src/pusher-js/**
     - lib/pusher_channels_flutter_web.dart
     - example/**
     - build/**

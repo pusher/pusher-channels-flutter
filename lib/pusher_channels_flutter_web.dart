@@ -9,15 +9,21 @@ import 'package:js/js_util.dart' as js_util;
 // ignore: avoid_web_libraries_in_flutter
 import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
-import 'package:pusher_channels_flutter_advanced/pusher-js/core/auth/options.dart';
-import 'package:pusher_channels_flutter_advanced/pusher-js/core/channels/channel.dart';
-import 'package:pusher_channels_flutter_advanced/pusher-js/core/channels/presence_channel.dart';
-import 'package:pusher_channels_flutter_advanced/pusher-js/core/options.dart';
-import 'package:pusher_channels_flutter_advanced/pusher-js/core/pusher.dart';
+import 'package:pusher_channels_flutter_advanced/src/pusher-js/core/auth/options.dart';
+import 'package:pusher_channels_flutter_advanced/src/pusher-js/core/channels/channel.dart';
+import 'package:pusher_channels_flutter_advanced/src/pusher-js/core/channels/presence_channel.dart';
+import 'package:pusher_channels_flutter_advanced/src/pusher-js/core/options.dart';
+import 'package:pusher_channels_flutter_advanced/src/pusher-js/core/pusher.dart';
 
+/// Error forwarded from the pusher-js web client.
 class PusherError extends Error {
+  /// Human-readable error message.
   String message;
+
+  /// Numeric error code from pusher-js, or `-1` when unknown.
   int code;
+
+  /// Creates a web client error.
   PusherError(this.message, this.code);
 }
 
@@ -54,6 +60,7 @@ class PusherChannelsFlutterWeb {
   Pusher? pusher;
   MethodChannel? methodChannel;
 
+  /// Registers this implementation with the Flutter web plugin registrar.
   static void registerWith(Registrar registrar) {
     final pluginInstance = PusherChannelsFlutterWeb();
     pluginInstance.methodChannel = MethodChannel(
