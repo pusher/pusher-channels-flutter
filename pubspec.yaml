@@ -1,12 +1,12 @@
 name: pusher_channels_flutter_advanced
-description: Pusher Channels Flutter Plugin
-version: 3.0.1
+description: Flutter plugin for Pusher Channels realtime messaging on Android, iOS, and web.
+version: 3.0.2
 homepage: https://github.com/nafiskabbo/pusher_channels_flutter_advanced
 repository: https://github.com/nafiskabbo/pusher_channels_flutter_advanced
 issue_tracker: https://github.com/nafiskabbo/pusher_channels_flutter_advanced/issues
 environment:
-  sdk: ">=3.5.0 <4.0.0"
-  flutter: ">=1.20.0"
+  sdk: ^3.12.0
+  flutter: ">=3.44.0"
 dependencies:
   flutter:
     sdk: flutter
