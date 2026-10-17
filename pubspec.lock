@@ -72,14 +72,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  js:
-    dependency: "direct main"
-    description:
-      name: js
-      sha256: "53385261521cc4a0c4658fd0ad07a7d14591cf8fc33abbceae306ddb974888dc"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.7.2"
   leak_tracker:
     dependency: transitive
     description:
