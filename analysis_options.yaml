@@ -8,6 +8,9 @@ analyzer:
     - lib/pusher-js/**
     - lib/pusher_channels_flutter_web.dart
     - example/**
+    - build/**
+    - android/**
+    - ios/**
 
 linter:
   # The lint rules applied to this project can be customized in the

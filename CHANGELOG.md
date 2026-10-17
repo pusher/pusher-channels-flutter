@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.1
+
+- Upgrade package dependencies (`flutter_lints` ^6.0.0)
+
 ## 3.0.0
 
 - **Package renamed** from `pusher_channels_flutter` to [`pusher_channels_flutter_advanced`](https://pub.dev/packages/pusher_channels_flutter_advanced) for independent publication on pub.dev
